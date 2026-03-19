@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Lenis from '@studio-freight/lenis';
 import Navbar from './Navbar';
 import Home from './Home';
 import About from './About';
@@ -9,12 +8,19 @@ import Services from './Services';
 import Contact from './Contact';
 import Gallery from './Gallery';
 import CV from './CV';
+import GithubStats from './GithubStats';
+import CustomCursor from './CustomCursor';
+import MyJourney from './MyJourney';
+import TechStack from './TechStack';
 import './App.css';
 
 const MainLayout = () => (
   <>
     <div id="home"><Home /></div>
     <div id="about"><About /></div>
+    <div id="tech"><TechStack /></div>
+    <div id="journey"><MyJourney /></div>
+    <div id="github"><GithubStats /></div>
     <div id="work"><Work /></div>
     <div id="photography"><Gallery /></div>
     <div id="services"><Services /></div>
@@ -24,19 +30,6 @@ const MainLayout = () => (
 
 function App() {
   useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-      smoothTouch: true,
-    });
-
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
-
     // Global scroll behavior for anchors
     const handleAnchorClick = (e) => {
       const target = e.target.closest('a');
@@ -45,14 +38,13 @@ function App() {
         const element = document.getElementById(id);
         if (element) {
           e.preventDefault();
-          lenis.scrollTo(element, { offset: 0, duration: 1.5 });
+          element.scrollIntoView({ behavior: 'smooth' });
         }
       }
     };
     document.addEventListener('click', handleAnchorClick);
 
     return () => {
-      lenis.destroy();
       document.removeEventListener('click', handleAnchorClick);
     };
   }, []);
@@ -64,6 +56,7 @@ function App() {
       <div className="blob blob-2" />
       <div className="blob blob-3" />
       
+      <CustomCursor />
       <Navbar />
       
       <main>
