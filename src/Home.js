@@ -1,8 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { SiJavascript, SiPython } from 'react-icons/si';
-import { FaBrain, FaJava } from 'react-icons/fa';
-import axios from 'axios';
 
 const ROLES = [
   'AI / ML Developer',
@@ -42,92 +38,9 @@ function useTypewriter(words, typingSpeed = 80, deletingSpeed = 40, pauseTime = 
   return displayed;
 }
 
-const OrbitIcon = ({ icon: Icon, label, delay, index }) => {
-  const angle = (index * 90) * (Math.PI / 180);
-  const radius = 100;
-  
-  return (
-    <motion.div
-      className="absolute flex items-center justify-center"
-      style={{
-        width: '40px',
-        height: '40px',
-      }}
-      animate={{
-        rotate: [0, 360],
-      }}
-      transition={{
-        duration: 20,
-        repeat: Infinity,
-        ease: "linear",
-      }}
-    >
-      <motion.div
-        className="relative group cursor-pointer"
-        animate={{
-          rotate: [0, -360],
-        }}
-        transition={{
-          duration: 20,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-        whileHover={{ scale: 1.2 }}
-      >
-        <div className="orbit-icon-glow absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" 
-             style={{ background: 'var(--purple)' }} />
-        <div className="relative z-10 w-10 h-10 rounded-full bg-slate-900/90 border border-purple-500/30 flex items-center justify-center text-purple-400 group-hover:text-purple-300 group-hover:border-purple-400 transition-all duration-300 shadow-[0_0_15px_rgba(138,92,246,0.3)]">
-          <Icon size={20} />
-        </div>
-        
-        {/* Tooltip */}
-        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
-          <div className="bg-slate-900/90 border border-purple-500/20 px-2 py-1 rounded text-[10px] whitespace-nowrap text-purple-200 backdrop-blur-md">
-            {label}
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-};
-
-const CountUp = ({ end, duration = 2 }) => {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    let startTimestamp = null;
-    const step = (timestamp) => {
-      if (!startTimestamp) startTimestamp = timestamp;
-      const progress = Math.min((timestamp - startTimestamp) / (duration * 1000), 1);
-      setCount(Math.floor(progress * end));
-      if (progress < 1) {
-        window.requestAnimationFrame(step);
-      }
-    };
-    window.requestAnimationFrame(step);
-  }, [end, duration]);
-
-  return <span>{count}+</span>;
-};
-
 export default function Home() {
   const fadeRefs = useRef([]);
   const typedText = useTypewriter(ROLES);
-  const [repoCount, setRepoCount] = useState(4);
-
-  useEffect(() => {
-    const fetchRepos = async () => {
-      try {
-        const response = await axios.get('https://api.github.com/users/arupdas0825');
-        if (response.data && response.data.public_repos) {
-          setRepoCount(response.data.public_repos);
-        }
-      } catch (error) {
-        console.error('Error fetching GitHub repos:', error);
-      }
-    };
-    fetchRepos();
-  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -141,27 +54,15 @@ export default function Home() {
     return () => observer.disconnect();
   }, []);
 
-  const addRef = (el) => { if (el && !fadeRefs.current.includes(el)) fadeRefs.current.push(el); };
-
-  const icons = [
-    { icon: FaJava, label: 'Java' },
-    { icon: SiJavascript, label: 'JavaScript' },
-    { icon: SiPython, label: 'Python' },
-    { icon: FaBrain, label: 'AI/ML' },
-  ];
+  const addRef = (el) => {
+    if (el && !fadeRefs.current.includes(el)) fadeRefs.current.push(el);
+  };
 
   return (
-    <section className="home-section relative overflow-hidden">
-      {/* Background Light Streak */}
-      <motion.div 
-        className="absolute w-[200%] h-[1px] bg-gradient-to-r from-transparent via-purple-500/20 to-transparent -rotate-45"
-        animate={{ x: ['-100%', '100%'] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-        style={{ top: '30%' }}
-      />
-
+    <section className="home-section">
       {/* LEFT */}
       <div className="hero-left fade-in" ref={addRef}>
+
         <div className="hero-badge">
           <span className="badge-dot" />
           Available for opportunities
@@ -171,7 +72,7 @@ export default function Home() {
 
         <h1 className="hero-name">Hi, I'm Arup Das</h1>
 
-        {/* TYPEWRITER ROLE */}
+        {/* TYPEWRITER */}
         <div className="hero-role-wrap">
           <span className="hero-role-text">{typedText}</span>
           <span className="hero-cursor">|</span>
@@ -235,89 +136,31 @@ export default function Home() {
       {/* RIGHT — Orbital Widget */}
       <div className="hero-visual fade-in" ref={addRef} style={{ animationDelay: '0.2s' }}>
         <div className="orbit-container">
-          <div className="orbit-card bg-[#0f0c1a]/80 border border-white/10 backdrop-blur-xl relative overflow-hidden group">
-            {/* Background texture override */}
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
-                 style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }} />
-            
-            <div className="orbit-card-header z-10">
+          <div className="orbit-card">
+            <div className="orbit-card-header">
               <span>CORE UI</span>
-              <span className="flex items-center gap-1.5 text-[#22c55e] font-bold">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
-                ONLINE
-              </span>
+              <span className="orbit-online">● ONLINE</span>
             </div>
-            
-            <div className="orbit-badges-top z-10">
+            <div className="orbit-badges-top">
               <span className="orbit-badge">● SYSTEM READY</span>
               <span className="orbit-badge">PORTFOLIO 2025</span>
               <span className="orbit-badge">AI POWERED</span>
             </div>
-
-            {/* Orbit System */}
-            <div className="relative w-64 h-64 flex items-center justify-center mt-8">
-              {/* Outer Orbit Ring */}
-              <div className="absolute w-full h-full rounded-full border border-purple-500/10 shadow-[inset_0_0_20px_rgba(138,92,246,0.05)]" />
-              
-              {/* Rotating Icons Container */}
-              <motion.div 
-                className="absolute w-full h-full"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-              >
-                {icons.map((item, i) => (
-                  <div key={i} className="absolute" style={{ 
-                    top: '50%', left: '50%',
-                    transform: `translate(-50%, -50%) rotate(${i * 90}deg) translateY(-128px) rotate(${-i * 90}deg)`
-                  }}>
-                    <motion.div 
-                      className="relative group/icon"
-                      animate={{ rotate: -360 }}
-                      transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                      whileHover={{ scale: 1.15 }}
-                    >
-                      <div className="absolute inset-0 bg-purple-500/20 blur-lg rounded-full opacity-0 group-hover/icon:opacity-100 transition-opacity" />
-                      <div className="w-10 h-10 rounded-full bg-[#0a0812] border border-white/10 flex items-center justify-center text-purple-400 shadow-[0_0_15px_rgba(138,92,246,0.2)] group-hover/icon:border-purple-500/50 group-hover/icon:text-purple-300 transition-all">
-                        <item.icon size={18} />
-                      </div>
-                      
-                      {/* Tooltip */}
-                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover/icon:opacity-100 transition-all">
-                        <span className="bg-slate-900/90 border border-white/10 px-2 py-0.5 rounded text-[10px] text-purple-200 backdrop-blur-md">
-                          {item.label}
-                        </span>
-                      </div>
-                    </motion.div>
-                  </div>
-                ))}
-              </motion.div>
-
-              {/* Inner Core */}
-              <motion.div 
-                className="orbit-core z-20 cursor-pointer"
-                animate={{ 
-                  y: [0, -8, 0],
-                  scale: [1, 1.02, 1]
-                }}
-                transition={{ 
-                  duration: 4, 
-                  repeat: Infinity, 
-                  ease: "easeInOut" 
-                }}
-              >
-                ARUP
-              </motion.div>
+            <div className="orbit-ring-outer" />
+            <div className="orbit-ring">
+              <span className="orbit-dot" style={{ top: '-14px', left: '50%', transform: 'translateX(-50%)' }}>🤖</span>
+              <span className="orbit-dot" style={{ right: '-14px', top: '50%', transform: 'translateY(-50%)' }}>⚡</span>
+              <span className="orbit-dot" style={{ bottom: '-14px', left: '50%', transform: 'translateX(-50%)' }}>📷</span>
+              <span className="orbit-dot" style={{ left: '-14px', top: '50%', transform: 'translateY(-50%)' }}>💻</span>
+              <div className="orbit-core">ARUP</div>
             </div>
-
-            <div className="orbit-stats z-10 w-full px-6 mt-6">
+            <div className="orbit-stats">
               <div className="orbit-stat">
-                <div className="orbit-stat-val">
-                  <CountUp end={repoCount} />
-                </div>
+                <div className="orbit-stat-val">4+</div>
                 <div className="orbit-stat-label">Projects</div>
               </div>
               <div className="orbit-stat">
-                <div className="orbit-stat-val text-purple-400">AI/ML</div>
+                <div className="orbit-stat-val">AI/ML</div>
                 <div className="orbit-stat-label">Focus</div>
               </div>
               <div className="orbit-stat">

@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { LucideChevronLeft, LucideChevronRight, LucideX } from 'lucide-react';
 
-// Updated photo list with user-provided titles and descriptions
 const photos = [
   { id: 1, src: "/photos/1.jpg", title: "Amber Awakening", desc: "A meditation on perception and intimacy—the human eye becomes a universe unto itself. The warm, honey-toned iris captures light like a sunset, reminding us that every moment of seeing is an act of connection between inner consciousness and outer reality." },
   { id: 2, src: "/photos/2.jpg", title: "Offerings of Devotion", desc: "In the chaos of the crowd, one man stands anchored in faith. The marigold garlands symbolize the persistence of tradition in modern India—a bridge between the spiritual and the everyday, where commerce and devotion share the same sacred space." },
@@ -10,8 +9,8 @@ const photos = [
   { id: 5, src: "/photos/5.jpg", title: "Still Waiting for Tomorrow", desc: "A powerful portrait of urban invisibility. The elderly man and his dog exist in parallel with the rushing world behind them—a quiet commentary on displacement, dignity, and the unconditional loyalty that transcends circumstance." },
   { id: 6, src: "/photos/6.jpg", title: "Golden Hour Commute", desc: "The ordinary transformed by light. Morning mist and golden haze turn a mundane street into a cinematic dreamscape, reminding us that magic exists in our daily routines if we pause long enough to witness it." },
   { id: 7, src: "/photos/7.jpg", title: "The Last Red of the Day", desc: "The sun sinks behind wires and concrete, yet still finds space to glow. This photograph symbolises how beauty continues to exist even when life feels crowded, broken or tangled." },
-  { id: 8, src: "/photos/8.jpg", title: "Hooghly Serenity", desc: "The iconic Vidyasagar Setu stands sentinel over the Hooghly River as fishermen continue their timeless practice. This image embodies Kolkata's soul—where monumental infrastructure and humble tradition coexist, where engineering marvels don't overshadow the human scale of life." },
-  { id: 9, src: "/photos/9.jpg", title: "Consuming Light", desc: "In the darkness, fire becomes a living entity—breathing, moving, devouring. This photograph freezes the ephemeral nature of flame, capturing its hungry elegance. It's a meditation on impermanence: what burns brightest burns briefly, yet leaves an indelible impression on everything it touches." },
+  { id: 8, src: "/photos/8.jpg", title: "Hooghly Serenity", desc: "The iconic Vidyasagar Setu stands sentinel over the Hooghly River as fishermen continue their timeless practice. This image embodies Kolkata's soul—where monumental infrastructure and humble tradition coexist." },
+  { id: 9, src: "/photos/9.jpg", title: "Consuming Light", desc: "In the darkness, fire becomes a living entity—breathing, moving, devouring. This photograph freezes the ephemeral nature of flame, capturing its hungry elegance. A meditation on impermanence: what burns brightest burns briefly." },
   { id: 10, src: "/photos/10.jpg", title: "Solitary Path", desc: "An empty lane bathed in nocturnal green—simultaneously inviting and isolating. This image captures the duality of urban solitude: the comfort of familiar neighborhoods and the strange loneliness that descends when the world sleeps." },
 ];
 
@@ -29,31 +28,33 @@ export default function Gallery() {
     return () => observer.disconnect();
   }, []);
 
-  const handlePrev = (e) => {
+  // ✅ useCallback — ESLint exhaustive-deps fix
+  const handlePrev = useCallback((e) => {
     e?.stopPropagation();
-    const idx = photos.findIndex(p => p.id === selected.id);
-    const prevIdx = (idx - 1 + photos.length) % photos.length;
-    setSelected(photos[prevIdx]);
-  };
+    setSelected(prev => {
+      const idx = photos.findIndex(p => p.id === prev.id);
+      return photos[(idx - 1 + photos.length) % photos.length];
+    });
+  }, []);
 
-  const handleNext = (e) => {
+  const handleNext = useCallback((e) => {
     e?.stopPropagation();
-    const idx = photos.findIndex(p => p.id === selected.id);
-    const nextIdx = (idx + 1) % photos.length;
-    setSelected(photos[nextIdx]);
-  };
+    setSelected(prev => {
+      const idx = photos.findIndex(p => p.id === prev.id);
+      return photos[(idx + 1) % photos.length];
+    });
+  }, []);
 
+  // ✅ handleNext & handlePrev now stable — safe in deps array
   useEffect(() => {
     const handler = (e) => {
       if (e.key === 'Escape') setSelected(null);
-      if (selected) {
-        if (e.key === 'ArrowLeft') handlePrev();
-        if (e.key === 'ArrowRight') handleNext();
-      }
+      if (e.key === 'ArrowLeft') handlePrev();
+      if (e.key === 'ArrowRight') handleNext();
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [selected]);
+  }, [handleNext, handlePrev]);
 
   return (
     <section id="photography" className="page-section gallery-section">
@@ -75,7 +76,9 @@ export default function Gallery() {
               style={{ animationDelay: `${(index % 5) * 0.1}s` }}
               onClick={() => setSelected(photo)}
             >
-              <img src={photo.src} alt={photo.title}
+              <img
+                src={photo.src}
+                alt={photo.title}
                 onError={e => {
                   e.target.style.display = 'none';
                   e.target.parentNode.classList.add('photo-missing');
@@ -95,7 +98,7 @@ export default function Gallery() {
           <button className="lightbox-nav lightbox-prev" onClick={handlePrev}>
             <LucideChevronLeft />
           </button>
-          
+
           <div className="lightbox-inner" onClick={e => e.stopPropagation()}>
             <button className="lightbox-close" onClick={() => setSelected(null)}>
               <LucideX />
