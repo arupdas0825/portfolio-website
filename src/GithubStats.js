@@ -24,7 +24,7 @@ const StatCard = ({ icon: Icon, label, value, color }) => (
     whileHover={{ scale: 1.05, boxShadow: `0 0 20px ${color}33` }}
     className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-300"
   >
-    <div className={`absolute -top-10 -right-10 w-24 h-24 rounded-full blur-3xl opacity-20`} style={{ backgroundColor: color }}></div>
+    <div className="absolute -top-10 -right-10 w-24 h-24 rounded-full blur-3xl opacity-20" style={{ backgroundColor: color }}></div>
     <div className="mb-4 p-3 rounded-xl bg-white/5 text-white group-hover:scale-110 transition-transform duration-300">
       <Icon size={24} style={{ color }} />
     </div>
@@ -69,21 +69,19 @@ const GithubStats = () => {
       { name: 'CSS', percentage: 3, color: '#563d7c' },
       { name: 'HTML', percentage: 2, color: '#e34c26' },
     ],
-    totalCommits: 450, // Mock
-    totalPRs: 25, // Mock
-    totalIssues: 12, // Mock
-    streak: { current: 15, longest: 45 }, // Mock
-    contributions: 120, // Mock
+    totalCommits: 450,
+    totalPRs: 25,
+    totalIssues: 12,
+    streak: { current: 15, longest: 45 },
+    contributions: 120,
   });
-
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchGithubData = async () => {
       try {
         const userRes = await fetch('https://api.github.com/users/arupdas0825');
         const userData = await userRes.json();
-        
+
         const reposRes = await fetch('https://api.github.com/users/arupdas0825/repos?per_page=100');
         const reposData = await reposRes.json();
 
@@ -92,13 +90,13 @@ const GithubStats = () => {
         const languages = {};
 
         if (Array.isArray(reposData)) {
-            reposData.forEach(repo => {
-                totalStars += repo.stargazers_count;
-                totalForks += repo.forks_count;
-                if (repo.language) {
-                    languages[repo.language] = (languages[repo.language] || 0) + 1;
-                }
-            });
+          reposData.forEach(repo => {
+            totalStars += repo.stargazers_count;
+            totalForks += repo.forks_count;
+            if (repo.language) {
+              languages[repo.language] = (languages[repo.language] || 0) + 1;
+            }
+          });
         }
 
         const sortedLangs = Object.entries(languages).sort((a, b) => b[1] - a[1]);
@@ -113,10 +111,8 @@ const GithubStats = () => {
           forks: totalForks,
           topLanguage,
         }));
-        setLoading(false);
       } catch (error) {
         console.error("Error fetching GitHub data:", error);
-        setLoading(false);
       }
     };
 
@@ -125,25 +121,40 @@ const GithubStats = () => {
 
   return (
     <section id="github" className="py-24 relative overflow-hidden bg-[#0a0812]">
-      {/* Background Particles/Motion */}
+      {/* Google Font — Orbitron */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap');
+        .gh-title-font {
+          font-family: 'Orbitron', sans-serif;
+          font-weight: 900;
+          letter-spacing: -0.02em;
+          background: linear-gradient(135deg, #a78bfa 0%, #8a5cf6 40%, #c084fc 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          filter: drop-shadow(0 0 30px rgba(138,92,246,0.4));
+        }
+      `}</style>
+
+      {/* Background glow */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 blur-[120px] animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 blur-[120px] animate-pulse delay-700"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 blur-[120px] animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-violet-500/10 blur-[120px] animate-pulse delay-700"></div>
       </div>
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
+
+        {/* ===== TITLE ===== */}
         <div className="text-center mb-16">
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-extrabold mb-4 font-syne uppercase tracking-tighter"
+            className="gh-title-font text-4xl md:text-5xl mb-4 uppercase"
           >
-            <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-fuchsia-500 bg-clip-text text-transparent drop-shadow-sm">
-              GitHub Stats
-            </span>
+            GitHub Stats
           </motion.h2>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -152,7 +163,7 @@ const GithubStats = () => {
           >
             Live Data from GitHub API
           </motion.p>
-          <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mt-6 rounded-full shadow-[0_0_15px_rgba(138,92,246,0.5)]"></div>
+          <div className="w-20 h-1 mx-auto mt-6 rounded-full" style={{ background: 'linear-gradient(90deg, #8a5cf6, #c084fc)', boxShadow: '0 0 15px rgba(138,92,246,0.5)' }}></div>
         </div>
 
         {/* Top Cards Grid */}
@@ -167,7 +178,7 @@ const GithubStats = () => {
         {/* Large Advanced Panel */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
           {/* Main Info Box */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -176,11 +187,11 @@ const GithubStats = () => {
             <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
               <Github size={120} />
             </div>
-            
+
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 h-full">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 border border-blue-500/20">
+                  <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 border border-purple-500/20">
                     <Github size={24} />
                   </div>
                   <div>
@@ -191,12 +202,12 @@ const GithubStats = () => {
 
                 <div className="grid grid-cols-2 gap-y-6 gap-x-12">
                   <div className="relative pl-6">
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-full"></div>
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-purple-500 rounded-full"></div>
                     <p className="text-xs text-slate-500 uppercase font-bold mb-1">Total Stars</p>
                     <p className="text-2xl font-bold text-white font-syne"><CountUp value={stats.stars} /></p>
                   </div>
                   <div className="relative pl-6">
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-purple-500 rounded-full"></div>
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-violet-500 rounded-full"></div>
                     <p className="text-xs text-slate-500 uppercase font-bold mb-1">Commits</p>
                     <p className="text-2xl font-bold text-white font-syne"><CountUp value={stats.totalCommits} /></p>
                   </div>
@@ -213,32 +224,19 @@ const GithubStats = () => {
                 </div>
               </div>
 
-              {/* Progress Ring for Dominant Language */}
+              {/* Progress Ring */}
               <div className="flex flex-col items-center justify-center bg-white/5 rounded-3xl p-8 border border-white/5 min-w-[200px]">
                 <div className="relative w-32 h-32 mb-4">
                   <svg className="w-full h-full transform -rotate-90">
-                    <circle
-                      cx="64"
-                      cy="64"
-                      r="58"
-                      stroke="currentColor"
-                      strokeWidth="8"
-                      fill="transparent"
-                      className="text-white/5"
-                    />
+                    <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
                     <motion.circle
-                      cx="64"
-                      cy="64"
-                      r="58"
-                      stroke="currentColor"
-                      strokeWidth="8"
-                      fill="transparent"
+                      cx="64" cy="64" r="58" stroke="#8a5cf6" strokeWidth="8" fill="transparent"
                       strokeDasharray="364.4"
                       initial={{ strokeDashoffset: 364.4 }}
                       whileInView={{ strokeDashoffset: 364.4 * (1 - 0.75) }}
                       viewport={{ once: true }}
                       transition={{ duration: 2, ease: "easeOut" }}
-                      className="text-blue-500 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]"
+                      style={{ filter: 'drop-shadow(0 0 8px rgba(138,92,246,0.6))' }}
                     />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -251,14 +249,14 @@ const GithubStats = () => {
           </motion.div>
 
           {/* Side Panel Breakdown */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 flex flex-col justify-between"
           >
             <h4 className="text-lg font-bold text-white mb-6 font-syne flex items-center gap-2">
-              <Code size={20} className="text-fuchsia-400" /> Language Breakdown
+              <Code size={20} style={{ color: '#c084fc' }} /> Language Breakdown
             </h4>
             <div className="space-y-2">
               {stats.languageBreakdown.map((lang, idx) => (
@@ -286,13 +284,13 @@ const GithubStats = () => {
               <div className="relative w-16 h-16 flex items-center justify-center">
                 <svg className="absolute inset-0 w-full h-full transform -rotate-90">
                   <circle cx="32" cy="32" r="30" stroke="currentColor" strokeWidth="3" fill="transparent" className="text-white/5" />
-                  <motion.circle 
-                    cx="32" cy="32" r="30" stroke={stat.color} strokeWidth="3" fill="transparent" 
-                    strokeDasharray="188.5" initial={{ strokeDashoffset: 188.5 }}
+                  <motion.circle
+                    cx="32" cy="32" r="30" stroke={stat.color} strokeWidth="3" fill="transparent"
+                    strokeDasharray="188.5"
+                    initial={{ strokeDashoffset: 188.5 }}
                     whileInView={{ strokeDashoffset: 188.5 * (1 - 0.8) }}
                     viewport={{ once: true }}
                     transition={{ duration: 1.5, delay: 0.5 + (idx * 0.1) }}
-                    className="drop-shadow-[0_0_5px_rgba(0,0,0,0.5)]"
                   />
                 </svg>
                 <stat.icon size={20} style={{ color: stat.color }} className="relative z-10 group-hover:scale-110 transition-transform" />
@@ -304,6 +302,7 @@ const GithubStats = () => {
             </motion.div>
           ))}
         </div>
+
       </div>
     </section>
   );

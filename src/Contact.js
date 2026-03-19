@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { LucideMail, LucideMapPin, LucideGraduationCap, LucideGithub, LucideLinkedin, LucideInstagram, LucideSend } from 'lucide-react';
+import { LucideMail, LucideMapPin, LucideGraduationCap, LucideGithub, LucideLinkedin, LucideInstagram, LucideSend, LucideFacebook } from 'lucide-react';
 import TiltCard from './TiltCard';
 
 const Contact = () => {
@@ -75,8 +75,9 @@ const Contact = () => {
                   <div className="flex gap-4">
                     {[
                       { icon: <LucideGithub size={20} />, href: "https://github.com/arupdas0825", color: "white" },
-                      { icon: <LucideLinkedin size={20} />, href: "https://linkedin.com", color: "blue-400" },
-                      { icon: <LucideInstagram size={20} />, href: "https://instagram.com", color: "fuchsia-400" }
+                      { icon: <LucideLinkedin size={20} />, href: "https://www.linkedin.com/in/arup-das-381bb02a1/", color: "blue-400" },
+                      { icon: <LucideInstagram size={20} />, href: "https://www.instagram.com/_arup_official_08/", color: "fuchsia-400" },
+                      { icon: <LucideFacebook size={20} />, href: "https://www.facebook.com/arupofficial08", color: "blue-600" }
                     ].map((social, i) => (
                       <a 
                         key={i} href={social.href} target="_blank" rel="noreferrer"
