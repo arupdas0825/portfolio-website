@@ -6,15 +6,14 @@
 
 ### AI/ML Developer · React Developer · Photographer
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/YOUR_BADGE_ID/deploy-status)](https://arup-portfolio08.netlify.app)
+[![Vercel Status](https://api.netlify.com/api/v1/badges/YOUR_BADGE_ID/deploy-status)](https://arup-portfolio-seven.vercel.app/)
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)
 ![Framer Motion](https://img.shields.io/badge/Framer-Motion-FF0080?style=flat&logo=framer&logoColor=white)
 ![GitHub API](https://img.shields.io/badge/GitHub-API-181717?style=flat&logo=github&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-purple?style=flat)
 
-**[🚀 Live Demo](https://arup-portfolio08.netlify.app)** · **[📂 GitHub](https://github.com/arupdas0825/portfolio-website)** · **[💼 LinkedIn](https://linkedin.com/in/arupdas0825)**
-
+**[🚀 Live Demo](https://arup-portfolio-seven.vercel.app/)** · **[📂 GitHub](https://github.com/arupdas0825/portfolio-website)** 
 </div>
 
 ---
