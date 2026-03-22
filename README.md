@@ -1,280 +1,364 @@
 <div align="center">
 
-<img src="public/logo192.png" width="100" height="100" alt="AD Logo" style="border-radius: 20px"/>
+<img src="public/logo192.png" width="90" height="90" alt="AD Logo" style="border-radius:18px; margin-bottom:16px"/>
 
-# 🌌 Arup Das — Portfolio v2.0
+<h1>
+  <img src="https://readme-typing-svg.herokuapp.com?font=Syne&weight=800&size=32&pause=1000&color=8A5CF6&center=true&vCenter=true&width=500&lines=Arup+Das+%E2%80%94+Portfolio+v2.1;AI%2FML+%C2%B7+React+%C2%B7+Photographer" alt="Typing SVG"/>
+</h1>
 
-### AI/ML Developer · React Developer · Photographer
+<p>
+  <a href="https://arup-portfolio-seven.vercel.app/" target="_blank">
+    <img src="https://img.shields.io/badge/LIVE-arup--portfolio.vercel.app-8a5cf6?style=for-the-badge&logo=vercel&logoColor=white"/>
+  </a>
+</p>
 
+<p>
+  <img src="https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Tailwind_CSS-3.x-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Framer_Motion-10.x-FF0080?style=flat-square&logo=framer&logoColor=white"/>
+  <img src="https://img.shields.io/badge/GitHub_REST_API-v3-181717?style=flat-square&logo=github&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Deployed_on-Vercel-000000?style=flat-square&logo=vercel&logoColor=white"/>
+  <img src="https://img.shields.io/badge/License-MIT-a78bfa?style=flat-square"/>
+</p>
 
-![React](https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)
-![Framer Motion](https://img.shields.io/badge/Framer-Motion-FF0080?style=flat&logo=framer&logoColor=white)
-![GitHub API](https://img.shields.io/badge/GitHub-API-181717?style=flat&logo=github&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-purple?style=flat)
+<p>
+  <a href="https://github.com/arupdas0825/portfolio-website"><img src="https://img.shields.io/github/stars/arupdas0825/portfolio-website?style=flat-square&color=facc15&logo=github"/></a>
+  <a href="https://github.com/arupdas0825/portfolio-website"><img src="https://img.shields.io/github/last-commit/arupdas0825/portfolio-website?style=flat-square&color=4ade80&logo=git&logoColor=white"/></a>
+  <img src="https://img.shields.io/badge/PRs-welcome-8a5cf6?style=flat-square"/>
+</p>
 
-**[🚀 Live Demo](https://arup-portfolio-seven.vercel.app/)** · **[📂 GitHub](https://github.com/arupdas0825/portfolio-website)** 
 </div>
 
 ---
 
-## 📸 Preview
+## 🗺️ Table of Contents
 
-| Home | Work | Photography |
-|------|------|-------------|
-| Orbital 3D Widget + Typewriter | GitHub Auto-Fetch Repos | Cinematic Lightbox |
-
----
-
-## ✨ Features
-
-### 🎨 Design & Theme
-- **Dark Purple Theme** — deep `#0a0812` background with `#8a5cf6` purple accents
-- **Ambient Blob Background** — animated radial glow blobs with noise texture overlay
-- **Syne + DM Sans** typography for a premium, modern feel
-- **Smooth scroll animations** — IntersectionObserver-based fade-in on all sections
-- **Custom AD Logo** — favicon, logo192, logo512 all updated
-- **Purple scrollbar** styling
-
-### 🏠 Home Section
-- **Orbital 3D Widget** — spinning rings with emoji orbit dots and pulsing core
-- **Typewriter Effect** — 8 rotating roles with blinking cursor:
-  - AI/ML Developer, React Developer, Android App Developer, Full Stack Developer, Open Source Contributor, Photographer & Videographer, Problem Solver, B.Tech CSE (AIML) Student
-- `< HELLO WORLD />` code-style tag
-- "Available for opportunities" live badge with green pulse dot
-- Social links — GitHub, LinkedIn, Instagram
-
-### 🧭 Navbar
-- **Single-page smooth scroll** — no separate page routing
-- **Pill-style floating navbar** with icons — Home, About, Work, Photography, Services, CV, Contact
-- **Auto-highlights active section** on scroll using `IntersectionObserver`
-- Glass morphism blur background
-- Sections: Home · About · Work · Photography · Services · CV · Contact
-
-### 👤 About Section
-- Profile photo with layered border rings
-- Detailed bio with highlighted keywords
-- **3 Skill Group cards** — Languages, Specializations, Creative Tools
-- Hover glow effects on skill cards
-
-### 💼 Work Section — Dynamic GitHub Integration
-- **Fetches ALL repos automatically** from GitHub API (paginated, no hardcoding)
-- New repos appear instantly — **no manual updates needed**
-- **Language filter pills** — filter by JavaScript, Python, Java, Kotlin etc.
-- Each card shows: language color dot, star count ⭐, fork count 🍴
-- Live Demo button appears **only when** GitHub homepage URL is set
-- Language → emoji mapping (Python=🐍, Java=☕, Kotlin=📱 etc.)
-- Loading spinner while fetching
-- "View All on GitHub" CTA button
-
-### 📊 GitHub Stats Section
-- **Orbitron font** title with purple gradient glow
-- Live stats: Stars, Forks, Repositories, Followers, Following (CountUp animation)
-- Large info panel: Total Stars, Commits, PRs, Issues
-- **Circular progress ring** for top language (75% JS)
-- Language breakdown with animated progress bars
-- Streak stats: Total Contributions, Current Streak, Longest Streak
-- All data from GitHub REST API
-
-### 📷 Photography Section
-- **10 cinematic photos** with custom titles and descriptions
-- **Masonry-style 4-column grid**
-- Hover overlay with photo title
-- **Lightbox** — side-by-side layout:
-  - Left: full photo
-  - Right: title + purple accent line + detailed description
-- Keyboard navigation: `←` `→` to cycle, `Esc` to close
-- Arrow navigation buttons
-
-### ⚙️ Services Section
-- 6 service cards: Web Development, AI/ML Solutions, Mobile App Dev, Creative Direction, Data Analysis, Backend Systems
-- Icon + title + description + skill tags
-- Top gradient line animation on hover
-
-### 📄 CV Section
-- Side-by-side layout: CTA left, preview card right
-- CV preview card with blurred content rows
-- View CV + Download CV buttons
-
-### 📬 Contact Section
-- Two-column layout: info left, form right
-- Contact info: Email, Location, University
-- Social icons: GitHub, LinkedIn, WhatsApp
-- Form fields: Name, Email, Subject, Message
-- Glowing Send button
+- [Overview](#-overview)
+- [Architecture](#-architecture)
+- [Tech Stack](#-tech-stack)
+- [Features](#-features)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [Environment Variables](#-environment-variables)
+- [Deployment](#-deployment)
+- [Color System](#-color-system)
+- [Customization Guide](#-customization-guide)
+- [License](#-license)
 
 ---
 
-## 🗂️ Project Structure
+## 🧠 Overview
+
+A **production-grade personal portfolio** engineered with React 18, driven by the GitHub REST API, and designed around a unified dark-purple design system. Every section is built to be dynamic — project cards, GitHub stats, language breakdowns, and contribution streaks are all fetched and rendered in real time with no manual data entry.
+
+> Built not just to look good, but to function as a living, self-updating developer profile.
+
+---
+
+## 🏗️ Architecture
 
 ```
-arup-portfolio/
-├── public/
-│   ├── favicon.ico          # Custom AD logo
-│   ├── logo192.png          # PWA icon
-│   ├── logo512.png          # PWA icon large
-│   ├── arup.jpg             # Profile photo
-│   ├── CV.pdf               # Downloadable CV
-│   ├── photos/              # Photography gallery
-│   │   ├── 1.jpg  → 10.jpg
-│   └── index.html
-│
-├── src/
-│   ├── App.js               # Root — single page, all sections
-│   ├── App.css              # All styles — dark purple theme
-│   ├── Navbar.js            # Floating pill navbar, smooth scroll
-│   ├── Home.js              # Hero + orbital widget + typewriter
-│   ├── About.js             # Bio + skill groups
-│   ├── Work.js              # GitHub API auto-fetch repos
-│   ├── GithubStats.js       # Live GitHub stats + charts
-│   ├── Gallery.js           # Photography + lightbox
-│   ├── Services.js          # Services cards
-│   ├── CV.js                # CV preview + download
-│   ├── Contact.js           # Contact form + socials
-│   └── index.js
-│
-├── .env                     # DISABLE_ESLINT_PLUGIN=true
-├── package.json
-├── tailwind.config.js
-└── README.md
+┌─────────────────────────────────────────────────────────┐
+│                    Browser (Client)                      │
+│                                                          │
+│  React 18 SPA — Single Page, Smooth Scroll Navigation   │
+│                                                          │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────┐  │
+│  │  Home    │  │  About   │  │TechStack │  │  Work  │  │
+│  │ Orbital  │  │ Skills   │  │  Glass   │  │  API + │  │
+│  │ Widget   │  │ Groups   │  │  Panels  │  │ README │  │
+│  └──────────┘  └──────────┘  └──────────┘  └────────┘  │
+│                                                          │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────┐  │
+│  │  GitHub  │  │ Gallery  │  │ Services │  │   CV   │  │
+│  │  Stats   │  │Lightbox  │  │  Cards   │  │Preview │  │
+│  │  Live    │  │          │  │          │  │        │  │
+│  └──────────┘  └──────────┘  └──────────┘  └────────┘  │
+│                                                          │
+└──────────────────────────┬──────────────────────────────┘
+                           │ fetch()
+          ┌────────────────▼─────────────────┐
+          │        GitHub REST API v3         │
+          │                                   │
+          │  /users/{u}          → profile    │
+          │  /users/{u}/repos    → projects   │
+          │  /repos/{u}/{r}/readme → README   │
+          │  /repos/{u}/{r}/languages → bytes │
+          │  /users/{u}/events   → streak     │
+          └───────────────────────────────────┘
 ```
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Category | Technology |
-|---|---|
-| **Framework** | React 18 (Create React App) |
-| **Styling** | Tailwind CSS + Custom CSS Variables |
-| **Animations** | Framer Motion, CSS Keyframes |
-| **Icons** | Lucide React |
-| **Fonts** | Syne, DM Sans, Orbitron (Google Fonts) |
-| **API** | GitHub REST API v3 |
-| **Deployment** | Netlify (auto-deploy from GitHub) |
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **UI Framework** | React 18 | Component architecture, hooks |
+| **Styling** | Tailwind CSS 3 + CSS Variables | Utility-first + design tokens |
+| **Animation** | Framer Motion 10 | Spring physics, page transitions |
+| **Icons** | Lucide React | Consistent SVG icon system |
+| **Fonts** | Syne · DM Sans · Orbitron | Display · Body · Mono headings |
+| **Data** | GitHub REST API v3 | Live repos, stats, READMEs |
+| **Build** | Create React App | Zero-config webpack bundler |
+| **Hosting** | Vercel | CI/CD via GitHub push |
+
+---
+
+## ✨ Features
+
+### 🏠 Home — Hero
+| Feature | Implementation |
+|---------|---------------|
+| Orbital 3D Widget | Pure CSS `@keyframes` spin + counter-spin rings |
+| Typewriter Effect | Custom `useTypewriter` hook — type → pause → delete → cycle |
+| `< HELLO WORLD />` | Code-style tag with monospace font |
+| Live status badge | Green pulse dot via CSS animation |
+| Social links | GitHub · LinkedIn · Instagram |
+
+### 🧩 TechStack — Liquid Glass
+- 6 categorised panels: **Frontend · Backend · Database · Tools · Languages · Exploring**
+- True glassmorphism: `rgba(255,255,255,0.035)` — no `backdrop-filter`, portfolio background visible through panels
+- Per-category colour accent line on panel top edge
+- Animated chip hover: spring scale + glow shadow
+
+### 💼 Work — GitHub-Driven
+- **All repos auto-fetched** from GitHub API — zero hardcoding
+- **README modal** on card click — fetches `application/vnd.github.v3.raw`, renders Markdown in-browser
+- Language filter pills with real language bytes percentages
+- Fallback static repos when API rate-limited
+- Live Demo button rendered only when `homepage` URL is set in repo
+
+### 📊 GitHub Stats — Real-time Dashboard
+| Metric | Source |
+|--------|--------|
+| Stars · Forks · Repos · Followers | `GET /users/{u}` + `/repos` |
+| Language breakdown (% by bytes) | `GET /repos/{u}/{r}/languages` — parallel fetch |
+| Contributions total | `github-contributions-api.jogruber.de` |
+| Current streak · Longest streak | Contributions API + GitHub Events fallback |
+| Total commits | `GET /search/commits?q=author:{u}` |
+| Profile avatar | `user.avatar_url` |
+
+### 📷 Photography — Cinematic Gallery
+- 10 curated shots with titles + editorial descriptions
+- Lightbox: **side-by-side** — image left, title + description right
+- Keyboard: `←` `→` navigate · `Esc` close
+- `useCallback` memoised handlers (ESLint exhaustive-deps compliant)
+
+---
+
+## 🗂️ Project Structure
+
+```
+portfolio-website/
+│
+├── public/
+│   ├── favicon.ico            # Custom AD logo (converted from AVIF)
+│   ├── logo192.png            # PWA manifest icon
+│   ├── logo512.png            # PWA manifest icon (large)
+│   ├── arup.jpg               # Profile photo
+│   ├── CV.pdf                 # Downloadable résumé
+│   └── photos/
+│       └── 1.jpg … 10.jpg    # Gallery images
+│
+├── src/
+│   ├── App.js                 # Root — section orchestration, no Router
+│   ├── App.css                # Design system — CSS variables, all component styles
+│   ├── index.js               # React DOM entry
+│   │
+│   ├── Navbar.js              # Floating pill nav, scroll-spy active state
+│   ├── Home.js                # Hero — orbital widget, typewriter hook
+│   ├── About.js               # Bio, skill group cards
+│   ├── TechStack.js           # Liquid glass tech panels
+│   ├── Work.js                # GitHub repo fetch, README modal, MD renderer
+│   ├── GithubStats.js         # Live stats dashboard, language bytes, streaks
+│   ├── Gallery.js             # Photo grid, lightbox, keyboard nav
+│   ├── Services.js            # Service cards
+│   ├── CV.js                  # CV preview + download
+│   └── Contact.js             # Contact form + social links
+│
+├── .env                       # DISABLE_ESLINT_PLUGIN=true
+├── tailwind.config.js
+├── package.json
+└── README.md
+```
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js v18+
-- npm or yarn
 
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/arupdas0825/portfolio-website.git
-
-# Navigate to project
-cd portfolio-website
-
-# Install dependencies
-npm install
-
-# Start development server
-npm start
+```
+node  >= 18.x
+npm   >= 9.x   (or yarn >= 1.22)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+### Clone & Run
 
-### Build for Production
+```bash
+# 1. Clone
+git clone https://github.com/arupdas0825/portfolio-website.git
+cd portfolio-website
+
+# 2. Install dependencies
+npm install
+
+# 3. Start dev server
+npm start
+# → http://localhost:3000
+```
+
+### Production Build
 
 ```bash
 npm run build
-```
-
-### Environment Variables
-
-Create a `.env` file in the root:
-
-```env
-DISABLE_ESLINT_PLUGIN=true
+# Output: /build (optimised, minified)
 ```
 
 ---
 
-## 📦 Dependencies
+## 🔐 Environment Variables
 
-```json
-{
-  "react": "^18.x",
-  "framer-motion": "^10.x",
-  "lucide-react": "^0.x",
-  "tailwindcss": "^3.x"
-}
+Create a `.env` file at the project root:
+
+```env
+# Prevents ESLint warnings from failing the Vercel CI build
+DISABLE_ESLINT_PLUGIN=true
+
+# Set on Vercel to prevent treating warnings as errors
+CI=false
 ```
 
 ---
 
 ## 🌐 Deployment
 
-This portfolio is deployed on **Netlify** with auto-deploy on every `git push` to `main`.
+### Vercel (Recommended)
 
-**Deploy your own:**
+```bash
+# Automatic — just push to main
+git push origin main
+# Vercel picks it up via GitHub integration and deploys automatically
+```
 
-1. Fork this repository
-2. Connect to [Netlify](https://netlify.com)
-3. Set build command: `npm run build`
-4. Set publish directory: `build`
-5. Add environment variable: `DISABLE_ESLINT_PLUGIN=true`
-6. Deploy! 🚀
+**Manual setup:**
 
----
+| Setting | Value |
+|---------|-------|
+| Framework | Create React App |
+| Build Command | `npm run build` |
+| Output Directory | `build` |
+| Env Variable | `CI=false` · `DISABLE_ESLINT_PLUGIN=true` |
 
-## 🎨 Color Palette
+### Netlify Alternative
 
-```css
---bg:            #0a0812   /* Deep dark background */
---purple:        #8a5cf6   /* Primary accent */
---purple-light:  #a78bfa   /* Light purple */
---accent:        #c084fc   /* Hover accent */
---card:          rgba(30,22,55,0.85)  /* Card background */
---text:          #e2d9f3   /* Body text */
---text-muted:    #9d8ec4   /* Muted text */
+```bash
+# Build locally, drag-drop /build to Netlify
+npm run build
 ```
 
 ---
 
-## 📝 Customization
+## 🎨 Color System
 
-### Add/Edit Typewriter Roles
-In `src/Home.js`, edit the `ROLES` array:
+```css
+/* Design tokens — defined in App.css */
+:root {
+  --bg:            #0a0812;                  /* Primary background */
+  --bg2:           #0f0c1a;                  /* Secondary background */
+  --purple:        #8a5cf6;                  /* Primary accent */
+  --purple-light:  #a78bfa;                  /* Light accent / headings */
+  --purple-dim:    rgba(138, 92, 246, 0.15); /* Subtle fills */
+  --accent:        #c084fc;                  /* Hover state */
+  --glow:          rgba(138, 92, 246, 0.4);  /* Box-shadow glow */
+  --card:          rgba(30, 22, 55, 0.85);   /* Card background */
+  --card-border:   rgba(138, 92, 246, 0.25); /* Card borders */
+  --text:          #e2d9f3;                  /* Body text */
+  --text-muted:    #9d8ec4;                  /* Secondary text */
+  --white:         #ffffff;
+}
+```
+
+---
+
+## 📝 Customization Guide
+
+### Add Typewriter Roles — `src/Home.js`
 ```js
 const ROLES = [
   'AI / ML Developer',
-  'Your Custom Role Here',  // ← add here
-  ...
+  'Your New Role Here',   // ← append here
 ];
 ```
 
-### Add Photography
-Place images in `public/photos/` and add entries in `src/Gallery.js`:
+### Add Photography — `src/Gallery.js`
 ```js
-{ id: 11, src: "/photos/11.jpg", title: "Your Title", desc: "Your description..." }
+const photos = [
+  // existing entries...
+  {
+    id: 11,
+    src: '/photos/11.jpg',
+    title: 'Your Shot Title',
+    desc: 'Your editorial description...',
+  },
+];
 ```
 
-### Update GitHub Username
-Change `GITHUB_USERNAME` in `src/Work.js` and `src/GithubStats.js`:
+### Change GitHub Username — `src/Work.js` + `src/GithubStats.js`
 ```js
-const GITHUB_USERNAME = 'your-github-username';
+const GITHUB_USERNAME = 'your-github-username'; // one line change
+```
+
+### Add TechStack Item — `src/TechStack.js`
+```js
+// Find the relevant category and append:
+{ name: 'New Tool', icon: '🔧' }
+```
+
+### Add Service Card — `src/Services.js`
+```js
+const services = [
+  // existing...
+  {
+    name: 'New Service',
+    desc: 'Description here.',
+    tags: ['Tag1', 'Tag2'],
+    icon: <svg>...</svg>,
+  },
+];
 ```
 
 ---
 
 ## 📜 License
 
-This project is licensed under the **MIT License** — feel free to use it as inspiration for your own portfolio.
+```
+MIT License — Copyright (c) 2025 Arup Das
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software.
+```
 
 ---
 
 <div align="center">
 
-**Designed & Built by [Arup Das](https://arup-portfolio08.netlify.app)**
+```
+╔═══════════════════════════════════════╗
+║   Built by Arup Das                   ║
+║   B.Tech CSE (AIML)                   ║
+║   Brainware University · Kolkata      ║
+╚═══════════════════════════════════════╝
+```
 
-*B.Tech CSE (AIML) · Brainware University · Kolkata*
+<p>
+  <a href="https://arup-portfolio-seven.vercel.app/">🌐 Live Portfolio</a> ·
+  <a href="https://github.com/arupdas0825">🐙 GitHub</a> ·
+  <a href="https://linkedin.com/in/arupdas0825">💼 LinkedIn</a>
+</p>
 
-⭐ **Star this repo if you found it helpful!**
+**If this project helped you, consider giving it a ⭐**
 
 </div>
