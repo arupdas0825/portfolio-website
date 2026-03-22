@@ -2,9 +2,10 @@
 
 <img src="public/logo192.png" width="90" height="90" alt="AD Logo" style="border-radius:18px; margin-bottom:16px"/>
 
-<h1>
-  <img src="https://readme-typing-svg.herokuapp.com?font=Syne&weight=800&size=32&pause=1000&color=8A5CF6&center=true&vCenter=true&width=500&lines=Arup+Das+%E2%80%94+Portfolio+v2.1;AI%2FML+%C2%B7+React+%C2%B7+Photographer" alt="Typing SVG"/>
-</h1>
+<h1>🌌 Arup Das — Portfolio v2.1</h1>
+<h3>
+  <img src="https://readme-typing-svg.demolab.com?font=Syne&weight=700&size=22&pause=1200&color=A78BFA&center=true&vCenter=true&width=440&height=40&lines=AI+%2F+ML+Developer;React+Developer;Android+App+Developer;Open+Source+Contributor;Photographer+%26+Videographer" alt="Roles"/>
+</h3>
 
 <p>
   <a href="https://arup-portfolio-seven.vercel.app/" target="_blank">
