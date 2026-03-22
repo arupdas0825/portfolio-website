@@ -136,19 +136,37 @@ export default function GithubStats() {
   const [loaded, setLoaded] = useState(false);
 
   const fetchData = useCallback(async () => {
+    const CACHE_KEY = 'gh_stats_' + USERNAME;
+    const CACHE_TTL = 60 * 60 * 1000;
+
+    // Check cache first
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { data, ts } = JSON.parse(cached);
+        if (Date.now() - ts < CACHE_TTL) {
+          setData(data); setLoaded(true); return;
+        }
+      }
+    } catch(_) {}
+
     try {
       /* 1 — User profile */
-      const user = await fetch(`https://api.github.com/users/${USERNAME}`).then(r=>r.json());
+      const userRes = await fetch(`https://api.github.com/users/${USERNAME}`);
+      if (!userRes.ok) throw new Error('User ' + userRes.status);
+      const user = await userRes.json();
 
       /* 2 — Repos */
-      const repos = await fetch(`https://api.github.com/users/${USERNAME}/repos?per_page=100`).then(r=>r.json());
+      const reposRes = await fetch(`https://api.github.com/users/${USERNAME}/repos?per_page=100`);
+      if (!reposRes.ok) throw new Error('Repos ' + reposRes.status);
+      const repos = await reposRes.json();
       let totalStars=0, totalForks=0;
       const ownRepos = Array.isArray(repos) ? repos.filter(r=>!r.fork) : [];
       ownRepos.forEach(r=>{ totalStars+=r.stargazers_count; totalForks+=r.forks_count; });
 
-      /* 3 — Language bytes (parallel) */
+      /* 3 — Language bytes (max 10 repos to save rate limit) */
       const langBytes={}, langRepoCount={};
-      await Promise.allSettled(ownRepos.map(async repo=>{
+      await Promise.allSettled(ownRepos.slice(0,10).map(async repo=>{
         try {
           const langs = await fetch(repo.languages_url).then(r=>r.json());
           Object.entries(langs).forEach(([lang,bytes])=>{
@@ -241,7 +259,7 @@ export default function GithubStats() {
         commits=cd2.total_count||0;
       } catch(_){}
 
-      setData({
+      const freshData = {
         stars:totalStars, forks:totalForks, repos:user.public_repos||0,
         followers:user.followers||0, following:user.following||0,
         commits, prs:0, issues:0,
@@ -251,8 +269,13 @@ export default function GithubStats() {
         languages:sortedLangs,
         avatarUrl:user.avatar_url||'',
         name:user.name||'Arup Das',
-      });
-    } catch(err){ console.error(err); }
+      };
+      setData(freshData);
+      // Save to cache
+      try { localStorage.setItem('gh_stats_' + USERNAME, JSON.stringify({ data: freshData, ts: Date.now() })); } catch(_){}
+    } catch(err){
+      console.warn('GitHub Stats API failed:', err.message);
+    }
     finally { setLoaded(true); }
   }, []);
 

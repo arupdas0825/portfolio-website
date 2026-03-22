@@ -336,7 +336,7 @@ const FALLBACK_REPOS = [
     languages_url: '',
   },
   {
-    id: 2, name: 'sahazej8-foundation', fork: false,
+    id: 2, name: 'sahasrajit-foundation', fork: false,
     description: 'Built the official website for Sahazej8 Foundation, a grassroots NGO. Firebase-powered admin panel.',
     language: 'JavaScript', stargazers_count: 2, forks_count: 0,
     html_url: 'https://github.com/arupdas0825/sahazej8-foundation', homepage: '',
@@ -403,43 +403,47 @@ const Work = () => {
   const [selected, setSelected] = useState(null); // clicked repo
 
   useEffect(() => {
+    const CACHE_KEY = `gh_repos_${GITHUB_USERNAME}`;
+    const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+
     const fetchAllRepos = async () => {
+      // ── 1. Try localStorage cache first ──
+      try {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          const { data, ts } = JSON.parse(cached);
+          if (Date.now() - ts < CACHE_TTL && Array.isArray(data) && data.length > 0) {
+            setRepos(data);
+            setLanguages(['All', ...new Set(data.map(r => r.language).filter(Boolean))]);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (_) {}
+
+      // ── 2. Fetch from API ──
       try {
         const res = await fetch(
-          `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100&page=1`,
+          `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`,
           { headers: { 'Accept': 'application/vnd.github.v3+json' } }
         );
 
-        // Rate limit or error check
-        if (!res.ok) {
-          console.warn('GitHub API error:', res.status);
-          setRepos(FALLBACK_REPOS);
-          setLanguages(['All', ...new Set(FALLBACK_REPOS.map(r => r.language).filter(Boolean))]);
-          return;
-        }
+        if (!res.ok) throw new Error(`API ${res.status}`);
 
         const data = await res.json();
-
-        // If response is not an array (e.g. rate limit message object)
-        if (!Array.isArray(data)) {
-          console.warn('GitHub API returned non-array:', data);
-          setRepos(FALLBACK_REPOS);
-          setLanguages(['All', ...new Set(FALLBACK_REPOS.map(r => r.language).filter(Boolean))]);
-          return;
-        }
+        if (!Array.isArray(data) || data.length === 0) throw new Error('Empty');
 
         const ownRepos = data.filter(r => !r.fork);
 
-        if (ownRepos.length === 0) {
-          setRepos(FALLBACK_REPOS);
-          setLanguages(['All', ...new Set(FALLBACK_REPOS.map(r => r.language).filter(Boolean))]);
-          return;
-        }
+        // Cache in localStorage
+        try {
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ data: ownRepos, ts: Date.now() }));
+        } catch (_) {}
 
         setRepos(ownRepos);
         setLanguages(['All', ...new Set(ownRepos.map(r => r.language).filter(Boolean))]);
       } catch (err) {
-        console.error('Fetch error:', err);
+        console.warn('GitHub API failed, using fallback:', err.message);
         setRepos(FALLBACK_REPOS);
         setLanguages(['All', ...new Set(FALLBACK_REPOS.map(r => r.language).filter(Boolean))]);
       } finally {
