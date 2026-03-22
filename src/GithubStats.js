@@ -1,311 +1,453 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, animate } from 'framer-motion';
-import { Star, GitFork, Package, Users, UserPlus, Github, Trophy, Zap, Clock, Code } from 'lucide-react';
+import {
+  Star, GitFork, Package, Users, UserPlus,
+  Github, Trophy, Zap, Clock, Code2,
+  GitCommitHorizontal, GitPullRequest, CircleDot, GitBranch
+} from 'lucide-react';
 
-const CountUp = ({ value }) => {
-  const [displayValue, setDisplayValue] = useState(0);
+const USERNAME = 'arupdas0825';
 
-  useEffect(() => {
-    const controls = animate(0, value, {
-      duration: 2,
-      onUpdate: (latest) => setDisplayValue(Math.floor(latest)),
-    });
-    return () => controls.stop();
-  }, [value]);
-
-  return <span>{displayValue}</span>;
+/* ─── Language colours ─── */
+const LANG_COLORS = {
+  JavaScript:'#f1e05a', Python:'#3572A5', Java:'#b07219',
+  Kotlin:'#A97BFF', TypeScript:'#2b7489', CSS:'#563d7c',
+  HTML:'#e34c26', Dart:'#00B4AB', Go:'#00ADD8',
+  Rust:'#dea584', Ruby:'#701516', Swift:'#F05138',
+  'C++':'#f34b7d', C:'#555555', PHP:'#4F5D95',
 };
 
-const StatCard = ({ icon: Icon, label, value, color }) => (
+const DEFAULT_LANGS = [
+  { name:'JavaScript', pct:62, color:'#f1e05a', count:6, bytes:672000 },
+  { name:'CSS',        pct:14, color:'#563d7c', count:2, bytes:143000 },
+  { name:'Java',       pct:10, color:'#b07219', count:1, bytes:95000  },
+  { name:'Python',     pct:4,  color:'#3572A5', count:1, bytes:43000  },
+  { name:'HTML',       pct:2,  color:'#e34c26', count:1, bytes:24000  },
+];
+
+/* ─── CountUp ─── */
+function CountUp({ value, duration = 1.6 }) {
+  const [d, setD] = useState(0);
+  useEffect(() => {
+    const c = animate(0, value, { duration, ease:'easeOut', onUpdate: v => setD(Math.floor(v)) });
+    return () => c.stop();
+  }, [value, duration]);
+  return <span>{d}</span>;
+}
+
+/* ─── True Liquid Glass Panel ─── */
+const Panel = ({ children, style = {}, hover = true, accent = false }) => (
   <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    whileHover={{ scale: 1.05, boxShadow: `0 0 20px ${color}33` }}
-    className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-300"
+    whileHover={hover ? { y: -3, scale: 1.015 } : {}}
+    transition={{ type:'spring', stiffness:260, damping:22 }}
+    style={{
+      position: 'relative',
+      background: accent
+        ? 'linear-gradient(135deg,rgba(138,92,246,0.18) 0%,rgba(192,132,252,0.08) 100%)'
+        : 'rgba(255,255,255,0.035)',
+      border: `1px solid ${accent ? 'rgba(138,92,246,0.45)' : 'rgba(255,255,255,0.08)'}`,
+      borderRadius: 20,
+      overflow: 'hidden',
+      /* Subtle inner highlight — no backdrop-filter */
+      boxShadow: accent
+        ? '0 0 0 1px rgba(138,92,246,0.15) inset, 0 1px 0 rgba(255,255,255,0.08) inset, 0 20px 60px rgba(0,0,0,0.35)'
+        : '0 1px 0 rgba(255,255,255,0.06) inset, 0 12px 40px rgba(0,0,0,0.3)',
+      ...style,
+    }}
   >
-    <div className="absolute -top-10 -right-10 w-24 h-24 rounded-full blur-3xl opacity-20" style={{ backgroundColor: color }}></div>
-    <div className="mb-4 p-3 rounded-xl bg-white/5 text-white group-hover:scale-110 transition-transform duration-300">
-      <Icon size={24} style={{ color }} />
-    </div>
-    <div className="text-3xl font-bold text-white mb-1 font-syne">
-      <CountUp value={value} />
-    </div>
-    <div className="text-sm text-slate-400 font-medium">{label}</div>
+    {/* Top sheen */}
+    <div style={{
+      position:'absolute', top:0, left:0, right:0, height:1,
+      background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent)',
+      pointerEvents:'none',
+    }}/>
+    {children}
   </motion.div>
 );
 
-const ProgressBar = ({ label, percentage, color }) => (
-  <div className="mb-4">
-    <div className="flex justify-between mb-1 text-xs font-syne font-semibold uppercase tracking-wider text-slate-400">
-      <span>{label}</span>
-      <span>{percentage}%</span>
+/* ─── Animated bar ─── */
+const Bar = ({ label, pct, color, bytes }) => (
+  <div style={{ marginBottom:13 }}>
+    <div style={{ display:'flex', justifyContent:'space-between', marginBottom:5, alignItems:'center' }}>
+      <div style={{ display:'flex', alignItems:'center', gap:7 }}>
+        <span style={{
+          width:8, height:8, borderRadius:'50%', background:color,
+          display:'inline-block', boxShadow:`0 0 8px ${color}99`, flexShrink:0,
+        }}/>
+        <span style={{ fontSize:12, fontFamily:'Syne,sans-serif', fontWeight:700, color:'rgba(255,255,255,0.8)' }}>
+          {label}
+        </span>
+      </div>
+      <span style={{ fontSize:11, color:'rgba(255,255,255,0.35)', fontFamily:'monospace' }}>
+        {bytes ? `${(bytes/1024).toFixed(1)} KB` : ''} · {pct}%
+      </span>
     </div>
-    <div className="h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+    <div style={{ height:5, background:'rgba(255,255,255,0.05)', borderRadius:99, overflow:'hidden', border:'1px solid rgba(255,255,255,0.04)' }}>
       <motion.div
-        initial={{ width: 0 }}
-        whileInView={{ width: `${percentage}%` }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
-        className="h-full rounded-full shadow-[0_0_10px_rgba(255,255,255,0.2)]"
-        style={{ background: color }}
+        initial={{ width:0 }}
+        whileInView={{ width:`${pct}%` }}
+        viewport={{ once:true }}
+        transition={{ duration:1.3, ease:'easeOut' }}
+        style={{
+          height:'100%', borderRadius:99,
+          background:`linear-gradient(90deg,${color}88,${color})`,
+          boxShadow:`0 0 8px ${color}66`,
+        }}
       />
     </div>
   </div>
 );
 
-const GithubStats = () => {
-  const [stats, setStats] = useState({
-    followers: 0,
-    following: 0,
-    publicRepos: 0,
-    stars: 0,
-    forks: 0,
-    topLanguage: 'JavaScript',
-    languageBreakdown: [
-      { name: 'JavaScript', percentage: 75, color: '#f7df1e' },
-      { name: 'Python', percentage: 15, color: '#3776ab' },
-      { name: 'Java', percentage: 5, color: '#b07219' },
-      { name: 'CSS', percentage: 3, color: '#563d7c' },
-      { name: 'HTML', percentage: 2, color: '#e34c26' },
-    ],
-    totalCommits: 450,
-    totalPRs: 25,
-    totalIssues: 12,
-    streak: { current: 15, longest: 45 },
-    contributions: 120,
+/* ─── SVG Ring ─── */
+const Ring = ({ pct, color, size=90, stroke=6, children }) => {
+  const r = (size - stroke * 2) / 2;
+  const circ = 2 * Math.PI * r;
+  return (
+    <div style={{ position:'relative', width:size, height:size, flexShrink:0 }}>
+      <svg width={size} height={size} style={{ transform:'rotate(-90deg)', position:'absolute', inset:0 }}>
+        <circle cx={size/2} cy={size/2} r={r} stroke="rgba(255,255,255,0.06)" strokeWidth={stroke} fill="none"/>
+        <motion.circle
+          cx={size/2} cy={size/2} r={r}
+          stroke={color} strokeWidth={stroke} fill="none" strokeLinecap="round"
+          strokeDasharray={circ}
+          initial={{ strokeDashoffset:circ }}
+          whileInView={{ strokeDashoffset:circ*(1-pct/100) }}
+          viewport={{ once:true }}
+          transition={{ duration:1.8, ease:'easeOut' }}
+          style={{ filter:`drop-shadow(0 0 5px ${color}99)` }}
+        />
+      </svg>
+      <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column' }}>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+export default function GithubStats() {
+  const sectionRef = useRef(null);
+  const [data, setData] = useState({
+    stars:0, forks:0, repos:0, followers:0, following:0,
+    commits:0, prs:0, issues:0,
+    contributions:0, currentStreak:0, longestStreak:0,
+    topLang:'JavaScript', topLangPct:67,
+    languages:[], avatarUrl:'', name:'Arup Das',
   });
+  const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => {
-    const fetchGithubData = async () => {
-      try {
-        const userRes = await fetch('https://api.github.com/users/arupdas0825');
-        const userData = await userRes.json();
+  const fetchData = useCallback(async () => {
+    try {
+      /* 1 — User profile */
+      const user = await fetch(`https://api.github.com/users/${USERNAME}`).then(r=>r.json());
 
-        const reposRes = await fetch('https://api.github.com/users/arupdas0825/repos?per_page=100');
-        const reposData = await reposRes.json();
+      /* 2 — Repos */
+      const repos = await fetch(`https://api.github.com/users/${USERNAME}/repos?per_page=100`).then(r=>r.json());
+      let totalStars=0, totalForks=0;
+      const ownRepos = Array.isArray(repos) ? repos.filter(r=>!r.fork) : [];
+      ownRepos.forEach(r=>{ totalStars+=r.stargazers_count; totalForks+=r.forks_count; });
 
-        let totalStars = 0;
-        let totalForks = 0;
-        const languages = {};
-
-        if (Array.isArray(reposData)) {
-          reposData.forEach(repo => {
-            totalStars += repo.stargazers_count;
-            totalForks += repo.forks_count;
-            if (repo.language) {
-              languages[repo.language] = (languages[repo.language] || 0) + 1;
-            }
+      /* 3 — Language bytes (parallel) */
+      const langBytes={}, langRepoCount={};
+      await Promise.allSettled(ownRepos.map(async repo=>{
+        try {
+          const langs = await fetch(repo.languages_url).then(r=>r.json());
+          Object.entries(langs).forEach(([lang,bytes])=>{
+            langBytes[lang]=(langBytes[lang]||0)+bytes;
+            langRepoCount[lang]=(langRepoCount[lang]||0)+1;
           });
+        } catch(_){}
+      }));
+      const totalBytes = Object.values(langBytes).reduce((a,b)=>a+b,0);
+      const sortedLangs = Object.entries(langBytes)
+        .sort((a,b)=>b[1]-a[1]).slice(0,6)
+        .map(([name,bytes])=>({
+          name, bytes, count:langRepoCount[name]||0,
+          pct: totalBytes>0 ? Math.round((bytes/totalBytes)*100) : 0,
+          color: LANG_COLORS[name]||'#8a5cf6',
+        }));
+
+      /* 4 — Contributions via jogruber (all years) */
+      let contributions=0, currentStreak=0, longestStreak=0;
+      try {
+        const cd = await fetch(
+          `https://github-contributions-api.jogruber.de/v4/${USERNAME}`
+        ).then(r=>r.json());
+
+        // Total
+        if(cd.total){
+          contributions = Object.values(cd.total).reduce((a,b)=>a+b,0);
         }
 
-        const sortedLangs = Object.entries(languages).sort((a, b) => b[1] - a[1]);
-        const topLanguage = sortedLangs[0]?.[0] || 'JavaScript';
+        if(Array.isArray(cd.contributions) && cd.contributions.length > 0){
+          // Sort by date ascending (oldest first)
+          const sorted = [...cd.contributions].sort((a,b)=>a.date.localeCompare(b.date));
 
-        setStats(prev => ({
-          ...prev,
-          followers: userData.followers || 0,
-          following: userData.following || 0,
-          publicRepos: userData.public_repos || 0,
-          stars: totalStars,
-          forks: totalForks,
-          topLanguage,
-        }));
-      } catch (error) {
-        console.error("Error fetching GitHub data:", error);
+          // Longest streak — simple forward scan
+          let ls=0, run=0;
+          sorted.forEach(d=>{ if(d.count>0){run++;ls=Math.max(ls,run);}else{run=0;} });
+          longestStreak = ls;
+
+          // Current streak — walk backward from the end
+          // Skip trailing zeros (today might not be over yet, allow 1 zero skip)
+          let cs=0, j=sorted.length-1;
+          // Allow today to be 0 (still in progress)
+          if(j>=0 && sorted[j].count===0) j--;
+          while(j>=0 && sorted[j].count>0){ cs++; j--; }
+          currentStreak = cs;
+        }
+      } catch(e){ console.error('Contrib API error:', e); }
+
+      /* 4b — Fallback: calculate streak from GitHub Events (last 90 days) */
+      if(currentStreak === 0){
+        try {
+          const events = await fetch(
+            `https://api.github.com/users/${USERNAME}/events/public?per_page=100`
+          ).then(r=>r.json());
+
+          if(Array.isArray(events)){
+            // Collect unique active dates (YYYY-MM-DD)
+            const activeDates = new Set(
+              events
+                .filter(e=>['PushEvent','CreateEvent','PullRequestEvent','IssuesEvent'].includes(e.type))
+                .map(e=>e.created_at.slice(0,10))
+            );
+
+            // Build streak backwards from today
+            const today = new Date();
+            let cs=0;
+            for(let d=0; d<90; d++){
+              const date = new Date(today);
+              date.setDate(today.getDate()-d);
+              const dateStr = date.toISOString().slice(0,10);
+              if(activeDates.has(dateStr)){ cs++; }
+              else if(d===0){ continue; } // skip today if no activity yet
+              else { break; }
+            }
+            currentStreak = cs;
+
+            // Longest from events (rough estimate)
+            if(longestStreak===0) longestStreak = Math.max(cs, 5);
+          }
+        } catch(e){ console.error('Events API error:', e); }
       }
-    };
 
-    fetchGithubData();
+      /* 5 — Commits */
+      let commits=0;
+      try {
+        const cd2 = await fetch(
+          `https://api.github.com/search/commits?q=author:${USERNAME}&per_page=1`,
+          { headers:{ Accept:'application/vnd.github.cloak-preview' } }
+        ).then(r=>r.json());
+        commits=cd2.total_count||0;
+      } catch(_){}
+
+      setData({
+        stars:totalStars, forks:totalForks, repos:user.public_repos||0,
+        followers:user.followers||0, following:user.following||0,
+        commits, prs:0, issues:0,
+        contributions, currentStreak, longestStreak,
+        topLang:sortedLangs[0]?.name||'JavaScript',
+        topLangPct:sortedLangs[0]?.pct||67,
+        languages:sortedLangs,
+        avatarUrl:user.avatar_url||'',
+        name:user.name||'Arup Das',
+      });
+    } catch(err){ console.error(err); }
+    finally { setLoaded(true); }
   }, []);
 
-  return (
-    <section id="github" className="py-24 relative overflow-hidden bg-[#0a0812]">
-      {/* Google Font — Orbitron */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap');
-        .gh-title-font {
-          font-family: 'Orbitron', sans-serif;
-          font-weight: 900;
-          letter-spacing: -0.02em;
-          background: linear-gradient(135deg, #a78bfa 0%, #8a5cf6 40%, #c084fc 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          filter: drop-shadow(0 0 30px rgba(138,92,246,0.4));
-        }
-      `}</style>
+  useEffect(()=>{ fetchData(); },[fetchData]);
 
-      {/* Background glow */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 blur-[120px] animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-violet-500/10 blur-[120px] animate-pulse delay-700"></div>
+  useEffect(()=>{
+    const obs=new IntersectionObserver(
+      es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('visible')),
+      {threshold:0.08}
+    );
+    if(sectionRef.current)
+      sectionRef.current.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+    return()=>obs.disconnect();
+  },[loaded]);
+
+  const topCards=[
+    { icon:Star,     label:'Stars Earned',  val:data.stars,     color:'#facc15' },
+    { icon:GitFork,  label:'Total Forks',   val:data.forks,     color:'#60a5fa' },
+    { icon:Package,  label:'Repositories',  val:data.repos,     color:'#c084fc' },
+    { icon:Users,    label:'Followers',     val:data.followers, color:'#4ade80' },
+    { icon:UserPlus, label:'Following',     val:data.following, color:'#f472b6' },
+  ];
+
+  const streakCards=[
+    { icon:Trophy, label:'Total Contributions', val:data.contributions,  color:'#facc15', pct:Math.min(data.contributions,100) },
+    { icon:Zap,    label:'Current Streak',      val:data.currentStreak,  color:'#f97316', pct:Math.min(data.currentStreak*10,100), suffix:'days' },
+    { icon:Clock,  label:'Longest Streak',      val:data.longestStreak,  color:'#a78bfa', pct:Math.min(data.longestStreak*10,100), suffix:'days' },
+  ];
+
+  const langs = data.languages.length>0 ? data.languages : DEFAULT_LANGS;
+
+  return (
+    <section
+      id="githubstats"
+      ref={sectionRef}
+      style={{ background:'transparent', padding:'100px 0 80px', position:'relative', overflow:'hidden' }}
+    >
+      {/* Purple glow ambience — matches portfolio */}
+      <div style={{ position:'absolute', inset:0, pointerEvents:'none', zIndex:0 }}>
+        <div style={{ position:'absolute', top:'5%', left:'5%', width:600, height:600, background:'radial-gradient(circle,rgba(138,92,246,0.07) 0%,transparent 70%)', borderRadius:'50%' }}/>
+        <div style={{ position:'absolute', bottom:'5%', right:'5%', width:500, height:500, background:'radial-gradient(circle,rgba(192,132,252,0.05) 0%,transparent 70%)', borderRadius:'50%' }}/>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 relative z-10">
+      <div style={{ maxWidth:1100, margin:'0 auto', padding:'0 32px', position:'relative', zIndex:1 }}>
 
-        {/* ===== TITLE ===== */}
-        <div className="text-center mb-16">
-          <motion.h2
-            initial={{ opacity: 0, y: -20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="gh-title-font text-4xl md:text-5xl mb-4 uppercase"
-          >
-            GitHub Stats
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="text-slate-400 font-medium tracking-widest text-sm uppercase"
-          >
-            Live Data from GitHub API
-          </motion.p>
-          <div className="w-20 h-1 mx-auto mt-6 rounded-full" style={{ background: 'linear-gradient(90deg, #8a5cf6, #c084fc)', boxShadow: '0 0 15px rgba(138,92,246,0.5)' }}></div>
+        {/* ── Title — matches portfolio heading style ── */}
+        <div className="fade-in" style={{ textAlign:'center', marginBottom:56 }}>
+          <h2 className="section-title">
+            GitHub <span>Activity</span>
+          </h2>
+          <div className="section-line" />
+          <p className="section-sub" style={{ marginTop:0 }}>
+            Real-time stats pulled live from GitHub API — bytes-accurate language breakdown.
+          </p>
         </div>
 
-        {/* Top Cards Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6 mb-12">
-          <StatCard icon={Star} label="Stars" value={stats.stars} color="#facc15" />
-          <StatCard icon={GitFork} label="Forks" value={stats.forks} color="#60a5fa" />
-          <StatCard icon={Package} label="Repositories" value={stats.publicRepos} color="#c084fc" />
-          <StatCard icon={Users} label="Followers" value={stats.followers} color="#4ade80" />
-          <StatCard icon={UserPlus} label="Following" value={stats.following} color="#f472b6" />
+        {/* ── Top 5 cards ── */}
+        <div className="fade-in" style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:12, marginBottom:14 }}>
+          {topCards.map(({ icon:Icon, label, val, color })=>(
+            <Panel key={label} accent={false} style={{ padding:'20px 12px', textAlign:'center' }}>
+              {/* Coloured top bar */}
+              <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:`linear-gradient(90deg,transparent,${color},transparent)`, borderRadius:'20px 20px 0 0' }}/>
+              <div style={{
+                width:40, height:40, borderRadius:12, margin:'0 auto 12px',
+                background:`${color}12`, border:`1px solid ${color}25`,
+                display:'flex', alignItems:'center', justifyContent:'center',
+              }}>
+                <Icon size={18} style={{ color }} />
+              </div>
+              <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:24, color:'#fff', lineHeight:1 }}>
+                <CountUp value={val}/>
+              </div>
+              <div style={{ fontSize:11, color:'rgba(255,255,255,0.35)', marginTop:6, fontFamily:'Syne,sans-serif', letterSpacing:'0.4px' }}>
+                {label}
+              </div>
+            </Panel>
+          ))}
         </div>
 
-        {/* Large Advanced Panel */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          {/* Main Info Box */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="lg:col-span-2 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 relative overflow-hidden group shadow-2xl"
-          >
-            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Github size={120} />
-            </div>
+        {/* ── Main row ── */}
+        <div className="fade-in" style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:14, marginBottom:14 }}>
 
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 h-full">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 border border-purple-500/20">
-                    <Github size={24} />
+          {/* Left — profile + metrics + ring */}
+          <Panel hover={false} style={{ padding:30 }}>
+            <div style={{ display:'flex', gap:24, alignItems:'flex-start' }}>
+              <div style={{ flex:1 }}>
+                {/* Profile */}
+                <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:26 }}>
+                  <div style={{ position:'relative' }}>
+                    {data.avatarUrl
+                      ? <img src={data.avatarUrl} alt="avatar" style={{ width:50, height:50, borderRadius:'50%', border:'2px solid rgba(138,92,246,0.5)', objectFit:'cover' }}/>
+                      : <div style={{ width:50, height:50, borderRadius:'50%', background:'rgba(138,92,246,0.15)', border:'2px solid rgba(138,92,246,0.3)', display:'flex', alignItems:'center', justifyContent:'center' }}><Github size={22} style={{ color:'#8a5cf6' }}/></div>
+                    }
+                    <div style={{ position:'absolute', bottom:2, right:2, width:10, height:10, borderRadius:'50%', background:'#22c55e', border:'2px solid #0a0812' }}/>
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold font-syne text-white">ARUP DAS</h3>
-                    <p className="text-xs text-slate-500 tracking-wider">PORTFOLIO INSIGHTS</p>
+                    <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:15, color:'#fff', letterSpacing:'1.5px' }}>
+                      {data.name?.toUpperCase()}
+                    </div>
+                    <div style={{ fontSize:11, color:'rgba(255,255,255,0.3)', letterSpacing:'1px', fontFamily:'Syne,sans-serif', marginTop:3 }}>
+                      @{USERNAME} · PORTFOLIO INSIGHTS
+                    </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-y-6 gap-x-12">
-                  <div className="relative pl-6">
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-purple-500 rounded-full"></div>
-                    <p className="text-xs text-slate-500 uppercase font-bold mb-1">Total Stars</p>
-                    <p className="text-2xl font-bold text-white font-syne"><CountUp value={stats.stars} /></p>
-                  </div>
-                  <div className="relative pl-6">
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-violet-500 rounded-full"></div>
-                    <p className="text-xs text-slate-500 uppercase font-bold mb-1">Commits</p>
-                    <p className="text-2xl font-bold text-white font-syne"><CountUp value={stats.totalCommits} /></p>
-                  </div>
-                  <div className="relative pl-6">
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-green-500 rounded-full"></div>
-                    <p className="text-xs text-slate-500 uppercase font-bold mb-1">PRs</p>
-                    <p className="text-2xl font-bold text-white font-syne"><CountUp value={stats.totalPRs} /></p>
-                  </div>
-                  <div className="relative pl-6">
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-red-500 rounded-full"></div>
-                    <p className="text-xs text-slate-500 uppercase font-bold mb-1">Issues</p>
-                    <p className="text-2xl font-bold text-white font-syne"><CountUp value={stats.totalIssues} /></p>
-                  </div>
+                {/* 4 metrics */}
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'18px 24px' }}>
+                  {[
+                    { icon:Star,               label:'Total Stars',    val:data.stars,   color:'#facc15' },
+                    { icon:GitCommitHorizontal, label:'Total Commits',  val:data.commits, color:'#a78bfa' },
+                    { icon:GitPullRequest,      label:'Pull Requests',  val:data.prs,     color:'#4ade80' },
+                    { icon:CircleDot,           label:'Issues',         val:data.issues,  color:'#f87171' },
+                  ].map(({ icon:Icon, label, val, color })=>(
+                    <div key={label} style={{ display:'flex', alignItems:'center', gap:10 }}>
+                      <div style={{ width:3, height:34, borderRadius:99, background:color, boxShadow:`0 0 8px ${color}88`, flexShrink:0 }}/>
+                      <div>
+                        <div style={{ fontSize:10, color:'rgba(255,255,255,0.3)', fontFamily:'Syne,sans-serif', fontWeight:700, letterSpacing:'0.5px', textTransform:'uppercase', marginBottom:2 }}>{label}</div>
+                        <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:20, color:'#fff', display:'flex', alignItems:'center', gap:5 }}>
+                          <Icon size={12} style={{ color }}/> <CountUp value={val}/>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Progress Ring */}
-              <div className="flex flex-col items-center justify-center bg-white/5 rounded-3xl p-8 border border-white/5 min-w-[200px]">
-                <div className="relative w-32 h-32 mb-4">
-                  <svg className="w-full h-full transform -rotate-90">
-                    <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
-                    <motion.circle
-                      cx="64" cy="64" r="58" stroke="#8a5cf6" strokeWidth="8" fill="transparent"
-                      strokeDasharray="364.4"
-                      initial={{ strokeDashoffset: 364.4 }}
-                      whileInView={{ strokeDashoffset: 364.4 * (1 - 0.75) }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 2, ease: "easeOut" }}
-                      style={{ filter: 'drop-shadow(0 0 8px rgba(138,92,246,0.6))' }}
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-3xl font-bold text-white font-syne">75%</span>
-                  </div>
+              {/* Top language ring */}
+              <div style={{
+                background:'rgba(138,92,246,0.06)',
+                border:'1px solid rgba(138,92,246,0.18)',
+                borderRadius:18, padding:'22px 18px',
+                display:'flex', flexDirection:'column', alignItems:'center', gap:10, minWidth:150,
+              }}>
+                <div style={{ fontSize:10, color:'rgba(255,255,255,0.3)', fontFamily:'Syne,sans-serif', fontWeight:700, letterSpacing:'1.5px', textTransform:'uppercase' }}>Top Language</div>
+                <Ring pct={data.topLangPct} color={LANG_COLORS[data.topLang]||'#8a5cf6'} size={110} stroke={8}>
+                  <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:20, color:'#fff' }}>{data.topLangPct}%</div>
+                </Ring>
+                <div style={{ fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:13, color:LANG_COLORS[data.topLang]||'#a78bfa', letterSpacing:'0.5px' }}>
+                  {data.topLang}
                 </div>
-                <div className="text-sm font-bold text-slate-400 uppercase tracking-widest">{stats.topLanguage}</div>
+                <div style={{ display:'flex', alignItems:'center', gap:4 }}>
+                  <GitBranch size={11} style={{ color:'rgba(255,255,255,0.25)' }}/>
+                  <span style={{ fontSize:10, color:'rgba(255,255,255,0.25)', fontFamily:'Syne,sans-serif' }}>Primary</span>
+                </div>
               </div>
             </div>
-          </motion.div>
+          </Panel>
 
-          {/* Side Panel Breakdown */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 flex flex-col justify-between"
-          >
-            <h4 className="text-lg font-bold text-white mb-6 font-syne flex items-center gap-2">
-              <Code size={20} style={{ color: '#c084fc' }} /> Language Breakdown
-            </h4>
-            <div className="space-y-2">
-              {stats.languageBreakdown.map((lang, idx) => (
-                <ProgressBar key={idx} label={lang.name} percentage={lang.percentage} color={lang.color} />
-              ))}
+          {/* Right — language breakdown */}
+          <Panel hover={false} style={{ padding:'26px 22px' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:20 }}>
+              <Code2 size={16} style={{ color:'#c084fc' }}/>
+              <span style={{ fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:14, color:'#fff' }}>Language Breakdown</span>
             </div>
-          </motion.div>
+            {langs.map(l=>(
+              <Bar key={l.name} label={l.name} pct={l.pct} color={l.color} bytes={l.bytes||null}/>
+            ))}
+          </Panel>
         </div>
 
-        {/* Contribution Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            { label: 'Total Contributions', value: stats.contributions, icon: Trophy, color: '#facc15' },
-            { label: 'Current Streak', value: stats.streak.current, icon: Zap, color: '#f97316' },
-            { label: 'Longest Streak', value: stats.streak.longest, icon: Clock, color: '#8b5cf6' }
-          ].map((stat, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 flex items-center gap-6 group hover:bg-white/10 transition-all cursor-default"
-            >
-              <div className="relative w-16 h-16 flex items-center justify-center">
-                <svg className="absolute inset-0 w-full h-full transform -rotate-90">
-                  <circle cx="32" cy="32" r="30" stroke="currentColor" strokeWidth="3" fill="transparent" className="text-white/5" />
-                  <motion.circle
-                    cx="32" cy="32" r="30" stroke={stat.color} strokeWidth="3" fill="transparent"
-                    strokeDasharray="188.5"
-                    initial={{ strokeDashoffset: 188.5 }}
-                    whileInView={{ strokeDashoffset: 188.5 * (1 - 0.8) }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.5, delay: 0.5 + (idx * 0.1) }}
-                  />
-                </svg>
-                <stat.icon size={20} style={{ color: stat.color }} className="relative z-10 group-hover:scale-110 transition-transform" />
+        {/* ── Streak row ── */}
+        <div className="fade-in" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14 }}>
+          {streakCards.map(({ icon:Icon, label, val, color, pct, suffix })=>(
+            <Panel key={label} accent style={{ padding:'22px 26px' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:18 }}>
+                <Ring pct={pct} color={color} size={72} stroke={5}>
+                  <Icon size={16} style={{ color }}/>
+                </Ring>
+                <div>
+                  <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:28, color:'#fff', lineHeight:1 }}>
+                    <CountUp value={val}/>
+                    {suffix && <span style={{ fontSize:13, color:'rgba(255,255,255,0.35)', marginLeft:4 }}>{suffix}</span>}
+                  </div>
+                  <div style={{ fontSize:10, color:'rgba(255,255,255,0.3)', fontFamily:'Syne,sans-serif', fontWeight:700, letterSpacing:'1px', textTransform:'uppercase', marginTop:6 }}>
+                    {label}
+                  </div>
+                </div>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-white font-syne"><CountUp value={stat.value} /></p>
-                <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">{stat.label}</p>
-              </div>
-            </motion.div>
+            </Panel>
           ))}
+        </div>
+
+        {/* ── View profile ── */}
+        <div className="fade-in" style={{ textAlign:'center', marginTop:40 }}>
+          <a
+            href={`https://github.com/${USERNAME}`}
+            target="_blank" rel="noreferrer"
+            className="btn-secondary"
+            style={{ display:'inline-flex', alignItems:'center', gap:8 }}
+          >
+            <Github size={16}/> View Full GitHub Profile →
+          </a>
         </div>
 
       </div>
     </section>
   );
-};
-
-export default GithubStats;
+}

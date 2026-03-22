@@ -1,98 +1,427 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { LucideExternalLink, LucideGithub, LucideStar, LucideGitFork } from 'lucide-react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { LucideExternalLink, LucideGithub, LucideStar, LucideGitFork, LucideX, LucideFileText, LucideLoader } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const GITHUB_USERNAME = 'arupdas0825';
 
 const langColors = {
-  JavaScript: '#f1e05a', Python: '#3572A5', Java: '#b07219',
-  Kotlin: '#A97BFF', TypeScript: '#2b7489', CSS: '#563d7c',
-  HTML: '#e34c26', Dart: '#00B4AB', default: '#8a5cf6',
+  JavaScript:'#f1e05a', Python:'#3572A5', Java:'#b07219',
+  Kotlin:'#A97BFF', TypeScript:'#2b7489', CSS:'#563d7c',
+  HTML:'#e34c26', Dart:'#00B4AB', default:'#8a5cf6',
 };
 
+function getRepoEmoji(lang) {
+  const map = {
+    JavaScript:'⚡', Python:'🐍', Java:'☕', Kotlin:'📱',
+    TypeScript:'🔷', CSS:'🎨', HTML:'🌐', Dart:'🎯',
+    'C++':'⚙️', C:'🔧', Go:'🐹', Rust:'🦀',
+  };
+  return map[lang] || '💻';
+}
+
+/* ── Simple Markdown → HTML renderer ── */
+function renderMarkdown(md) {
+  if (!md) return '';
+  return md
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    // headings
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    // bold / italic
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/__(.+?)__/g,'<strong>$1</strong>')
+    // inline code
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    // code blocks
+    .replace(/```[\w]*\n([\s\S]*?)```/g,'<pre><code>$1</code></pre>')
+    // images — skip
+    .replace(/!\[.*?\]\(.*?\)/g,'')
+    // links
+    .replace(/\[(.+?)\]\((.+?)\)/g,'<a href="$2" target="_blank" rel="noreferrer">$1</a>')
+    // horizontal rule
+    .replace(/^---$/gm,'<hr/>')
+    // unordered list
+    .replace(/^\s*[-*] (.+)$/gm,'<li>$1</li>')
+    // ordered list
+    .replace(/^\d+\. (.+)$/gm,'<li>$1</li>')
+    // paragraphs
+    .replace(/\n\n+/g,'</p><p>')
+    .replace(/^(?!<[hlpico])/gm, '')
+}
+
+/* ── README Modal ── */
+function ReadmeModal({ repo, onClose }) {
+  const [content, setContent] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  useEffect(() => {
+    const fetchReadme = async () => {
+      setLoading(true); setNotFound(false);
+      try {
+        const res = await fetch(
+          `https://api.github.com/repos/${GITHUB_USERNAME}/${repo.name}/readme`,
+          { headers: { Accept: 'application/vnd.github.v3.raw' } }
+        );
+        if (!res.ok) { setNotFound(true); setLoading(false); return; }
+        const text = await res.text();
+        setContent(text);
+      } catch (_) { setNotFound(true); }
+      finally { setLoading(false); }
+    };
+    fetchReadme();
+  }, [repo.name]);
+
+  const handleEsc = useCallback((e) => {
+    if (e.key === 'Escape') onClose();
+  }, [onClose]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [handleEsc]);
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 999,
+          background: 'rgba(0,0,0,0.75)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 20,
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92, y: 24 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 16 }}
+          transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+          onClick={e => e.stopPropagation()}
+          style={{
+            width: '100%', maxWidth: 820,
+            maxHeight: '88vh',
+            background: 'rgba(18,12,36,0.97)',
+            border: '1px solid rgba(138,92,246,0.3)',
+            borderRadius: 24,
+            overflow: 'hidden',
+            display: 'flex', flexDirection: 'column',
+            boxShadow: '0 0 0 1px rgba(255,255,255,0.05) inset, 0 32px 80px rgba(0,0,0,0.6), 0 0 60px rgba(138,92,246,0.12)',
+          }}
+        >
+          {/* Top sheen */}
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, height: 1,
+            background: 'linear-gradient(90deg,transparent,rgba(138,92,246,0.6),transparent)',
+          }}/>
+
+          {/* Header */}
+          <div style={{
+            padding: '20px 28px',
+            borderBottom: '1px solid rgba(255,255,255,0.07)',
+            display: 'flex', alignItems: 'center', gap: 14,
+            background: 'rgba(138,92,246,0.06)',
+            flexShrink: 0,
+          }}>
+            <div style={{
+              width: 40, height: 40, borderRadius: 12,
+              background: `${langColors[repo.language] || langColors.default}18`,
+              border: `1px solid ${langColors[repo.language] || langColors.default}30`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 18, flexShrink: 0,
+            }}>
+              {getRepoEmoji(repo.language)}
+            </div>
+
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:17, color:'#fff', marginBottom:3 }}>
+                {repo.name}
+              </div>
+              <div style={{ fontSize:12, color:'rgba(255,255,255,0.4)', fontFamily:'DM Sans,sans-serif', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
+                {repo.description || 'No description'}
+              </div>
+            </div>
+
+            <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
+              {/* Language */}
+              {repo.language && (
+                <span style={{
+                  display:'flex', alignItems:'center', gap:5,
+                  background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.08)',
+                  borderRadius:20, padding:'4px 12px',
+                  fontSize:11, fontFamily:'Syne,sans-serif', fontWeight:700,
+                  color:'rgba(255,255,255,0.6)',
+                }}>
+                  <span style={{ width:7, height:7, borderRadius:'50%', background:langColors[repo.language]||langColors.default, display:'inline-block' }}/>
+                  {repo.language}
+                </span>
+              )}
+              {/* Stars */}
+              <span style={{ display:'flex', alignItems:'center', gap:4, fontSize:12, color:'rgba(255,255,255,0.4)' }}>
+                <LucideStar size={12}/> {repo.stargazers_count}
+              </span>
+              {/* GitHub link */}
+              <a
+                href={repo.html_url} target="_blank" rel="noreferrer"
+                style={{
+                  display:'flex', alignItems:'center', gap:6,
+                  background:'var(--purple)', color:'#fff',
+                  padding:'7px 14px', borderRadius:20,
+                  fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:12,
+                  textDecoration:'none',
+                }}
+              >
+                <LucideGithub size={13}/> GitHub
+              </a>
+              {repo.homepage && (
+                <a
+                  href={repo.homepage} target="_blank" rel="noreferrer"
+                  style={{
+                    display:'flex', alignItems:'center', gap:6,
+                    background:'transparent', color:'var(--purple-light)',
+                    border:'1px solid var(--purple)',
+                    padding:'7px 14px', borderRadius:20,
+                    fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:12,
+                    textDecoration:'none',
+                  }}
+                >
+                  <LucideExternalLink size={13}/> Live Demo
+                </a>
+              )}
+              {/* Close */}
+              <button
+                onClick={onClose}
+                style={{
+                  width:34, height:34, borderRadius:'50%',
+                  background:'rgba(255,255,255,0.06)',
+                  border:'1px solid rgba(255,255,255,0.1)',
+                  color:'rgba(255,255,255,0.7)', cursor:'pointer',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  transition:'all 0.2s',
+                }}
+                onMouseEnter={e=>{ e.currentTarget.style.background='rgba(138,92,246,0.3)'; e.currentTarget.style.color='#fff'; }}
+                onMouseLeave={e=>{ e.currentTarget.style.background='rgba(255,255,255,0.06)'; e.currentTarget.style.color='rgba(255,255,255,0.7)'; }}
+              >
+                <LucideX size={15}/>
+              </button>
+            </div>
+          </div>
+
+          {/* README body */}
+          <div style={{ flex:1, overflowY:'auto', padding:'28px 36px' }}>
+            {loading && (
+              <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:200, gap:16, color:'rgba(255,255,255,0.35)' }}>
+                <LucideLoader size={28} style={{ animation:'spin 1s linear infinite', color:'var(--purple)' }}/>
+                <span style={{ fontFamily:'Syne,sans-serif', fontSize:13 }}>Fetching README...</span>
+              </div>
+            )}
+
+            {!loading && notFound && (
+              <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:200, gap:12, color:'rgba(255,255,255,0.3)' }}>
+                <LucideFileText size={40} style={{ color:'rgba(138,92,246,0.4)' }}/>
+                <div style={{ fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:15, color:'rgba(255,255,255,0.5)' }}>No README found</div>
+                <p style={{ fontSize:13, textAlign:'center', maxWidth:300, lineHeight:1.6 }}>
+                  This repository doesn't have a README yet.
+                </p>
+                <a href={repo.html_url} target="_blank" rel="noreferrer"
+                  style={{ display:'flex', alignItems:'center', gap:6, background:'var(--purple)', color:'#fff', padding:'8px 18px', borderRadius:20, fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:13, textDecoration:'none' }}>
+                  <LucideGithub size={14}/> View on GitHub
+                </a>
+              </div>
+            )}
+
+            {!loading && !notFound && content && (
+              <>
+                <style>{`
+                  .readme-body h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;color:#fff;margin:0 0 16px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.08);}
+                  .readme-body h2{font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;color:#e2d9f3;margin:24px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.06);}
+                  .readme-body h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:#a78bfa;margin:18px 0 8px;}
+                  .readme-body p{font-family:'DM Sans',sans-serif;font-size:14px;color:rgba(255,255,255,0.65);line-height:1.75;margin:0 0 12px;}
+                  .readme-body a{color:#a78bfa;text-decoration:underline;}
+                  .readme-body code{background:rgba(138,92,246,0.15);border:1px solid rgba(138,92,246,0.2);border-radius:5px;padding:2px 7px;font-family:monospace;font-size:12px;color:#c084fc;}
+                  .readme-body pre{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:18px;overflow-x:auto;margin:14px 0;}
+                  .readme-body pre code{background:none;border:none;padding:0;font-size:13px;color:rgba(255,255,255,0.8);}
+                  .readme-body li{font-family:'DM Sans',sans-serif;font-size:14px;color:rgba(255,255,255,0.65);line-height:1.75;margin:4px 0;padding-left:18px;position:relative;}
+                  .readme-body li::before{content:'›';position:absolute;left:0;color:#8a5cf6;font-weight:700;}
+                  .readme-body hr{border:none;border-top:1px solid rgba(255,255,255,0.08);margin:20px 0;}
+                  .readme-body strong{color:rgba(255,255,255,0.9);font-weight:700;}
+                  .readme-body em{color:rgba(255,255,255,0.6);font-style:italic;}
+                  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+                `}</style>
+                <div
+                  className="readme-body"
+                  dangerouslySetInnerHTML={{ __html: `<p>${renderMarkdown(content)}</p>` }}
+                />
+              </>
+            )}
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+
+/* ── Fallback repos (shown when API rate-limited) ── */
+const FALLBACK_REPOS = [
+  {
+    id: 1, name: 'LocalCare-Finder-Android', fork: false,
+    description: 'LocalCare Finder — Find nearby hospitals, pharmacies & blood banks across India instantly. Built with Kotlin, Google Maps, Flask & OpenStreetMap API.',
+    language: 'Kotlin', stargazers_count: 1, forks_count: 0,
+    html_url: 'https://github.com/arupdas0825/LocalCare-Finder-Android', homepage: '',
+    languages_url: '',
+  },
+  {
+    id: 2, name: 'sahasrajit-foundation', fork: false,
+    description: 'Built the official website for Sahazej8 Foundation, a grassroots NGO. Firebase-powered admin panel.',
+    language: 'JavaScript', stargazers_count: 2, forks_count: 0,
+    html_url: 'https://github.com/arupdas0825/sahazej8-foundation', homepage: '',
+    languages_url: '',
+  },
+  {
+    id: 3, name: 'quiz-web', fork: false,
+    description: 'A modern Online Examination System built with ReactJs. Features DBMS, OOPS, Python, C, DSA, 10-min countdown timer, grade calculation.',
+    language: 'JavaScript', stargazers_count: 3, forks_count: 1,
+    html_url: 'https://github.com/arupdas0825/quiz-web', homepage: 'https://quiz-web-demo.vercel.app',
+    languages_url: '',
+  },
+  {
+    id: 4, name: 'arupdas0825', fork: false,
+    description: 'B.Tech CSE (AIML) | React Developer | Exploring AI, Algorithms & Full-Stack Development',
+    language: 'JavaScript', stargazers_count: 4, forks_count: 0,
+    html_url: 'https://github.com/arupdas0825', homepage: '',
+    languages_url: '',
+  },
+  {
+    id: 5, name: 'algorithm-visualizer', fork: false,
+    description: 'A React-based Algorithm Visualizer that animates sorting algorithms like Bubble Sort for real-time visualization.',
+    language: 'JavaScript', stargazers_count: 2, forks_count: 0,
+    html_url: 'https://github.com/arupdas0825/algorithm-visualizer', homepage: '',
+    languages_url: '',
+  },
+  {
+    id: 6, name: 'portfolio-website', fork: false,
+    description: 'A premium interactive portfolio blending Artificial Intelligence, software engineering, and cinematic photography. Built with React, Tailwind CSS.',
+    language: 'JavaScript', stargazers_count: 3, forks_count: 0,
+    html_url: 'https://github.com/arupdas0825/portfolio-website', homepage: 'https://arup-portfolio08.netlify.app',
+    languages_url: '',
+  },
+  {
+    id: 7, name: 'Online-Examination-System-Java', fork: false,
+    description: 'A robust, scalable Java web application for seamless online assessment management with secure user authentication and automated evaluation.',
+    language: 'Java', stargazers_count: 1, forks_count: 0,
+    html_url: 'https://github.com/arupdas0825/Online-Examination-System-Java', homepage: '',
+    languages_url: '',
+  },
+  {
+    id: 8, name: 'localcare-finder', fork: false,
+    description: 'LocalCare Finder is a public utility web app to help users quickly locate nearby healthcare services using location-based search.',
+    language: 'CSS', stargazers_count: 1, forks_count: 0,
+    html_url: 'https://github.com/arupdas0825/localcare-finder', homepage: '',
+    languages_url: '',
+  },
+  {
+    id: 9, name: 'studytra', fork: false,
+    description: 'Study Abroad Execution Platform for Indian students wanting to study in Germany, USA or Canada. Powered by Gemini AI.',
+    language: 'JavaScript', stargazers_count: 5, forks_count: 1,
+    html_url: 'https://github.com/arupdas0825/studytra', homepage: '',
+    languages_url: '',
+  },
+];
+
+/* ── Main Work Component ── */
 const Work = () => {
   const fadeRefs = useRef([]);
   const [repos, setRepos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
   const [languages, setLanguages] = useState(['All']);
+  const [selected, setSelected] = useState(null); // clicked repo
 
   useEffect(() => {
-    // সব repos fetch করো (max 100 per page, multiple pages support)
     const fetchAllRepos = async () => {
       try {
-        let allRepos = [];
-        let page = 1;
-        while (true) {
-          const res = await fetch(
-            `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100&page=${page}`
-          );
-          const data = await res.json();
-          if (!Array.isArray(data) || data.length === 0) break;
-          allRepos = [...allRepos, ...data];
-          if (data.length < 100) break;
-          page++;
+        const res = await fetch(
+          `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100&page=1`,
+          { headers: { 'Accept': 'application/vnd.github.v3+json' } }
+        );
+
+        // Rate limit or error check
+        if (!res.ok) {
+          console.warn('GitHub API error:', res.status);
+          setRepos(FALLBACK_REPOS);
+          setLanguages(['All', ...new Set(FALLBACK_REPOS.map(r => r.language).filter(Boolean))]);
+          return;
         }
 
-        // Fork গুলো বাদ দাও (optional — fork রাখতে চাইলে এই line মুছো)
-        const ownRepos = allRepos.filter(r => !r.fork);
+        const data = await res.json();
+
+        // If response is not an array (e.g. rate limit message object)
+        if (!Array.isArray(data)) {
+          console.warn('GitHub API returned non-array:', data);
+          setRepos(FALLBACK_REPOS);
+          setLanguages(['All', ...new Set(FALLBACK_REPOS.map(r => r.language).filter(Boolean))]);
+          return;
+        }
+
+        const ownRepos = data.filter(r => !r.fork);
+
+        if (ownRepos.length === 0) {
+          setRepos(FALLBACK_REPOS);
+          setLanguages(['All', ...new Set(FALLBACK_REPOS.map(r => r.language).filter(Boolean))]);
+          return;
+        }
 
         setRepos(ownRepos);
-
-        // Unique languages collect করো filter এর জন্য
-        const langs = ['All', ...new Set(ownRepos.map(r => r.language).filter(Boolean))];
-        setLanguages(langs);
-        setLoading(false);
+        setLanguages(['All', ...new Set(ownRepos.map(r => r.language).filter(Boolean))]);
       } catch (err) {
-        console.error('GitHub fetch error:', err);
+        console.error('Fetch error:', err);
+        setRepos(FALLBACK_REPOS);
+        setLanguages(['All', ...new Set(FALLBACK_REPOS.map(r => r.language).filter(Boolean))]);
+      } finally {
         setLoading(false);
       }
     };
-
     fetchAllRepos();
   }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          observer.unobserve(e.target);
-        }
-      }),
+      entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }),
       { threshold: 0.08 }
     );
     fadeRefs.current.forEach(el => el && observer.observe(el));
     return () => observer.disconnect();
   }, [repos]);
 
-  const addRef = (el) => { if (el && !fadeRefs.current.includes(el)) fadeRefs.current.push(el); };
-
+  const addRef = el => { if (el && !fadeRefs.current.includes(el)) fadeRefs.current.push(el); };
   const filtered = filter === 'All' ? repos : repos.filter(r => r.language === filter);
 
   return (
     <section id="work" className="page-section">
       <div className="section-inner">
         <h2 className="section-title fade-in" ref={addRef}>Featured <span>Work</span></h2>
-        <div className="section-line fade-in" ref={addRef}></div>
+        <div className="section-line fade-in" ref={addRef} />
         <p className="section-sub fade-in" ref={addRef}>
-          All my GitHub projects — live from the API. New repos appear here automatically.
+          All my GitHub projects — live from the API. Click any card to read the README.
         </p>
 
-        {/* Language Filter Pills */}
+        {/* Filter pills */}
         {!loading && (
           <div className="work-filters fade-in" ref={addRef}>
             {languages.map(lang => (
-              <button
-                key={lang}
-                className={`work-filter-btn ${filter === lang ? 'active' : ''}`}
-                onClick={() => setFilter(lang)}
-              >
-                {lang !== 'All' && (
-                  <span
-                    className="filter-lang-dot"
-                    style={{ background: langColors[lang] || langColors.default }}
-                  />
-                )}
+              <button key={lang} className={`work-filter-btn ${filter === lang ? 'active' : ''}`} onClick={() => setFilter(lang)}>
+                {lang !== 'All' && <span className="filter-lang-dot" style={{ background: langColors[lang] || langColors.default }} />}
                 {lang}
                 {lang === 'All' && <span className="filter-count">{repos.length}</span>}
               </button>
@@ -100,7 +429,7 @@ const Work = () => {
           </div>
         )}
 
-        {/* Loading State */}
+        {/* Loading */}
         {loading && (
           <div className="work-loading">
             <div className="work-loading-spinner" />
@@ -108,111 +437,79 @@ const Work = () => {
           </div>
         )}
 
-        {/* Repos Grid */}
+        {/* Grid */}
         {!loading && (
           <>
             <div className="projects-grid">
               {filtered.map((repo, idx) => (
-                <div
+                <motion.div
                   key={repo.id}
                   className="project-card fade-in"
                   ref={addRef}
-                  style={{ animationDelay: `${(idx % 6) * 0.08}s` }}
+                  style={{ animationDelay:`${(idx%6)*0.08}s`, cursor:'pointer' }}
+                  onClick={() => setSelected(repo)}
+                  whileHover={{ y:-6, boxShadow:'0 20px 50px rgba(138,92,246,0.25)' }}
+                  transition={{ type:'spring', stiffness:260, damping:22 }}
                 >
-                  {/* Thumb */}
-                  <div
-                    className="project-thumb"
-                    style={{
-                      background: `linear-gradient(135deg, ${(langColors[repo.language] || langColors.default)}18, rgba(10,8,18,0.9))`
-                    }}
-                  >
-                    <div className="project-thumb-icon" style={{ fontSize: '2rem' }}>
-                      {getRepoEmoji(repo.language)}
-                    </div>
-                    {/* Star & Fork */}
+                  <div className="project-thumb" style={{ background:`linear-gradient(135deg,${(langColors[repo.language]||langColors.default)}18,rgba(10,8,18,0.9))` }}>
+                    <div className="project-thumb-icon" style={{ fontSize:'2rem' }}>{getRepoEmoji(repo.language)}</div>
                     <div className="repo-meta-overlay">
-                      <span><LucideStar size={11} /> {repo.stargazers_count}</span>
-                      <span><LucideGitFork size={11} /> {repo.forks_count}</span>
+                      <span><LucideStar size={11}/> {repo.stargazers_count}</span>
+                      <span><LucideGitFork size={11}/> {repo.forks_count}</span>
+                    </div>
+                    {/* README hint */}
+                    <div style={{
+                      position:'absolute', bottom:10, left:12,
+                      display:'flex', alignItems:'center', gap:5,
+                      fontSize:10, color:'rgba(255,255,255,0.4)',
+                      fontFamily:'Syne,sans-serif',
+                    }}>
+                      <LucideFileText size={10}/> Click to read README
                     </div>
                   </div>
-
                   <div className="project-body">
                     <div className="project-name">{repo.name}</div>
-                    <div className="project-desc">
-                      {repo.description || 'No description provided.'}
-                    </div>
-
-                    {/* Language + Topics */}
+                    <div className="project-desc">{repo.description || 'No description provided.'}</div>
                     <div className="project-tags">
                       {repo.language && (
-                        <span className="project-tag" style={{ borderColor: `${langColors[repo.language] || langColors.default}55` }}>
-                          <span
-                            style={{
-                              display: 'inline-block', width: 8, height: 8, borderRadius: '50%',
-                              background: langColors[repo.language] || langColors.default,
-                              marginRight: 5, flexShrink: 0,
-                            }}
-                          />
+                        <span className="project-tag" style={{ borderColor:`${langColors[repo.language]||langColors.default}55` }}>
+                          <span style={{ display:'inline-block', width:8, height:8, borderRadius:'50%', background:langColors[repo.language]||langColors.default, marginRight:5, flexShrink:0 }}/>
                           {repo.language}
                         </span>
                       )}
                     </div>
-
-                    <div className="project-links">
-                      <a
-                        href={repo.html_url}
-                        target="_blank" rel="noreferrer"
-                        className="project-link github"
-                      >
-                        <LucideGithub size={14} /> GitHub
+                    <div className="project-links" onClick={e => e.stopPropagation()}>
+                      <a href={repo.html_url} target="_blank" rel="noreferrer" className="project-link github">
+                        <LucideGithub size={14}/> GitHub
                       </a>
                       {repo.homepage && (
-                        <a
-                          href={repo.homepage}
-                          target="_blank" rel="noreferrer"
-                          className="project-link demo"
-                        >
-                          <LucideExternalLink size={14} /> Live Demo
+                        <a href={repo.homepage} target="_blank" rel="noreferrer" className="project-link demo">
+                          <LucideExternalLink size={14}/> Live Demo
                         </a>
                       )}
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
 
             {filtered.length === 0 && (
-              <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: 32 }}>
-                No repos found for this language.
-              </p>
+              <p style={{ textAlign:'center', color:'var(--text-muted)', marginTop:32 }}>No repos found for this language.</p>
             )}
 
             <div className="work-view-all fade-in" ref={addRef}>
-              <a
-                href={`https://github.com/${GITHUB_USERNAME}?tab=repositories`}
-                target="_blank" rel="noreferrer"
-                className="btn-secondary"
-              >
-                <LucideGithub size={16} />
-                View All on GitHub
+              <a href={`https://github.com/${GITHUB_USERNAME}?tab=repositories`} target="_blank" rel="noreferrer" className="btn-secondary">
+                <LucideGithub size={16}/> View All on GitHub
               </a>
             </div>
           </>
         )}
       </div>
+
+      {/* README Modal */}
+      {selected && <ReadmeModal repo={selected} onClose={() => setSelected(null)} />}
     </section>
   );
 };
-
-// Language → emoji mapping
-function getRepoEmoji(lang) {
-  const map = {
-    JavaScript: '⚡', Python: '🐍', Java: '☕', Kotlin: '📱',
-    TypeScript: '🔷', CSS: '🎨', HTML: '🌐', Dart: '🎯',
-    'C++': '⚙️', C: '🔧', Go: '🐹', Rust: '🦀',
-    Ruby: '💎', PHP: '🐘', Swift: '🍎',
-  };
-  return map[lang] || '💻';
-}
 
 export default Work;

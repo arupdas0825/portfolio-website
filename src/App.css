@@ -805,3 +805,21 @@ body::before {
   .lightbox-info { padding: 24px 20px; border-left: none; border-top: 1px solid var(--card-border); }
   .lightbox-nav { display: none; }
 }
+
+/* ===== GITHUB STATS — Responsive ===== */
+@media (max-width: 900px) {
+  /* top 5 cards → 3 col */
+  .gh-top-grid { grid-template-columns: repeat(3,1fr) !important; }
+  .gh-main-grid { grid-template-columns: 1fr !important; }
+  .gh-streak-grid { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 600px) {
+  .gh-top-grid { grid-template-columns: repeat(2,1fr) !important; }
+}
+
+/* ── TechStack responsive ── */
+@media (max-width: 768px) {
+  #techstack > div > div:last-child {
+    grid-template-columns: 1fr !important;
+  }
+}

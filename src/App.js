@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from './Navbar';
 import Home from './Home';
 import About from './About';
+import TechStack from './TechStack';
 import Work from './Work';
 import GithubStats from './GithubStats';
 import Gallery from './Gallery';
@@ -21,6 +22,7 @@ function App() {
 
       <div id="home"><Home /></div>
       <div id="about"><About /></div>
+      <div id="techstack"><TechStack /></div>
       <div id="work"><Work /></div>
       <div id="githubstats"><GithubStats /></div>  {/* ← navbar ছাড়াই */}
       <div id="gallery"><Gallery /></div>
