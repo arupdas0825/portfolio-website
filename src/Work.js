@@ -19,36 +19,89 @@ function getRepoEmoji(lang) {
   return map[lang] || '💻';
 }
 
-/* ── Simple Markdown → HTML renderer ── */
+/* ── Markdown → HTML renderer (handles HTML in README) ── */
 function renderMarkdown(md) {
   if (!md) return '';
-  return md
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    // headings
-    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
-    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
-    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
-    // bold / italic
-    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g,'<em>$1</em>')
-    .replace(/__(.+?)__/g,'<strong>$1</strong>')
-    // inline code
-    .replace(/`([^`]+)`/g,'<code>$1</code>')
-    // code blocks
-    .replace(/```[\w]*\n([\s\S]*?)```/g,'<pre><code>$1</code></pre>')
-    // images — skip
-    .replace(/!\[.*?\]\(.*?\)/g,'')
-    // links
-    .replace(/\[(.+?)\]\((.+?)\)/g,'<a href="$2" target="_blank" rel="noreferrer">$1</a>')
-    // horizontal rule
-    .replace(/^---$/gm,'<hr/>')
-    // unordered list
-    .replace(/^\s*[-*] (.+)$/gm,'<li>$1</li>')
-    // ordered list
-    .replace(/^\d+\. (.+)$/gm,'<li>$1</li>')
-    // paragraphs
-    .replace(/\n\n+/g,'</p><p>')
-    .replace(/^(?!<[hlpico])/gm, '')
+
+  // 1. Extract & protect code blocks first
+  const codeBlocks = [];
+  md = md.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
+    const idx = codeBlocks.length;
+    codeBlocks.push(`<pre class="rm-pre"><code class="rm-code">${code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code></pre>`);
+    return `%%CODEBLOCK_${idx}%%`;
+  });
+
+  // 2. Protect inline code
+  const inlineCodes = [];
+  md = md.replace(/`([^`]+)`/g, (_, code) => {
+    const idx = inlineCodes.length;
+    inlineCodes.push(`<code class="rm-inline">${code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code>`);
+    return `%%INLINE_${idx}%%`;
+  });
+
+  // 3. Strip HTML tags that README might have (div, img, br, etc.)
+  //    Keep content inside, remove the tags themselves
+  md = md
+    .replace(/<div[^>]*>/gi, '')
+    .replace(/<\/div>/gi, '\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<p[^>]*>/gi, '')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<img[^>]*\/>/gi, '') // remove images (badges etc. dont render in modal)
+    .replace(/<a[^>]*href="([^"]*)"[^>]*>([^<]*)<\/a>/gi, '<a href="$1" target="_blank" rel="noreferrer" class="rm-link">$2</a>')
+    .replace(/<[^>]+>/g, ''); // strip any remaining tags
+
+  // 4. Headings
+  md = md
+    .replace(/^#{4,} (.+)$/gm, '<h4 class="rm-h4">$1</h4>')
+    .replace(/^### (.+)$/gm, '<h3 class="rm-h3">$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2 class="rm-h2">$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1 class="rm-h1">$1</h1>');
+
+  // 5. Bold / italic
+  md = md
+    .replace(/\*\*(.+?)\*\*/g, '<strong class="rm-bold">$1</strong>')
+    .replace(/__(.+?)__/g, '<strong class="rm-bold">$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em class="rm-em">$1</em>');
+
+  // 6. Links
+  md = md.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer" class="rm-link">$1</a>');
+
+  // 7. Images — skip badges, show alt text
+  md = md.replace(/!\[([^\]]*)\]\([^)]+\)/g, '');
+
+  // 8. Horizontal rule
+  md = md.replace(/^---+$/gm, '<hr class="rm-hr"/>');
+
+  // 9. Tables
+  md = md.replace(/^\|(.+)\|$/gm, (line) => {
+    const cells = line.split('|').slice(1,-1).map(c => c.trim());
+    if(cells.every(c => /^[-: ]+$/.test(c))) return '%%TABLE_SEP%%';
+    return '<tr>' + cells.map(c => `<td class="rm-td">${c}</td>`).join('') + '</tr>';
+  });
+  md = md.replace(/(<tr>.*?<\/tr>\n?)+/gs, (table) => {
+    const rows = table.trim().split('\n').filter(r => !r.includes('%%TABLE_SEP%%'));
+    if(rows.length === 0) return '';
+    const [header, ...body] = rows;
+    const thead = header.replace(/td/g,'th class="rm-th"').replace(/class="rm-td"/g,'class="rm-th"');
+    return `<table class="rm-table"><thead>${thead}</thead><tbody>${body.join('')}</tbody></table>`;
+  });
+  md = md.replace(/%%TABLE_SEP%%\n?/g, '');
+
+  // 10. Lists
+  md = md
+    .replace(/^\s*[-*] (.+)$/gm, '<li class="rm-li">$1</li>')
+    .replace(/^\d+\. (.+)$/gm, '<li class="rm-li rm-oli">$1</li>');
+
+  // 11. Paragraphs
+  md = md.replace(/\n{2,}/g, '</p><p class="rm-p">');
+  md = `<p class="rm-p">${md}</p>`;
+
+  // 12. Restore code blocks & inline codes
+  codeBlocks.forEach((block, i) => { md = md.replace(`%%CODEBLOCK_${i}%%`, block); });
+  inlineCodes.forEach((code, i) => { md = md.replace(`%%INLINE_${i}%%`, code); });
+
+  return md;
 }
 
 /* ── README Modal ── */
@@ -96,10 +149,10 @@ function ReadmeModal({ repo, onClose }) {
         exit={{ opacity: 0 }}
         onClick={onClose}
         style={{
-          position: 'fixed', inset: 0, zIndex: 999,
-          background: 'rgba(0,0,0,0.75)',
+          position: 'fixed', inset: 0, zIndex: 1200,
+          background: 'rgba(0,0,0,0.82)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: 20,
+          padding: '80px 20px 20px 20px', // top padding clears navbar
         }}
       >
         <motion.div
@@ -243,25 +296,26 @@ function ReadmeModal({ repo, onClose }) {
             {!loading && !notFound && content && (
               <>
                 <style>{`
-                  .readme-body h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;color:#fff;margin:0 0 16px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.08);}
-                  .readme-body h2{font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;color:#e2d9f3;margin:24px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.06);}
-                  .readme-body h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:#a78bfa;margin:18px 0 8px;}
-                  .readme-body p{font-family:'DM Sans',sans-serif;font-size:14px;color:rgba(255,255,255,0.65);line-height:1.75;margin:0 0 12px;}
-                  .readme-body a{color:#a78bfa;text-decoration:underline;}
-                  .readme-body code{background:rgba(138,92,246,0.15);border:1px solid rgba(138,92,246,0.2);border-radius:5px;padding:2px 7px;font-family:monospace;font-size:12px;color:#c084fc;}
-                  .readme-body pre{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:18px;overflow-x:auto;margin:14px 0;}
-                  .readme-body pre code{background:none;border:none;padding:0;font-size:13px;color:rgba(255,255,255,0.8);}
-                  .readme-body li{font-family:'DM Sans',sans-serif;font-size:14px;color:rgba(255,255,255,0.65);line-height:1.75;margin:4px 0;padding-left:18px;position:relative;}
-                  .readme-body li::before{content:'›';position:absolute;left:0;color:#8a5cf6;font-weight:700;}
-                  .readme-body hr{border:none;border-top:1px solid rgba(255,255,255,0.08);margin:20px 0;}
-                  .readme-body strong{color:rgba(255,255,255,0.9);font-weight:700;}
-                  .readme-body em{color:rgba(255,255,255,0.6);font-style:italic;}
                   @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+                  .rm-h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:#fff;margin:0 0 14px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.08);}
+                  .rm-h2{font-family:'Syne',sans-serif;font-weight:700;font-size:1.15rem;color:#e2d9f3;margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.06);}
+                  .rm-h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:#a78bfa;margin:16px 0 8px;}
+                  .rm-h4{font-family:'Syne',sans-serif;font-weight:600;font-size:0.9rem;color:#c084fc;margin:12px 0 6px;}
+                  .rm-p{font-family:'DM Sans',sans-serif;font-size:13.5px;color:rgba(255,255,255,0.62);line-height:1.8;margin:0 0 10px;}
+                  .rm-link{color:#a78bfa;text-decoration:underline;word-break:break-all;}
+                  .rm-inline{background:rgba(138,92,246,0.15);border:1px solid rgba(138,92,246,0.2);border-radius:5px;padding:1px 7px;font-family:monospace;font-size:12px;color:#c084fc;}
+                  .rm-pre{background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;overflow-x:auto;margin:12px 0;}
+                  .rm-code{font-family:monospace;font-size:12.5px;color:rgba(255,255,255,0.82);white-space:pre;}
+                  .rm-li{font-family:'DM Sans',sans-serif;font-size:13.5px;color:rgba(255,255,255,0.62);line-height:1.8;margin:3px 0;padding-left:16px;position:relative;list-style:none;}
+                  .rm-li::before{content:'›';position:absolute;left:0;color:#8a5cf6;font-weight:700;}
+                  .rm-hr{border:none;border-top:1px solid rgba(255,255,255,0.07);margin:18px 0;}
+                  .rm-bold{color:rgba(255,255,255,0.88);font-weight:700;}
+                  .rm-em{color:rgba(255,255,255,0.58);font-style:italic;}
+                  .rm-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;}
+                  .rm-th{padding:8px 12px;background:rgba(138,92,246,0.15);border:1px solid rgba(255,255,255,0.07);color:#a78bfa;font-family:'Syne',sans-serif;font-weight:700;text-align:left;}
+                  .rm-td{padding:7px 12px;border:1px solid rgba(255,255,255,0.06);color:rgba(255,255,255,0.62);font-family:'DM Sans',sans-serif;vertical-align:top;}
                 `}</style>
-                <div
-                  className="readme-body"
-                  dangerouslySetInnerHTML={{ __html: `<p>${renderMarkdown(content)}</p>` }}
-                />
+                <div dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }} />
               </>
             )}
           </div>
@@ -282,7 +336,7 @@ const FALLBACK_REPOS = [
     languages_url: '',
   },
   {
-    id: 2, name: 'sahasrajit-foundation', fork: false,
+    id: 2, name: 'sahazej8-foundation', fork: false,
     description: 'Built the official website for Sahazej8 Foundation, a grassroots NGO. Firebase-powered admin panel.',
     language: 'JavaScript', stargazers_count: 2, forks_count: 0,
     html_url: 'https://github.com/arupdas0825/sahazej8-foundation', homepage: '',
