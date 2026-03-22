@@ -161,16 +161,9 @@ export default function TechStack() {
 
         {/* ── Title — portfolio heading style ── */}
         <div className="fade-in" style={{ marginBottom: 16 }}>
-          <div style={{
-            fontFamily: 'Syne, sans-serif', fontWeight: 700,
-            fontSize: 12, letterSpacing: '3px',
-            color: 'var(--purple-light)',
-            textTransform: 'uppercase', marginBottom: 10,
-          }}>
-            TECH STACK
-          </div>
+          <span className="section-label" style={{ textAlign:'left' }}>✦ WHAT I WORK WITH ✦</span>
           <h2 className="section-title" style={{ textAlign: 'left', marginBottom: 8 }}>
-            Technologies I <span>work with</span>
+            Tech <span>Stack</span>
           </h2>
           <p style={{
             fontFamily: 'DM Sans, sans-serif', fontSize: '0.92rem',

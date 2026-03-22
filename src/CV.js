@@ -17,6 +17,7 @@ export default function CV() {
     <section className="page-section cv-section">
       <div className="section-inner cv-inner">
         <div className="fade-in" ref={addRef}>
+          <span className="section-label">✦ MY RESUME ✦</span>
           <h2 className="section-title">Curriculum <span>Vitae</span></h2>
           <div className="section-line" />
           <p className="section-sub">

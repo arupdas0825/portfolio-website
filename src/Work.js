@@ -336,7 +336,7 @@ const FALLBACK_REPOS = [
     languages_url: '',
   },
   {
-    id: 2, name: 'sahasrajit-foundation', fork: false,
+    id: 2, name: 'sahazej8-foundation', fork: false,
     description: 'Built the official website for Sahazej8 Foundation, a grassroots NGO. Firebase-powered admin panel.',
     language: 'JavaScript', stargazers_count: 2, forks_count: 0,
     html_url: 'https://github.com/arupdas0825/sahazej8-foundation', homepage: '',
@@ -468,7 +468,8 @@ const Work = () => {
   return (
     <section id="work" className="page-section">
       <div className="section-inner">
-        <h2 className="section-title fade-in" ref={addRef}>Featured <span>Work</span></h2>
+        <span className="section-label fade-in" ref={addRef}>✦ OPEN SOURCE WORK ✦</span>
+        <h2 className="section-title fade-in" ref={addRef}>My <span>Works</span></h2>
         <div className="section-line fade-in" ref={addRef} />
         <p className="section-sub fade-in" ref={addRef}>
           All my GitHub projects — live from the API. Click any card to read the README.

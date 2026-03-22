@@ -323,6 +323,7 @@ export default function GithubStats() {
 
         {/* ── Title — matches portfolio heading style ── */}
         <div className="fade-in" style={{ textAlign:'center', marginBottom:56 }}>
+          <span className="section-label">✦ LIVE FROM API ✦</span>
           <h2 className="section-title">
             GitHub <span>Activity</span>
           </h2>

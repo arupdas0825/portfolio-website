@@ -1,115 +1,144 @@
 import React, { useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { LucideCode, LucideBrain, LucideSmartphone, LucideCamera, LucideBarChart4, LucideShieldCheck } from 'lucide-react';
-import TiltCard from './TiltCard';
 
-const Services = () => {
-  const fadeRefs = useRef([]);
+const services = [
+  {
+    name: 'Web Development',
+    desc: 'Building responsive, modern web applications using React, JavaScript, and Tailwind CSS with a focus on clean UI and solid engineering principles.',
+    color: '#60a5fa',
+    icon: (
+      <svg fill="none" stroke="currentColor" strokeWidth="1.8" width="26" height="26" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l-3 3 3 3m4.5-6l3 3-3 3M13.5 6l-3 12"/>
+      </svg>
+    ),
+  },
+  {
+    name: 'AI / ML Solutions',
+    desc: 'Designing and implementing intelligent systems — from Gemini AI integrations to machine learning models that solve real-world problems at scale.',
+    color: '#c084fc',
+    icon: (
+      <svg fill="none" stroke="currentColor" strokeWidth="1.8" width="26" height="26" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/>
+      </svg>
+    ),
+  },
+  {
+    name: 'Mobile App Dev',
+    desc: 'Creating Android applications with Kotlin, Firebase backend, and modern UI patterns — from concept to Play Store ready.',
+    color: '#f472b6',
+    icon: (
+      <svg fill="none" stroke="currentColor" strokeWidth="1.8" width="26" height="26" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/>
+      </svg>
+    ),
+  },
+  {
+    name: 'Creative Direction',
+    desc: "Combining technical skills with a photographer's eye — UI/UX design, video editing with Premiere Pro & After Effects, and visual storytelling.",
+    color: '#2dd4bf',
+    icon: (
+      <svg fill="none" stroke="currentColor" strokeWidth="1.8" width="26" height="26" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/>
+      </svg>
+    ),
+  },
+  {
+    name: 'Data Analysis',
+    desc: 'Turning raw data into actionable insights using Python, SQL, and machine learning techniques — from data cleaning to advanced visualizations and reports.',
+    color: '#4ade80',
+    icon: (
+      <svg fill="none" stroke="currentColor" strokeWidth="1.8" width="26" height="26" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/>
+      </svg>
+    ),
+  },
+  {
+    name: 'Backend Systems',
+    desc: 'Building robust server-side logic with Java, Firebase, and REST APIs — scalable, secure, and production-ready systems for modern web applications.',
+    color: '#f87171',
+    icon: (
+      <svg fill="none" stroke="currentColor" strokeWidth="1.8" width="26" height="26" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>
+      </svg>
+    ),
+  },
+];
+
+export default function Services() {
+  const sectionRef = useRef(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          observer.unobserve(e.target);
-        }
-      }),
-      { threshold: 0.1 }
+    const obs = new IntersectionObserver(
+      es => es.forEach(e => e.isIntersecting && e.target.classList.add('visible')),
+      { threshold: 0.08 }
     );
-    fadeRefs.current.forEach(el => el && observer.observe(el));
-    return () => observer.disconnect();
+    if (sectionRef.current)
+      sectionRef.current.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+    return () => obs.disconnect();
   }, []);
 
-  const addRef = (el) => { if (el && !fadeRefs.current.includes(el)) fadeRefs.current.push(el); };
+  const handleMouseMove = (e) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const rotX = ((y - cy) / cy) * -8;
+    const rotY = ((x - cx) / cx) * 8;
+    card.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.02,1.02,1.02)`;
+    const glow = card.querySelector('.svc-glow');
+    if (glow) { glow.style.left = x + 'px'; glow.style.top = y + 'px'; glow.style.opacity = '1'; }
+  };
 
-  const services = [
-    {
-      title: "Web Development",
-      desc: "Building responsive, modern web applications using React, JavaScript, and Tailwind CSS with a focus on clean UI and solid engineering principles.",
-      icon: <LucideCode size={32} />,
-      color: "blue"
-    },
-    {
-      title: "AI / ML Solutions",
-      desc: "Designing and implementing intelligent systems — from Gemini AI integrations to machine learning models that solve real-world problems at scale.",
-      icon: <LucideBrain size={32} />,
-      color: "purple"
-    },
-    {
-      title: "Mobile App Dev",
-      desc: "Creating cross-platform mobile applications with Firebase backend, location services, and modern UI patterns that work seamlessly on both iOS and Android.",
-      icon: <LucideSmartphone size={32} />,
-      color: "fuchsia"
-    },
-    {
-      title: "Creative Direction",
-      desc: "Combining technical skills with a photographer's eye — UI/UX design, video editing with Premiere Pro & After Effects, and visual storytelling.",
-      icon: <LucideCamera size={32} />,
-      color: "cyan"
-    },
-    {
-      title: "Data Analysis",
-      desc: "Turning raw data into actionable insights using Python, SQL, and machine learning techniques — from data cleaning to advanced visualizations and reports.",
-      icon: <LucideBarChart4 size={32} />,
-      color: "green"
-    },
-    {
-      title: "Backend Systems",
-      desc: "Building robust server-side logic with Java, Firebase, and REST APIs — scalable, secure, and production-ready systems for modern web applications.",
-      icon: <LucideShieldCheck size={32} />,
-      color: "rose"
-    }
-  ];
+  const handleMouseLeave = (e) => {
+    e.currentTarget.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
+    const glow = e.currentTarget.querySelector('.svc-glow');
+    if (glow) glow.style.opacity = '0';
+  };
 
   return (
-    <section id="services" className="py-24 relative overflow-hidden">
-      <div className="max-w-6xl mx-auto px-6 relative z-10">
-        <div className="text-center mb-16">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-extrabold mb-4 font-syne uppercase tracking-tight text-white"
-          >
-            Capabilities & <span>Services</span>
-          </motion.h2>
-          <div className="w-20 h-1 bg-purple-500 mx-auto rounded-full shadow-[0_0_15px_rgba(138,92,246,0.5)]"></div>
-          <p className="mt-6 text-slate-400 max-w-2xl mx-auto text-lg">
-            What I bring to the table — from intelligent systems to creative digital experiences.
-          </p>
-        </div>
+    <section id="services" className="page-section" ref={sectionRef}>
+      <div className="section-inner">
+        <span className="section-label fade-in">✦ WHAT I OFFER ✦</span>
+        <h2 className="section-title fade-in">Features & <span>Services</span></h2>
+        <div className="section-line fade-in" />
+        <p className="section-sub fade-in">
+          What I bring to the table — from intelligent systems to creative digital experiences.
+        </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((s, idx) => (
-            <TiltCard key={idx}>
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 h-full flex flex-col group hover:border-purple-500/30 transition-all duration-500"
-              >
-                <div className={`w-16 h-16 rounded-2xl bg-${s.color}-500/10 flex items-center justify-center text-${s.color}-400 mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-inner`}>
-                  {s.icon}
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-4 font-syne">{s.title}</h3>
-                <p className="text-slate-400 leading-relaxed mb-6 flex-1">{s.desc}</p>
-                <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    whileInView={{ width: '100%' }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1, delay: 0.5 + idx * 0.1 }}
-                    className={`h-full bg-${s.color}-500/50`}
-                  />
-                </div>
-              </motion.div>
-            </TiltCard>
+        <div className="svc-grid">
+          {services.map((service, i) => (
+            <div
+              key={service.name}
+              className="svc-card fade-in"
+              style={{ animationDelay: `${i * 0.08}s` }}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+            >
+              {/* Cursor glow */}
+              <div className="svc-glow" style={{ background: `radial-gradient(circle 90px, ${service.color}22, transparent)` }} />
+
+              {/* Top accent */}
+              <div className="svc-top-line" style={{ background: `linear-gradient(90deg, transparent, ${service.color}, transparent)` }} />
+
+              {/* Icon */}
+              <div className="svc-icon" style={{ background: `${service.color}14`, border: `1px solid ${service.color}28`, color: service.color }}>
+                {service.icon}
+              </div>
+
+              {/* Title */}
+              <div className="svc-name">{service.name}</div>
+
+              {/* Desc */}
+              <div className="svc-desc">{service.desc}</div>
+
+              {/* Bottom line */}
+              <div className="svc-bottom-line" style={{ background: `linear-gradient(90deg, ${service.color}bb, transparent)` }} />
+            </div>
           ))}
         </div>
       </div>
     </section>
   );
-};
-
-export default Services;
+}
