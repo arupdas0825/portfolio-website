@@ -1,39 +1,26 @@
 import React, { useState, useEffect } from 'react';
 
 const navLinks = [
-  {
-    id: 'home', label: 'Home',
-    icon: <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" /></svg>
-  },
-  {
-    id: 'about', label: 'About',
-    icon: <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z" /></svg>
-  },
-  {
-    id: 'work', label: 'Work',
-    icon: <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.33C18 2.99 16.5 2 15 2c-.88 0-1.65.4-2.18 1.02L12 4.5l-.82-1.48C10.65 2.4 9.88 2 9 2 7.5 2 6 2.99 6 4.67 6 5.12 6.11 5.56 6.18 6H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z" /></svg>
-  },
-  {
-    id: 'gallery', label: 'Photography',
-    icon: <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 15.2A3.2 3.2 0 0 1 8.8 12 3.2 3.2 0 0 1 12 8.8 3.2 3.2 0 0 1 15.2 12 3.2 3.2 0 0 1 12 15.2M12 7a5 5 0 0 0-5 5 5 5 0 0 0 5 5 5 5 0 0 0 5-5 5 5 0 0 0-5-5m-7 5.5H3v-1h2V7l1.5-2h11L19 7v4.5h2v1h-2V17l-1.5 2H6.5L5 17v-4.5z" /></svg>
-  },
-  {
-    id: 'services', label: 'Services',
-    icon: <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" /></svg>
-  },
-  {
-    id: 'cv', label: 'CV',
-    icon: <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z" /></svg>
-  },
-  {
-    id: 'contact', label: 'Contact',
-    icon: <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" /></svg>
-  },
+  { id:'home',      label:'Home',        icon:'🏠' },
+  { id:'about',     label:'About',       icon:'👤' },
+  { id:'work',      label:'Work',        icon:'💼' },
+  { id:'gallery',   label:'Photography', icon:'📷' },
+  { id:'services',  label:'Services',    icon:'⚙️' },
+  { id:'cv',        label:'CV',          icon:'📄' },
+  { id:'contact',   label:'Contact',     icon:'📬' },
 ];
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [active, setActive] = useState('home');
+  const [scrolled, setScrolled]   = useState(false);
+  const [active, setActive]       = useState('home');
+  const [menuOpen, setMenuOpen]   = useState(false);
+  const [isMobile, setIsMobile]   = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,9 +28,7 @@ export default function Navbar() {
       const sections = navLinks.map(l => document.getElementById(l.id)).filter(Boolean);
       let current = 'home';
       sections.forEach(sec => {
-        if (window.scrollY >= sec.offsetTop - 120) {
-          current = sec.id;
-        }
+        if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
       });
       setActive(current);
     };
@@ -51,20 +36,157 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close menu on scroll
+  useEffect(() => {
+    if (menuOpen) {
+      const close = () => setMenuOpen(false);
+      window.addEventListener('scroll', close, { once: true });
+    }
+  }, [menuOpen]);
+
   const scrollTo = (id) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setMenuOpen(false);
   };
 
+  // ── MOBILE NAV ──
+  if (isMobile) return (
+    <>
+      <nav style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '14px 20px',
+        background: scrolled ? 'rgba(10,8,18,0.95)' : 'rgba(10,8,18,0.7)',
+        backdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(138,92,246,0.15)',
+        transition: 'background 0.3s',
+      }}>
+        {/* Logo */}
+        <div style={{
+          fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18,
+          background: 'linear-gradient(135deg,#a78bfa,#22d3ee)',
+          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+        }}>
+          Arup Das
+        </div>
+
+        {/* Hamburger button */}
+        <button
+          onClick={() => setMenuOpen(o => !o)}
+          style={{
+            background: menuOpen ? 'rgba(138,92,246,0.2)' : 'rgba(255,255,255,0.05)',
+            border: `1px solid ${menuOpen ? 'rgba(138,92,246,0.5)' : 'rgba(255,255,255,0.1)'}`,
+            borderRadius: 10, width: 40, height: 40,
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', gap: 5,
+            cursor: 'pointer', padding: 0, transition: 'all 0.2s',
+          }}
+        >
+          {[0,1,2].map(i => (
+            <span key={i} style={{
+              display: 'block',
+              width: menuOpen ? (i === 1 ? 0 : 22) : 22,
+              height: 2,
+              background: menuOpen ? '#a78bfa' : 'rgba(255,255,255,0.7)',
+              borderRadius: 2,
+              transition: 'all 0.25s ease',
+              transform: menuOpen
+                ? i === 0 ? 'rotate(45deg) translate(5px,5px)'
+                : i === 2 ? 'rotate(-45deg) translate(5px,-5px)'
+                : 'scaleX(0)'
+                : 'none',
+            }}/>
+          ))}
+        </button>
+      </nav>
+
+      {/* Drawer */}
+      <div style={{
+        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+        zIndex: 190,
+        pointerEvents: menuOpen ? 'all' : 'none',
+      }}>
+        {/* Backdrop */}
+        <div
+          onClick={() => setMenuOpen(false)}
+          style={{
+            position: 'absolute', inset: 0,
+            background: 'rgba(0,0,0,0.6)',
+            opacity: menuOpen ? 1 : 0,
+            transition: 'opacity 0.3s',
+          }}
+        />
+
+        {/* Menu panel */}
+        <div style={{
+          position: 'absolute', top: 0, right: 0,
+          width: '75vw', maxWidth: 280,
+          height: '100%',
+          background: 'rgba(12,8,24,0.98)',
+          borderLeft: '1px solid rgba(138,92,246,0.25)',
+          boxShadow: '-20px 0 60px rgba(0,0,0,0.5)',
+          transform: menuOpen ? 'translateX(0)' : 'translateX(100%)',
+          transition: 'transform 0.32s cubic-bezier(0.34,1.2,0.64,1)',
+          display: 'flex', flexDirection: 'column',
+          padding: '80px 20px 40px',
+          gap: 6,
+        }}>
+          {/* Purple top line */}
+          <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:'linear-gradient(90deg,transparent,#8a5cf6,#22d3ee,transparent)' }}/>
+
+          <div style={{ fontFamily:"'Syne',sans-serif", fontSize:11, fontWeight:700, letterSpacing:'2px', color:'rgba(255,255,255,0.3)', marginBottom:8 }}>
+            NAVIGATE
+          </div>
+
+          {navLinks.map((link, i) => (
+            <button
+              key={link.id}
+              onClick={() => scrollTo(link.id)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 12,
+                padding: '13px 16px', borderRadius: 12,
+                background: active === link.id ? 'rgba(138,92,246,0.2)' : 'transparent',
+                border: active === link.id ? '1px solid rgba(138,92,246,0.4)' : '1px solid transparent',
+                color: active === link.id ? '#a78bfa' : 'rgba(255,255,255,0.65)',
+                fontSize: 14, fontWeight: 600,
+                fontFamily: "'Syne',sans-serif",
+                cursor: 'pointer', textAlign: 'left',
+                transition: 'all 0.2s',
+                transform: menuOpen ? 'translateX(0)' : 'translateX(30px)',
+                opacity: menuOpen ? 1 : 0,
+                transitionDelay: menuOpen ? `${i * 0.04}s` : '0s',
+              }}
+            >
+              <span style={{ fontSize: 16 }}>{link.icon}</span>
+              {link.label}
+              {active === link.id && (
+                <span style={{ marginLeft:'auto', width:6, height:6, borderRadius:'50%', background:'#8a5cf6', boxShadow:'0 0 8px #8a5cf6' }}/>
+              )}
+            </button>
+          ))}
+
+          {/* Bottom */}
+          <div style={{ marginTop:'auto', paddingTop:20, borderTop:'1px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ fontSize:11, color:'rgba(255,255,255,0.25)', fontFamily:"'Syne',sans-serif", textAlign:'center' }}>
+              Arup Das · Portfolio v2.1
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+
+  // ── DESKTOP NAV (unchanged) ──
   return (
     <nav className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}>
-      {navLinks.map(({ id, label, icon }) => (
+      {navLinks.map(({ id, label }) => (
         <button
           key={id}
           className={`nav-item ${active === id ? 'active' : ''}`}
           onClick={() => scrollTo(id)}
         >
-          {icon}
           {label}
         </button>
       ))}
