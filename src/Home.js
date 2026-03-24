@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import FloatingTechIcons from './FloatingTechIcons';
 
 const ROLES = [
   'AI / ML Developer',
@@ -133,43 +134,9 @@ export default function Home() {
         </div>
       </div>
 
-      {/* RIGHT — Orbital Widget */}
+      {/* RIGHT — Floating Tech Icons */}
       <div className="hero-visual fade-in" ref={addRef} style={{ animationDelay: '0.2s' }}>
-        <div className="orbit-container">
-          <div className="orbit-card">
-            <div className="orbit-card-header">
-              <span>CORE UI</span>
-              <span className="orbit-online">● ONLINE</span>
-            </div>
-            <div className="orbit-badges-top">
-              <span className="orbit-badge">● SYSTEM READY</span>
-              <span className="orbit-badge">PORTFOLIO 2025</span>
-              <span className="orbit-badge">AI POWERED</span>
-            </div>
-            <div className="orbit-ring-outer" />
-            <div className="orbit-ring">
-              <span className="orbit-dot" style={{ top: '-14px', left: '50%', transform: 'translateX(-50%)' }}>🤖</span>
-              <span className="orbit-dot" style={{ right: '-14px', top: '50%', transform: 'translateY(-50%)' }}>⚡</span>
-              <span className="orbit-dot" style={{ bottom: '-14px', left: '50%', transform: 'translateX(-50%)' }}>📷</span>
-              <span className="orbit-dot" style={{ left: '-14px', top: '50%', transform: 'translateY(-50%)' }}>💻</span>
-              <div className="orbit-core">ARUP</div>
-            </div>
-            <div className="orbit-stats">
-              <div className="orbit-stat">
-                <div className="orbit-stat-val">4+</div>
-                <div className="orbit-stat-label">Projects</div>
-              </div>
-              <div className="orbit-stat">
-                <div className="orbit-stat-val">AI/ML</div>
-                <div className="orbit-stat-label">Focus</div>
-              </div>
-              <div className="orbit-stat">
-                <div className="orbit-stat-val">∞</div>
-                <div className="orbit-stat-label">Curiosity</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <FloatingTechIcons />
       </div>
     </section>
   );
