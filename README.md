@@ -87,7 +87,7 @@ const arup = {
 | Status | Project | Stack | Features | URL |
 |--------|---------|-------|----------|-----|
 | ![Live](https://img.shields.io/badge/LIVE-4ade80?style=flat-square) | **[Portfolio v2.1](https://arup-portfolio-seven.vercel.app/)** | React + GitHub API | Live GitHub Stats · README Modal · Liquid Glass UI · Typewriter · Blackhole & Orbiting Icons | [arup-portfolio.vercel.app](https://arup-portfolio-seven.vercel.app/) |
-| ![Live](https://img.shields.io/badge/LIVE-4ade80?style=flat-square) | **[StudyTra](https://github.com/arupdas0825/studytra)** | React + Gemini AI | AI Roadmaps · Visa Guidance · Cost Breakdown · Firebase | — |
+| ![Live](https://img.shields.io/badge/LIVE-4ade80?style=flat-square) | **[StudyTra](https://github.com/arupdas0825/studytra)** | React + Gemini AI | AI Roadmaps · Visa Guidance · Cost Breakdown · Firebase | — | (studytra.vercel.app)
 | ![Live](https://img.shields.io/badge/WIP-facc15?style=flat-square) | **[SwasthyaBindu](https://github.com/arupdas0825)** | Kotlin + Firebase | Hemoglobin Screening · OTP Auth · Camera Analysis | Android |
 | ![Live](https://img.shields.io/badge/LIVE-4ade80?style=flat-square) | **[LocalCare Finder](https://github.com/arupdas0825/LocalCare-Finder-Android)** | Kotlin + Maps API | Nearby Hospitals · Pharmacies · Blood Banks | Android |
 | ![Live](https://img.shields.io/badge/LIVE-4ade80?style=flat-square) | **[Quiz Web](https://github.com/arupdas0825/quiz-web)** | React + Firebase | Online Exam · Countdown Timer · Grade Calculation | [Demo](https://github.com/arupdas0825/quiz-web) |
