@@ -1,78 +1,193 @@
-import React, { useEffect, useState } from 'react';
-import { motion, useSpring } from 'framer-motion';
+import React, { useEffect, useRef } from 'react';
+import './customCursor.css';
 
 const CustomCursor = () => {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [isPointer, setIsPointer] = useState(false);
+  const mainCursor = useRef(null);
+  const particlesContainer = useRef(null);
 
-  // Smooth springs for the outer circle trail
-  const springConfig = { damping: 25, stiffness: 150 };
-  const cursorX = useSpring(0, springConfig);
-  const cursorY = useSpring(0, springConfig);
+  // Mutable state for high performance
+  const mouse = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  const cursor = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  
+  const isBlackhole = useRef(false);
+  const hoverTarget = useRef(null);
+
+  // Particle System Optimization
+  const PARTICLE_COUNT = 25; // max 25 particles
+  const particles = useRef([]);
+  const activeParticles = useRef([]);
+  const lastParticleTime = useRef(0);
 
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
-      cursorX.set(e.clientX);
-      cursorY.set(e.clientY);
+    // 1. Initialize DOM nodes for Particle Pool
+    if (particlesContainer.current && particles.current.length === 0) {
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        const p = document.createElement('div');
+        p.className = 'cursor-particle';
+        p.style.opacity = '0'; // hide
+        particlesContainer.current.appendChild(p);
+        
+        particles.current.push({
+          element: p,
+          active: false,
+          x: 0, 
+          y: 0, 
+          vx: 0, 
+          vy: 0,
+          life: 0,
+          maxLife: 400 + Math.random() * 200 // 400ms to 600ms lifetime
+        });
+      }
+    }
 
-      // Check if hovering over clickable elements
-      const target = e.target;
-      const isClickable = 
-        window.getComputedStyle(target).cursor === 'pointer' ||
-        target.tagName === 'A' ||
-        target.tagName === 'BUTTON' ||
-        target.onclick ||
-        target.closest('a') ||
-        target.closest('button') ||
-        target.closest('.clickable');
-      
-      setIsPointer(!!isClickable);
+    // 2. Event Listeners
+    const onMouseMove = (e) => {
+      mouse.current.x = e.clientX;
+      mouse.current.y = e.clientY;
+
+      // Throttle particle spawning
+      const now = performance.now();
+      if (now - lastParticleTime.current > 30) {
+        spawnParticle(e.clientX, e.clientY);
+        lastParticleTime.current = now;
+      }
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [cursorX, cursorY]);
+    const handleMouseOver = (e) => {
+      const blackhole = e.target.closest('.bh-anchor, .project-card');
+      if (blackhole) {
+        isBlackhole.current = true;
+        hoverTarget.current = blackhole;
+      }
+    };
+
+    const handleMouseOut = (e) => {
+      const blackhole = e.target.closest('.bh-anchor, .project-card');
+      if (blackhole) {
+        isBlackhole.current = false;
+        hoverTarget.current = null;
+      }
+    };
+
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
+    document.addEventListener('mouseover', handleMouseOver, { passive: true });
+    document.addEventListener('mouseout', handleMouseOut, { passive: true });
+
+    // 3. Render Loop (requestAnimationFrame)
+    let animationFrameId;
+    let lastTime = performance.now();
+
+    const render = (time) => {
+      const dt = time - lastTime;
+      lastTime = time;
+
+      let targetX = mouse.current.x;
+      let targetY = mouse.current.y;
+
+      // Calculate smooth velocity for scaling
+      const dx = targetX - cursor.current.x;
+      const dy = targetY - cursor.current.y;
+      const velocity = Math.sqrt(dx * dx + dy * dy);
+      
+      // Blackhole Gravity pull logic
+      if (isBlackhole.current && hoverTarget.current) {
+        const rect = hoverTarget.current.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        const strength = 0.4;
+        targetX = targetX + (centerX - targetX) * strength;
+        targetY = targetY + (centerY - targetY) * strength;
+      }
+
+      // Cursor LERP
+      cursor.current.x += (targetX - cursor.current.x) * 0.15;
+      cursor.current.y += (targetY - cursor.current.y) * 0.15;
+
+      if (mainCursor.current) {
+        // Subtle scale elongation based on velocity
+        const scale = 1 - Math.min(velocity * 0.002, 0.3);
+
+        mainCursor.current.style.transform = `translate3d(${cursor.current.x}px, ${cursor.current.y}px, 0) scale(${scale})`;
+
+        if (isBlackhole.current) {
+          mainCursor.current.classList.add('cursor-blackhole');
+        } else {
+          mainCursor.current.classList.remove('cursor-blackhole');
+        }
+      }
+
+      updateParticles(dt);
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    animationFrameId = requestAnimationFrame(render);
+
+    // 4. Cleanup on unmount
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseover', handleMouseOver);
+      document.removeEventListener('mouseout', handleMouseOut);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  const spawnParticle = (x, y) => {
+    const pIndex = particles.current.findIndex((p) => !p.active);
+    if (pIndex === -1) return; 
+
+    const p = particles.current[pIndex];
+    p.active = true;
+    p.x = x;
+    p.y = y;
+    p.vx = (Math.random() - 0.5) * 1.5; 
+    p.vy = (Math.random() - 0.5) * 1.5; 
+    p.life = p.maxLife;
+
+    p.element.style.transform = `translate3d(${x}px, ${y}px, 0) scale(1)`;
+    p.element.style.opacity = '0.7';
+
+    activeParticles.current.push(p);
+  };
+
+  const updateParticles = (dt) => {
+    for (let i = activeParticles.current.length - 1; i >= 0; i--) {
+      const p = activeParticles.current[i];
+      p.life -= dt;
+
+      if (p.life <= 0) {
+        p.active = false;
+        p.element.style.opacity = '0';
+        activeParticles.current.splice(i, 1);
+        continue;
+      }
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if (isBlackhole.current && hoverTarget.current) {
+        const rect = hoverTarget.current.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        p.x += (centerX - p.x) * 0.05;
+        p.y += (centerY - p.y) * 0.05;
+      }
+
+      const progress = 1 - (p.life / p.maxLife);
+      const opacity = (1 - progress) * 0.7;
+      const scale = 1 - (progress * 0.5); 
+
+      p.element.style.transform = `translate3d(${p.x}px, ${p.y}px, 0) scale(${scale})`;
+      p.element.style.opacity = opacity.toString();
+    }
+  };
 
   return (
     <>
-      {/* Inner Dot */}
-      <motion.div
-        className="fixed top-0 left-0 w-2 h-2 bg-white rounded-full pointer-events-none z-[9999] mix-blend-difference"
-        animate={{
-          x: mousePos.x - 4,
-          y: mousePos.y - 4,
-          scale: isPointer ? 1.5 : 1,
-        }}
-        transition={{ type: 'spring', damping: 30, stiffness: 250, mass: 0.5 }}
-      />
-
-      {/* Outer Circle (Trailing Effect) */}
-      <motion.div
-        className="fixed top-0 left-0 w-10 h-10 border border-white/40 rounded-full pointer-events-none z-[9998] mix-blend-difference"
-        style={{
-          x: cursorX,
-          y: cursorY,
-          translateX: '-50%',
-          translateY: '-50%',
-        }}
-        animate={{
-          scale: isPointer ? 1.8 : 1,
-          borderWidth: isPointer ? '1px' : '1.5px',
-          borderColor: isPointer ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.4)',
-        }}
-      />
-      
-      {/* Subtle Glow Trail */}
-      <motion.div
-        className="fixed top-0 left-0 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl pointer-events-none z-[9997]"
-        animate={{
-          x: mousePos.x - 80,
-          y: mousePos.y - 80,
-          scale: isPointer ? 1.2 : 1,
-          opacity: isPointer ? 0.6 : 0.3,
-        }}
-      />
+      <div id="cursor-particles" ref={particlesContainer} />
+      <div id="main-cursor" ref={mainCursor} />
     </>
   );
 };
