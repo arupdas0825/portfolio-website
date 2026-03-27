@@ -5,13 +5,15 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
- apiKey: "AIzaSyAUOWCYogkSr70_w2mtHRmvX0HQN6nmGrY",
-  authDomain: "arup-portfolio.firebaseapp.com",
-  projectId: "arup-portfolio",
-  messagingSenderId: "695869509670",
-  appId: "1:695869509670:web:339e7da2cc0ada144fd6e7",
-  measurementId: "G-YRHP147LKR"
+
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
 };
+
 
 const app = initializeApp(firebaseConfig);
 
