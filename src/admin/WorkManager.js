@@ -32,10 +32,12 @@ export default function WorkManager() {
 
   // Listen to Firestore for saved customizations
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, 'projectSettings'), snap => {
+    const unsub = onSnapshot(collection(db, 'projects'), snap => {
       const data = {};
       snap.docs.forEach(d => { data[d.id] = d.data(); });
       setSavedData(data);
+    }, err => {
+      console.error('Firestore error:', err.message);
     });
     return unsub;
   }, []);
@@ -75,7 +77,7 @@ export default function WorkManager() {
         data.thumbnail = editForm.thumbnail;
       }
 
-      await setDoc(doc(db, 'projectSettings', editing.name), data);
+      await setDoc(doc(db, 'projects', editing.name), data);
       setMsg('✅ Saved! Portfolio will show updated data.');
       setEditing(null);
     } catch(e) { setMsg('❌ ' + e.message); }

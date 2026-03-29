@@ -1247,8 +1247,8 @@ body::before {
   background-size: 300% 300%;
   animation: gradientMove 3s ease infinite;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
 }
 
@@ -1319,4 +1319,27 @@ body::before {
 @media (max-width: 768px) {
   .about-photo-gradient-border { width: 240px; height: 280px; }
   .hero-visual canvas { width: 280px !important; height: 280px !important; }
+}
+
+/* ===== BLACKHOLE WRAPPER — no clip ===== */
+.blackhole-wrap {
+  width: 400px;
+  height: 400px;
+  overflow: visible;
+  position: relative;
+}
+
+.blackhole-wrap canvas {
+  width: 400px !important;
+  height: 400px !important;
+  overflow: visible;
+}
+
+.hero-visual {
+  overflow: visible !important;
+}
+
+@media (max-width: 900px) {
+  .blackhole-wrap,
+  .blackhole-wrap canvas { width: 300px !important; height: 300px !important; }
 }
