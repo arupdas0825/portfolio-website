@@ -1257,3 +1257,66 @@ body::before {
   50%  { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+
+/* ===== ABOUT PHOTO — Animated Gradient Border ===== */
+.about-photo-gradient-border {
+  position: relative;
+  width: 290px;
+  height: 330px;
+  border-radius: 22px;
+  padding: 3px;
+  background: linear-gradient(var(--angle, 0deg), #8a5cf6, #22d3ee, #c084fc, #8a5cf6);
+  animation: borderRotate 3s linear infinite;
+  cursor: default;
+  flex-shrink: 0;
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes borderRotate {
+  to { --angle: 360deg; }
+}
+
+.about-photo-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(138,92,246,0.2), rgba(30,22,55,0.9));
+}
+
+.about-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Fallback for browsers not supporting @property */
+@supports not (background: paint(houdini)) {
+  .about-photo-gradient-border {
+    background: linear-gradient(135deg, #8a5cf6, #22d3ee, #c084fc) !important;
+    animation: gradientShift 3s ease infinite !important;
+    background-size: 300% 300% !important;
+  }
+  @keyframes gradientShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+}
+
+/* Blackhole canvas size */
+.hero-visual canvas {
+  width: 380px !important;
+  height: 380px !important;
+}
+
+@media (max-width: 768px) {
+  .about-photo-gradient-border { width: 240px; height: 280px; }
+  .hero-visual canvas { width: 280px !important; height: 280px !important; }
+}

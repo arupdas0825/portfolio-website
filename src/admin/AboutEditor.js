@@ -1,86 +1,67 @@
-import React, { useEffect, useRef } from 'react';
+// src/admin/AboutEditor.js
+import React, { useState, useEffect } from 'react';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '../firebase';
+import { S, Msg, Field } from './AdminStyles';
 
-const skillGroups = [
-  {
-    title: 'Languages',
-    tags: ['Python', 'Java', 'C/C++', 'JavaScript', 'SQL', 'Firebase'],
-  },
-  {
-    title: 'Specializations',
-    tags: ['AI / ML', 'Machine Learning', 'Mobile App Dev', 'React'],
-  },
-  {
-    title: 'Creative Tools',
-    tags: ['Premiere Pro', 'After Effects', 'Photography'],
-  },
-];
-
-export default function About({ onPhotoDoubleClick }) {
-  const fadeRefs = useRef([]);
-  const addRef = (el) => { if (el && !fadeRefs.current.includes(el)) fadeRefs.current.push(el); };
+export default function AboutEditor() {
+  const [form, setForm] = useState({
+    bio1: 'I am a detail-oriented Computer Science & Engineering student at Brainware University, specialising in Artificial Intelligence and Machine Learning. Based in Kolkata, I am passionate about bridging the gap between robust software architecture and intelligent system design.',
+    bio2: 'With a strong foundation in Python, Java, C/C++, and Google Firebase, I focus on building scalable applications. My technical toolkit is complemented by a creative background in Photography and Professional Video Editing.',
+    languages: 'Python,Java,C/C++,JavaScript,SQL,Firebase',
+    specializations: 'AI / ML,Machine Learning,Mobile App Dev,React',
+    creativeTools: 'Premiere Pro,After Effects,Photography',
+  });
+  const [saving, setSaving]   = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [msg, setMsg]         = useState('');
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach(e => e.isIntersecting && e.target.classList.add('visible')),
-      { threshold: 0.12 }
-    );
-    fadeRefs.current.forEach(el => el && observer.observe(el));
-    return () => observer.disconnect();
+    getDoc(doc(db, 'siteData', 'about'))
+      .then(snap => { if (snap.exists()) setForm(f => ({ ...f, ...snap.data() })); })
+      .catch(err => setMsg('❌ Load error: ' + err.message))
+      .finally(() => setLoading(false));
   }, []);
 
+  const f = k => ({
+    value: form[k] || '',
+    onChange: e => setForm(prev => ({ ...prev, [k]: e.target.value })),
+  });
+
+  const save = async () => {
+    setSaving(true); setMsg('');
+    try {
+      await setDoc(doc(db, 'siteData', 'about'), form, { merge: true });
+      setMsg('✅ About section saved! Refresh portfolio to see changes.');
+    } catch(e) {
+      setMsg('❌ Save failed: ' + e.message);
+    } finally { setSaving(false); }
+  };
+
+  if (loading) return <div style={{ color:'rgba(255,255,255,0.4)', padding:20 }}>Loading...</div>;
+
   return (
-    <section className="page-section about-section">
-      <div className="section-inner about-inner">
-        {/* Photo */}
-        <div className="about-img-wrap fade-in" ref={addRef}>
-          <div className="about-photo-ring-2" />
-          <div className="about-photo-ring" />
-          <div
-            className="photo-placeholder about-photo-secret"
-            onDoubleClick={onPhotoDoubleClick}
-            title="Arup Das"
-            style={{ cursor: 'default' }}
-          >
-            <img src="/arup.jpg" alt="Arup Das" className="about-photo-img"
-              onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
-            <div className="photo-fallback" style={{ display: 'none' }}>
-              <span className="photo-emoji">🧑‍💻</span>
-              <span className="photo-name-label">Arup Das</span>
-              <span className="photo-subtitle-label">B.Tech CSE (AIML)<br />Brainware University</span>
-            </div>
-          </div>
-        </div>
+    <div>
+      <h2 style={S.heading}>👤 About Me Editor</h2>
+      <p style={S.sub}>Edit your bio and skill tags</p>
 
-        {/* Content */}
-        <div className="about-content fade-in" ref={addRef} style={{ animationDelay: '0.15s' }}>
-          <span className="section-label">— WHO AM I —</span>
-          <h2 className="section-title about-title">About <span>Me</span></h2>
-          <div className="section-line" />
-          <p className="section-sub about-sub">
-            I am a detail-oriented Computer Science & Engineering student at Brainware University,
-            specialising in <strong style={{ color: 'var(--purple-light)' }}>Artificial Intelligence and Machine Learning</strong>.
-            Based in Kolkata, I am passionate about bridging the gap between robust software architecture
-            and intelligent system design.
-            <br /><br />
-            With a strong foundation in Python, Java, C/C++, and Google Firebase, I focus on building
-            scalable applications. My technical toolkit is complemented by a creative background in
-            Photography and Professional Video Editing.
-          </p>
-
-          <div className="about-skills">
-            {skillGroups.map(group => (
-              <div className="skill-group" key={group.title}>
-                <div className="skill-group-title">{group.title}</div>
-                <div className="skill-tags">
-                  {group.tags.map(tag => (
-                    <span className="skill-tag" key={tag}>{tag}</span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      <div style={S.card}>
+        <div style={S.cardTitle}>Bio Paragraphs</div>
+        <Field label="Paragraph 1" {...f('bio1')} multiline/>
+        <Field label="Paragraph 2" {...f('bio2')} multiline/>
       </div>
-    </section>
+
+      <div style={S.card}>
+        <div style={S.cardTitle}>Skill Tags (comma separated)</div>
+        <Field label="Languages" placeholder="Python,Java,C/C++,JavaScript" {...f('languages')}/>
+        <Field label="Specializations" placeholder="AI / ML,Machine Learning,React" {...f('specializations')}/>
+        <Field label="Creative Tools" placeholder="Premiere Pro,After Effects,Photography" {...f('creativeTools')}/>
+      </div>
+
+      <Msg text={msg}/>
+      <button style={S.btnPrimary} onClick={save} disabled={saving}>
+        {saving ? 'Saving...' : '💾 Save About'}
+      </button>
+    </div>
   );
 }

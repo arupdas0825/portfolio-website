@@ -1,216 +1,213 @@
-// src/admin/WorkManager.js
-import React, { useState, useEffect } from 'react';
-import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from 'firebase/firestore';
+// src/admin/WorkManager.js — GitHub repos only, set primary/secondary
+import React, { useState, useEffect, useCallback } from 'react';
+import { collection, doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 import { uploadToCloudinary } from './cloudinary';
+import { S, Msg } from './AdminStyles';
 
-const COLL = 'projects';
+const GITHUB_USERNAME = 'arupdas0825';
 
 export default function WorkManager() {
-  const [projects, setProjects] = useState([]);
-  const [form, setForm] = useState({ name:'', desc:'', github:'', demo:'', tags:'', type:'primary' });
+  const [repos, setRepos]         = useState([]);
+  const [savedData, setSavedData] = useState({});
+  const [editing, setEditing]     = useState(null);
+  const [editForm, setEditForm]   = useState({ desc:'', type:'secondary', thumbnail:'', tags:'' });
   const [thumbFile, setThumbFile] = useState(null);
   const [thumbPreview, setThumbPreview] = useState('');
-  const [editing, setEditing] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [msg, setMsg] = useState('');
+  const [progress, setProgress]   = useState(0);
+  const [loadingRepos, setLoadingRepos] = useState(true);
+  const [msg, setMsg]             = useState('');
 
+  // Fetch GitHub repos
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, COLL), snap => {
-      const d = snap.docs.map(x => ({ id:x.id, ...x.data() }));
-      d.sort((a,b)=>(a.order||0)-(b.order||0));
-      setProjects(d);
+    fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`)
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data)) setRepos(data.filter(r => !r.fork));
+      })
+      .catch(() => {})
+      .finally(() => setLoadingRepos(false));
+  }, []);
+
+  // Listen to Firestore for saved customizations
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, 'projectSettings'), snap => {
+      const data = {};
+      snap.docs.forEach(d => { data[d.id] = d.data(); });
+      setSavedData(data);
     });
     return unsub;
   }, []);
 
-  const handleThumb = (e) => {
-    const f = e.target.files[0];
-    if (!f) return;
-    setThumbFile(f);
-    setThumbPreview(URL.createObjectURL(f));
-  };
-
-  const uploadThumb = (f) => uploadToCloudinary(f, 'portfolio/projects', setProgress);
+  const startEdit = useCallback((repo) => {
+    const saved = savedData[repo.name] || {};
+    setEditing(repo);
+    setEditForm({
+      desc:      saved.desc      || repo.description || '',
+      type:      saved.type      || 'secondary',
+      thumbnail: saved.thumbnail || '',
+      tags:      saved.tags      || (repo.language ? repo.language : ''),
+    });
+    setThumbPreview(saved.thumbnail || '');
+    setThumbFile(null);
+  }, [savedData]);
 
   const handleSave = async () => {
-    if (!form.name) return setMsg('Project name required.');
+    if (!editing) return;
     setUploading(true); setMsg('');
     try {
       const data = {
-        name: form.name, desc: form.desc,
-        github: form.github, demo: form.demo,
-        tags: form.tags.split(',').map(t=>t.trim()).filter(Boolean),
-        type: form.type,
+        name:      editing.name,
+        desc:      editForm.desc,
+        type:      editForm.type,
+        tags:      editForm.tags,
+        github:    editing.html_url,
+        demo:      editing.homepage || '',
+        stars:     editing.stargazers_count,
+        language:  editing.language,
       };
+
       if (thumbFile) {
-        const { url, publicId } = await uploadThumb(thumbFile);
+        const { url } = await uploadToCloudinary(thumbFile, 'portfolio/projects', setProgress);
         data.thumbnail = url;
-        data.thumbPublicId = publicId;
-      }
-      if (editing) {
-        await updateDoc(doc(db, COLL, editing.id), data);
-        setMsg('✅ Project updated!');
       } else {
-        data.order = projects.length;
-        data.createdAt = serverTimestamp();
-        await addDoc(collection(db, COLL), data);
-        setMsg('✅ Project added!');
+        data.thumbnail = editForm.thumbnail;
       }
-      resetForm();
+
+      await setDoc(doc(db, 'projectSettings', editing.name), data);
+      setMsg('✅ Saved! Portfolio will show updated data.');
+      setEditing(null);
     } catch(e) { setMsg('❌ ' + e.message); }
     finally { setUploading(false); setProgress(0); }
   };
 
-  const handleEdit = (p) => {
-    setEditing(p);
-    setForm({ name:p.name||'', desc:p.desc||'', github:p.github||'', demo:p.demo||'', tags:(p.tags||[]).join(', '), type:p.type||'primary' });
-    setThumbPreview(p.thumbnail||'');
-    setThumbFile(null);
-    window.scrollTo(0,0);
-  };
+  const primary   = repos.filter(r => savedData[r.name]?.type === 'primary');
+  const secondary = repos.filter(r => !savedData[r.name] || savedData[r.name]?.type !== 'primary');
 
-  const handleDelete = async (p) => {
-    if (!window.confirm(`Delete "${p.name}"?`)) return;
-    await deleteDoc(doc(db, COLL, p.id));
-    // Image stays on Cloudinary free tier (no server-side delete needed)
-    setMsg('🗑️ Deleted.');
-  };
-
-  const resetForm = () => { setEditing(null); setForm({ name:'', desc:'', github:'', demo:'', tags:'', type:'primary' }); setThumbFile(null); setThumbPreview(''); };
-
-  const primary   = projects.filter(p => p.type !== 'secondary');
-  const secondary = projects.filter(p => p.type === 'secondary');
+  if (loadingRepos) return <div style={{ color:'rgba(255,255,255,0.4)', padding:20 }}>Fetching GitHub repos...</div>;
 
   return (
     <div>
-      <h2 style={S.heading}>💼 Work / Projects Manager</h2>
-      <p style={S.sub}>{primary.length} primary · {secondary.length} secondary projects</p>
+      <h2 style={S.heading}>💼 Work / Projects</h2>
+      <p style={S.sub}>{repos.length} GitHub repos · click any to customize</p>
 
-      {/* Form */}
-      <div style={S.card}>
-        <h3 style={S.cardTitle}>{editing ? '✏️ Edit Project' : '➕ Add Project'}</h3>
+      <Msg text={msg}/>
 
-        <div style={S.grid2}>
-          <div style={S.field}>
-            <label style={S.label}>Project Name *</label>
-            <input style={S.input} value={form.name} onChange={e=>setForm({...form,name:e.target.value})} placeholder="studytra"/>
+      {/* Edit form */}
+      {editing && (
+        <div style={{ ...S.card, border:'1px solid rgba(138,92,246,0.4)', marginBottom:20 }}>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
+            <div style={{ ...S.cardTitle, marginBottom:0 }}>✏️ Editing: <span style={{ color:'#fff' }}>{editing.name}</span></div>
+            <button style={S.btnSecondary} onClick={() => setEditing(null)}>Cancel</button>
           </div>
-          <div style={S.field}>
-            <label style={S.label}>Type</label>
-            <select style={S.input} value={form.type} onChange={e=>setForm({...form,type:e.target.value})}>
-              <option value="primary">⭐ Primary Project</option>
-              <option value="secondary">📌 Secondary Project</option>
-            </select>
-          </div>
-        </div>
 
-        <div style={S.field}>
-          <label style={S.label}>Description</label>
-          <textarea style={{...S.input,height:70,resize:'vertical'}} value={form.desc} onChange={e=>setForm({...form,desc:e.target.value})} placeholder="What this project does..."/>
-        </div>
-
-        <div style={S.grid2}>
-          <div style={S.field}>
-            <label style={S.label}>GitHub URL</label>
-            <input style={S.input} value={form.github} onChange={e=>setForm({...form,github:e.target.value})} placeholder="https://github.com/..."/>
-          </div>
-          <div style={S.field}>
-            <label style={S.label}>Live Demo URL</label>
-            <input style={S.input} value={form.demo} onChange={e=>setForm({...form,demo:e.target.value})} placeholder="https://..."/>
-          </div>
-        </div>
-
-        <div style={S.field}>
-          <label style={S.label}>Tech Tags (comma separated)</label>
-          <input style={S.input} value={form.tags} onChange={e=>setForm({...form,tags:e.target.value})} placeholder="React, Firebase, Gemini AI"/>
-        </div>
-
-        <div style={S.field}>
-          <label style={S.label}>Thumbnail Image {editing ? '(optional — keep current)' : ''}</label>
-          <input style={{...S.input,padding:'8px 12px'}} type="file" accept="image/*" onChange={handleThumb}/>
-        </div>
-
-        {thumbPreview && <img src={thumbPreview} alt="thumb" style={{width:'100%',maxHeight:160,objectFit:'cover',borderRadius:10,marginBottom:14}}/>}
-
-        {uploading && (
-          <div style={{marginBottom:12}}>
-            <div style={{height:5,background:'rgba(255,255,255,0.07)',borderRadius:99}}>
-              <div style={{height:'100%',width:`${progress}%`,background:'linear-gradient(90deg,#8a5cf6,#c084fc)',borderRadius:99}}/>
+          <div style={{ marginBottom:12 }}>
+            <label style={S.label}>Project Type</label>
+            <div style={{ display:'flex', gap:10 }}>
+              {['primary','secondary'].map(t => (
+                <button key={t} onClick={() => setEditForm(f=>({...f,type:t}))} style={{
+                  flex:1, padding:'9px', borderRadius:9,
+                  background: editForm.type===t ? (t==='primary'?'rgba(250,204,21,0.2)':'rgba(138,92,246,0.2)') : 'rgba(255,255,255,0.04)',
+                  border: `1px solid ${editForm.type===t ? (t==='primary'?'rgba(250,204,21,0.5)':'rgba(138,92,246,0.5)') : 'rgba(255,255,255,0.08)'}`,
+                  color: editForm.type===t ? (t==='primary'?'#facc15':'#a78bfa') : 'rgba(255,255,255,0.4)',
+                  fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:12, cursor:'pointer',
+                }}>
+                  {t==='primary' ? '⭐ Primary' : '📌 Secondary'}
+                </button>
+              ))}
             </div>
-            <p style={{fontSize:11,color:'rgba(255,255,255,0.4)',marginTop:3}}>{progress}%</p>
           </div>
-        )}
 
-        {msg && <div style={{color:msg.startsWith('✅')?'#4ade80':'#f87171',fontSize:13,marginBottom:12}}>{msg}</div>}
+          <div style={{ marginBottom:12 }}>
+            <label style={S.label}>Description</label>
+            <textarea style={S.textarea} value={editForm.desc}
+              onChange={e=>setEditForm(f=>({...f,desc:e.target.value}))}
+              placeholder="What this project does..."/>
+          </div>
 
-        <div style={{display:'flex',gap:10}}>
-          <button style={S.btnPrimary} onClick={handleSave} disabled={uploading}>{uploading?'Saving...':editing?'Update':'Add Project'}</button>
-          {editing && <button style={S.btnSecondary} onClick={resetForm}>Cancel</button>}
+          <div style={{ marginBottom:12 }}>
+            <label style={S.label}>Tags (comma separated)</label>
+            <input style={S.input} value={editForm.tags}
+              onChange={e=>setEditForm(f=>({...f,tags:e.target.value}))}
+              placeholder="React, Firebase, AI"/>
+          </div>
+
+          <div style={{ marginBottom:12 }}>
+            <label style={S.label}>Thumbnail Image (optional)</label>
+            <input style={{...S.input,padding:'7px 12px'}} type="file" accept="image/*"
+              onChange={e=>{const f=e.target.files[0];if(f){setThumbFile(f);setThumbPreview(URL.createObjectURL(f));}}}/>
+            {thumbPreview && <img src={thumbPreview} alt="thumb" style={{width:'100%',maxHeight:120,objectFit:'cover',borderRadius:8,marginTop:8}}/>}
+          </div>
+
+          {uploading && (
+            <div style={{ marginBottom:10 }}>
+              <div style={S.progress}><div style={{...S.progressBar,width:`${progress}%`}}/></div>
+            </div>
+          )}
+
+          <button style={S.btnPrimary} onClick={handleSave} disabled={uploading}>
+            {uploading ? `${progress}%...` : '💾 Save Changes'}
+          </button>
         </div>
-      </div>
+      )}
 
-      {/* Primary Projects */}
+      {/* Primary repos */}
       {primary.length > 0 && (
         <>
-          <h3 style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:15,color:'#facc15',marginBottom:12}}>⭐ Primary Projects</h3>
-          <div style={S.projGrid}>
-            {primary.map(p => <ProjectCard key={p.id} p={p} onEdit={handleEdit} onDelete={handleDelete}/>)}
+          <div style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:12, color:'#facc15', marginBottom:10, letterSpacing:'1px' }}>
+            ⭐ PRIMARY PROJECTS ({primary.length})
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))', gap:10, marginBottom:20 }}>
+            {primary.map(r => <RepoCard key={r.id} repo={r} saved={savedData[r.name]} onEdit={startEdit}/>)}
           </div>
         </>
       )}
 
-      {/* Secondary Projects */}
-      {secondary.length > 0 && (
-        <>
-          <h3 style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:15,color:'#a78bfa',marginBottom:12,marginTop:24}}>📌 Secondary Projects</h3>
-          <div style={S.projGrid}>
-            {secondary.map(p => <ProjectCard key={p.id} p={p} onEdit={handleEdit} onDelete={handleDelete}/>)}
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-function ProjectCard({ p, onEdit, onDelete }) {
-  return (
-    <div style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:12, overflow:'hidden' }}>
-      {p.thumbnail
-        ? <img src={p.thumbnail} alt={p.name} style={{width:'100%',height:120,objectFit:'cover'}} onError={e=>e.target.style.display='none'}/>
-        : <div style={{height:80,background:'rgba(138,92,246,0.1)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:28}}>💻</div>
-      }
-      <div style={{padding:'12px 14px'}}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}}>
-          <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:13,color:'#fff'}}>{p.name}</div>
-          <span style={{fontSize:10,padding:'2px 8px',borderRadius:10,background:p.type==='secondary'?'rgba(167,139,250,0.15)':'rgba(250,204,21,0.15)',color:p.type==='secondary'?'#a78bfa':'#facc15'}}>{p.type==='secondary'?'secondary':'primary'}</span>
-        </div>
-        <div style={{fontSize:11,color:'rgba(255,255,255,0.4)',marginBottom:10,lineHeight:1.5,overflow:'hidden',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical'}}>{p.desc}</div>
-        <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:10}}>
-          {(p.tags||[]).map(t=><span key={t} style={{fontSize:10,padding:'2px 8px',background:'rgba(138,92,246,0.15)',borderRadius:20,color:'#a78bfa'}}>{t}</span>)}
-        </div>
-        <div style={{display:'flex',gap:6}}>
-          <button style={S.btnEdit} onClick={()=>onEdit(p)}>✏️ Edit</button>
-          <button style={S.btnDelete} onClick={()=>onDelete(p)}>🗑️</button>
-        </div>
+      {/* All repos as secondary */}
+      <div style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:12, color:'rgba(255,255,255,0.4)', marginBottom:10, letterSpacing:'1px' }}>
+        📌 ALL REPOS — click to customize ({secondary.length})
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))', gap:10 }}>
+        {secondary.map(r => <RepoCard key={r.id} repo={r} saved={savedData[r.name]} onEdit={startEdit}/>)}
       </div>
     </div>
   );
 }
 
-const S = {
-  heading:{ fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:'1.5rem',color:'#fff',marginBottom:4 },
-  sub:    { color:'rgba(255,255,255,0.4)',fontSize:13,marginBottom:24 },
-  card:   { background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:16,padding:24,marginBottom:24 },
-  cardTitle:{ fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:15,color:'#a78bfa',marginBottom:16 },
-  grid2:  { display:'grid',gridTemplateColumns:'1fr 1fr',gap:14 },
-  field:  { marginBottom:14 },
-  label:  { display:'block',fontSize:12,fontWeight:600,color:'rgba(255,255,255,0.5)',marginBottom:6,fontFamily:"'Syne',sans-serif" },
-  input:  { width:'100%',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:10,padding:'11px 14px',color:'#fff',fontSize:13,outline:'none',fontFamily:"'DM Sans',sans-serif",boxSizing:'border-box' },
-  btnPrimary:{ background:'linear-gradient(135deg,#8a5cf6,#c084fc)',border:'none',borderRadius:10,padding:'11px 22px',color:'#fff',fontSize:13,fontWeight:700,fontFamily:"'Syne',sans-serif",cursor:'pointer' },
-  btnSecondary:{ background:'transparent',border:'1px solid rgba(255,255,255,0.15)',borderRadius:10,padding:'11px 22px',color:'rgba(255,255,255,0.6)',fontSize:13,fontFamily:"'Syne',sans-serif",cursor:'pointer' },
-  projGrid:{ display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))',gap:14,marginBottom:8 },
-  btnEdit:  { flex:1,background:'rgba(138,92,246,0.2)',border:'1px solid rgba(138,92,246,0.3)',borderRadius:8,padding:'5px 10px',color:'#a78bfa',fontSize:11,fontWeight:600,cursor:'pointer' },
-  btnDelete:{ background:'rgba(248,113,113,0.1)',border:'1px solid rgba(248,113,113,0.2)',borderRadius:8,padding:'5px 10px',color:'#f87171',fontSize:11,cursor:'pointer' },
-};
+function RepoCard({ repo, saved, onEdit }) {
+  const type = saved?.type || 'secondary';
+  return (
+    <div style={{
+      background:'rgba(255,255,255,0.04)',
+      border:`1px solid ${type==='primary'?'rgba(250,204,21,0.25)':'rgba(255,255,255,0.07)'}`,
+      borderRadius:12, overflow:'hidden', cursor:'pointer', transition:'all 0.2s',
+    }}
+    onMouseEnter={e=>e.currentTarget.style.borderColor='rgba(138,92,246,0.4)'}
+    onMouseLeave={e=>e.currentTarget.style.borderColor=type==='primary'?'rgba(250,204,21,0.25)':'rgba(255,255,255,0.07)'}
+    >
+      {saved?.thumbnail
+        ? <img src={saved.thumbnail} alt={repo.name} style={{width:'100%',height:80,objectFit:'cover'}}/>
+        : <div style={{height:60,background:'rgba(138,92,246,0.08)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}}>
+            {repo.language==='Python'?'🐍':repo.language==='Java'?'☕':repo.language==='Kotlin'?'📱':'💻'}
+          </div>
+      }
+      <div style={{ padding:'10px 12px' }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:4 }}>
+          <div style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:11, color:'#fff', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', flex:1 }}>{repo.name}</div>
+          <span style={{ fontSize:9, padding:'2px 6px', borderRadius:10, marginLeft:4, flexShrink:0,
+            background:type==='primary'?'rgba(250,204,21,0.15)':'rgba(138,92,246,0.1)',
+            color:type==='primary'?'#facc15':'rgba(255,255,255,0.3)',
+          }}>{type==='primary'?'⭐':'·'}</span>
+        </div>
+        {repo.language && <div style={{ fontSize:10, color:'rgba(255,255,255,0.3)', marginBottom:8 }}>{repo.language}</div>}
+        <button style={{
+          width:'100%', background:'rgba(138,92,246,0.15)',
+          border:'1px solid rgba(138,92,246,0.25)', borderRadius:7,
+          padding:'5px', color:'#a78bfa', fontSize:11, fontWeight:600,
+          fontFamily:"'Syne',sans-serif", cursor:'pointer',
+        }} onClick={() => onEdit(repo)}>✏️ Customize</button>
+      </div>
+    </div>
+  );
+}
