@@ -1,85 +1,87 @@
 // src/admin/AdminDashboard.js
 import React, { useState } from 'react';
-import { signOut } from 'firebase/auth';
-import { auth } from '../firebase';
-import PhotoManager   from './PhotoManager';
 import AboutEditor    from './AboutEditor';
 import WorkManager    from './WorkManager';
 import ContactEditor  from './ContactEditor';
+import HomeEditor     from './HomeEditor';
+import PhotoManager from './PhotoManager';
+import ServicesEditor from './ServicesEditor';
+import CVEditor       from './CVEditor';
 
 const TABS = [
-  { id:'photos',  label:'📷', full:'Photography' },
-  { id:'about',   label:'👤', full:'About' },
-  { id:'work',    label:'💼', full:'Work / Projects' },
-  { id:'contact', label:'📬', full:'Contact' },
+  { id:'home',     emoji:'🏠', label:'Home / Hero' },
+  { id:'about',    emoji:'👤', label:'About Me' },
+  { id:'work',     emoji:'💼', label:'Work / Projects' },
+  { id:'gallery',  emoji:'📷', label:'Photography' },
+  { id:'services', emoji:'⚙️', label:'Services' },
+  { id:'cv',       emoji:'📄', label:'CV / Resume' },
+  { id:'contact',  emoji:'📬', label:'Contact' },
 ];
 
-export default function AdminDashboard({ user, onClose }) {
-  const [tab, setTab] = useState('photos');
+export default function AdminDashboard({ onLock }) {
+  const [tab, setTab] = useState('home');
 
   return (
-    <div style={{ display:'flex', height:'100%', fontFamily:"'DM Sans',sans-serif" }}>
+    <div style={{display:'flex',height:'100%',overflow:'hidden',fontFamily:"'DM Sans',sans-serif"}}>
 
       {/* Sidebar */}
       <aside style={{
-        width:200, flexShrink:0,
+        width:185, flexShrink:0,
         borderRight:'1px solid rgba(255,255,255,0.06)',
-        background:'rgba(255,255,255,0.02)',
+        background:'rgba(0,0,0,0.2)',
         display:'flex', flexDirection:'column',
-        padding:'20px 12px',
+        padding:'16px 10px',
+        overflowY:'auto',
       }}>
-        <div style={{marginBottom:20}}>
-          <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:12,color:'rgba(255,255,255,0.4)',letterSpacing:'1.5px',marginBottom:4}}>SIGNED IN AS</div>
-          <div style={{fontSize:12,color:'#a78bfa',wordBreak:'break-all'}}>{user.email}</div>
+        <div style={{fontSize:10,color:'rgba(255,255,255,0.25)',letterSpacing:'2px',fontFamily:"'Syne',sans-serif",fontWeight:700,padding:'0 8px',marginBottom:10}}>
+          SECTIONS
         </div>
 
-        <nav style={{display:'flex',flexDirection:'column',gap:3,flex:1}}>
+        <nav style={{display:'flex',flexDirection:'column',gap:2,flex:1}}>
           {TABS.map(t=>(
-            <button
-              key={t.id}
-              onClick={()=>setTab(t.id)}
-              style={{
-                background: tab===t.id ? 'rgba(138,92,246,0.2)' : 'transparent',
-                border: 'none',
-                borderLeft: tab===t.id ? '2px solid #8a5cf6' : '2px solid transparent',
-                borderRadius: '0 10px 10px 0',
-                padding:'11px 14px',
-                color: tab===t.id ? '#a78bfa' : 'rgba(255,255,255,0.45)',
-                fontSize:13, fontWeight:600,
-                fontFamily:"'Syne',sans-serif",
-                cursor:'pointer', textAlign:'left',
-                transition:'all 0.2s',
-                display:'flex',alignItems:'center',gap:8,
-              }}
-              onMouseEnter={e=>{ if(tab!==t.id) e.currentTarget.style.background='rgba(255,255,255,0.04)'; }}
-              onMouseLeave={e=>{ if(tab!==t.id) e.currentTarget.style.background='transparent'; }}
+            <button key={t.id} onClick={()=>setTab(t.id)} style={{
+              background: tab===t.id ? 'rgba(138,92,246,0.18)' : 'transparent',
+              border:'none',
+              borderLeft:`2px solid ${tab===t.id?'#8a5cf6':'transparent'}`,
+              borderRadius:'0 10px 10px 0',
+              padding:'9px 12px',
+              color: tab===t.id ? '#a78bfa' : 'rgba(255,255,255,0.4)',
+              fontSize:12, fontWeight:600,
+              fontFamily:"'Syne',sans-serif",
+              cursor:'pointer', textAlign:'left',
+              transition:'all 0.15s',
+              display:'flex', alignItems:'center', gap:7,
+            }}
+            onMouseEnter={e=>{ if(tab!==t.id) e.currentTarget.style.background='rgba(255,255,255,0.04)'; }}
+            onMouseLeave={e=>{ if(tab!==t.id) e.currentTarget.style.background='transparent'; }}
             >
-              <span>{t.label}</span> {t.full}
+              <span style={{fontSize:14}}>{t.emoji}</span>
+              <span>{t.label}</span>
             </button>
           ))}
         </nav>
 
-        <button
-          onClick={()=>signOut(auth)}
-          style={{
-            background:'rgba(248,113,113,0.08)',
+        <div style={{marginTop:12,paddingTop:12,borderTop:'1px solid rgba(255,255,255,0.06)'}}>
+          <button onClick={onLock} style={{
+            width:'100%', background:'rgba(248,113,113,0.08)',
             border:'1px solid rgba(248,113,113,0.2)',
-            borderRadius:10,padding:'9px 14px',
-            color:'#f87171',fontSize:12,
-            fontFamily:"'Syne',sans-serif",fontWeight:600,
+            borderRadius:9, padding:'8px 12px',
+            color:'#f87171', fontSize:11,
+            fontFamily:"'Syne',sans-serif", fontWeight:700,
             cursor:'pointer',
-          }}
-        >
-          🚪 Sign Out
-        </button>
+          }}>🔒 Lock Panel</button>
+        </div>
       </aside>
 
-      {/* Main content */}
-      <main style={{flex:1,overflow:'auto',padding:'28px 32px'}}>
-        {tab==='photos'  && <PhotoManager />}
-        {tab==='about'   && <AboutEditor />}
-        {tab==='work'    && <WorkManager />}
-        {tab==='contact' && <ContactEditor />}
+      {/* Main */}
+      <main className="admin-panel-scroll" style={{flex:1,overflowY:'auto',padding:'22px 26px'}}>
+        {tab==='home'     && <HomeEditor />}
+        {tab==='about'    && <AboutEditor />}
+        {tab==='work'     && <WorkManager />}
+        {tab==='gallery'  && <GalleryManager />}
+        {tab==='services' && <ServicesEditor />}
+        {tab==='cv'       && <CVEditor />}
+        {tab==='contact'  && <ContactEditor />}
       </main>
     </div>
   );
