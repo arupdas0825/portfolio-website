@@ -1,188 +1,279 @@
 <div align="center">
 
+<img src="public/logo192.png" width="90" height="90" alt="AD Logo" style="border-radius:18px; margin-bottom:16px"/>
+
 <!-- Banner -->
 <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=8a5cf6&height=200&section=header&text=Arup%20Das&fontSize=70&fontColor=ffffff&fontAlignY=35&desc=AI%2FML%20Developer%20%7C%20React%20Developer%20%7C%20Photographer&descAlignY=58&descSize=18&animation=fadeIn"/>
 
-<!-- Typing SVG -->
-<img src="https://readme-typing-svg.demolab.com?font=Syne&weight=700&size=20&pause=1200&color=A78BFA&center=true&vCenter=true&width=500&height=40&lines=Building+AI-powered+digital+systems...;React+%7C+Kotlin+%7C+Python+%7C+Firebase;Open+to+Internships+%26+Collaborations+%F0%9F%9A%80" alt="Typing SVG"/>
+<h3>
+  <img src="https://readme-typing-svg.demolab.com?font=Syne&weight=700&size=20&pause=1200&color=A78BFA&center=true&vCenter=true&width=500&height=40&lines=AI+%2F+ML+Developer;React+Developer;Android+App+Developer;Open+Source+Contributor;Photographer+%26+Videographer" alt="Roles"/>
+</h3>
 
-<br/>
+<p>
+  <a href="https://arup-portfolio-seven.vercel.app/" target="_blank">
+    <img src="https://img.shields.io/badge/LIVE-arup--portfolio.vercel.app-8a5cf6?style=for-the-badge&logo=vercel&logoColor=white"/>
+  </a>
+</p>
 
-<!-- Badge row -->
-<a href="https://arup-portfolio-seven.vercel.app/" target="_blank">
-  <img src="https://img.shields.io/badge/🌐_LIVE_PORTFOLIO-arup--portfolio.vercel.app-8a5cf6?style=for-the-badge"/>
-</a>
-&nbsp;
-<a href="https://github.com/arupdas0825" target="_blank">
-  <img src="https://img.shields.io/badge/GitHub-arupdas0825-181717?style=for-the-badge&logo=github"/>
-</a>
-&nbsp;
-<a href="https://linkedin.com/in/arupdas0825" target="_blank">
-  <img src="https://img.shields.io/badge/LinkedIn-Arup_Das-0077B5?style=for-the-badge&logo=linkedin"/>
-</a>
+<p>
+  <img src="https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Firebase-Firestore-FFCA28?style=flat-square&logo=firebase&logoColor=black"/>
+  <img src="https://img.shields.io/badge/Cloudinary-Free_Storage-3448C5?style=flat-square&logo=cloudinary&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Framer_Motion-10.x-FF0080?style=flat-square&logo=framer&logoColor=white"/>
+  <img src="https://img.shields.io/badge/GitHub_REST_API-v3-181717?style=flat-square&logo=github&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Deployed-Vercel-000000?style=flat-square&logo=vercel&logoColor=white"/>
+  <img src="https://img.shields.io/badge/License-MIT-a78bfa?style=flat-square"/>
+</p>
 
-<br/><br/>
-
-<img src="https://komarev.com/ghpvc/?username=arupdas0825&style=flat-square&color=8a5cf6&label=Profile+Views"/>
-&nbsp;
-<img src="https://img.shields.io/github/stars/arupdas0825/portfolio-website?style=flat-square&color=facc15&label=Portfolio+Stars"/>
-&nbsp;
-<img src="https://img.shields.io/badge/Status-Open_to_Work-4ade80?style=flat-square"/>
+<p>
+  <a href="https://github.com/arupdas0825/portfolio-website">
+    <img src="https://img.shields.io/github/stars/arupdas0825/portfolio-website?style=flat-square&color=facc15"/>
+  </a>
+  <a href="https://github.com/arupdas0825/portfolio-website">
+    <img src="https://img.shields.io/github/last-commit/arupdas0825/portfolio-website?style=flat-square&color=4ade80"/>
+  </a>
+  <img src="https://img.shields.io/badge/PRs-welcome-8a5cf6?style=flat-square"/>
+</p>
 
 </div>
 
 ---
 
-## 🧑‍💻 About Me
-
-<table>
-<tr>
-<td width="55%">
-
-```js
-const arup = {
-  name      : "Arup Das",
-  location  : "Kolkata, West Bengal 🇮🇳",
-  portfolio : "arup-portfolio.vercel.app",
-
-  education : {
-    degree  : "B.Tech in CSE (AI/ML)",
-    college : "Brainware University, Kolkata",
-  },
-
-  currentlyBuilding : [
-    "Personal Portfolio v2.1",
-    "SwasthyaBindu — Anemia Screening App",
-  ],
-
-  currentlyLearning : [
-    "System Design",
-    "Deep Learning",
-    "Docker & DevOps",
-  ],
-
-  openTo : ["Internships", "Collaborations", "Open Source"],
-
-  askMeAbout : ["React", "Kotlin", "Python", "AI/ML"],
-
-  funFact : "I debug with console.log and I'm not sorry.",
-};
-```
-
-</td>
-<td width="45%" align="center">
-
-<img src="https://github-readme-stats.vercel.app/api?username=arupdas0825&show_icons=true&theme=tokyonight&hide_border=true&bg_color=0d0b16&title_color=a78bfa&icon_color=8a5cf6&text_color=9d8ec4&ring_color=8a5cf6" width="100%"/>
-
-<img src="https://github-readme-streak-stats.herokuapp.com/?user=arupdas0825&theme=tokyonight&hide_border=true&background=0d0b16&ring=8a5cf6&fire=c084fc&currStreakLabel=a78bfa&sideLabels=9d8ec4&dates=9d8ec4" width="100%"/>
-
-</td>
-</tr>
-</table>
+## 🗺️ Table of Contents
+- [Overview](#-overview)
+- [What's New in v3.0](#-whats-new-in-v30)
+- [Architecture](#-architecture)
+- [Tech Stack](#-tech-stack)
+- [Features](#-features)
+- [Admin CMS](#-admin-cms)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [Deployment](#-deployment)
+- [Customization](#-customization)
 
 ---
 
-## 🚀 Featured Projects
+## 🧠 Overview
 
-| Status | Project | Stack | Features | URL |
-|--------|---------|-------|----------|-----|
-| ![Live](https://img.shields.io/badge/LIVE-4ade80?style=flat-square) | **[Portfolio v2.1](https://arup-portfolio-seven.vercel.app/)** | React + GitHub API | Cinematic Particle Cursor · Liquid Glass UI · Live GitHub Stats · Blackhole Gravity | [arup-portfolio.vercel.app](https://arup-portfolio-seven.vercel.app/) |
-| ![Live](https://img.shields.io/badge/LIVE-4ade80?style=flat-square) | **[StudyTra](https://github.com/arupdas0825/studytra)** | React + Gemini AI | AI Roadmaps · Visa Guidance · Cost Breakdown · Firebase | [studytra.vercel.app](https://studytra.vercel.app/) |
-| ![Live](https://img.shields.io/badge/WIP-facc15?style=flat-square) | **[SwasthyaBindu](https://github.com/arupdas0825)** | Kotlin + Firebase | Hemoglobin Screening · OTP Auth · Camera Analysis | Android |
-| ![Live](https://img.shields.io/badge/LIVE-4ade80?style=flat-square) | **[LocalCare Finder](https://github.com/arupdas0825/LocalCare-Finder-Android)** | Kotlin + Maps API | Nearby Hospitals · Pharmacies · Blood Banks | Android |
-| ![Live](https://img.shields.io/badge/LIVE-4ade80?style=flat-square) | **[Quiz Web](https://github.com/arupdas0825/quiz-web)** | React + Firebase | Online Exam · Countdown Timer · Grade Calculation | [Demo](https://github.com/arupdas0825/quiz-web) |
+A **production-grade personal portfolio** engineered with React 18, powered by Firebase Firestore + Cloudinary, driven by the GitHub REST API, and featuring a hidden admin CMS accessible only via a secret gesture. Everything is live and self-updating — no rebuild needed to change content.
+
+---
+
+## 🆕 What's New in v3.0
+
+| Feature | Description |
+|---------|-------------|
+| 🌑 **Blackhole Animation** | Canvas-based realistic blackhole with physics — accretion disk, event horizon, photon ring. 12 tech icons orbit and get sucked in, then re-emerge |
+| 🔐 **Hidden Admin Panel** | Double-click on profile photo → password-protected CMS panel opens as 3D glass overlay |
+| 📸 **Full CMS** | Edit every section from browser — Home, About (with photo upload), Work, Gallery, Services, CV, Contact |
+| 🖼️ **Cloudinary Storage** | Free image hosting (25GB) for profile photo, project thumbnails, gallery photos |
+| 💼 **GitHub-driven Work** | Work section pulls all repos from API; customize description, type, thumbnail per repo |
+| 🌈 **Gradient Photo Border** | Animated purple→cyan gradient border on profile photo using CSS `@property` |
+
+---
+
+## 🏗️ Architecture
+
+```
+React 18 SPA — Single Page, Smooth Scroll
+│
+├─ 🌑 Home          Blackhole canvas animation · Typewriter roles
+├─ 👤 About         Animated gradient border photo · Skills · CMS-driven bio
+├─ 🧩 TechStack     Liquid glass panels · Animated chip hover
+├─ 💼 Work          GitHub API auto-fetch · README modal · Primary/Secondary
+├─ 📊 GithubStats   Live stats · Language bytes · Streak · CountUp
+├─ 📷 Photography   Cinematic grid · Side-by-side lightbox · Keyboard nav
+├─ ⚙️ Services      3D tilt cards · Liquid glass · Cursor glow
+├─ 📄 CV            Preview card · Upload via Cloudinary
+└─ 📬 Contact       Form · Social links · Firebase-stored
+         │
+         ├─ GitHub REST API v3 → repos, README, languages, stats
+         ├─ Firebase Firestore → CMS content storage
+         ├─ Cloudinary → Image uploads (free 25GB)
+         └─ Admin Panel → Double-click photo → password → edit anything
+```
 
 ---
 
 ## 🛠️ Tech Stack
 
-**Frontend**
-
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-
-**Backend & Mobile**
-
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
-![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
-
-**Database & Cloud**
-
-![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
-![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
-
-**Tools & Platforms**
-
-![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
-![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)
-![VS Code](https://img.shields.io/badge/VS_Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white)
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
-![Framer Motion](https://img.shields.io/badge/Framer_Motion-FF0080?style=for-the-badge&logo=framer&logoColor=white)
-
-**Creative**
-
-![Premiere Pro](https://img.shields.io/badge/Premiere_Pro-9999FF?style=for-the-badge&logo=adobe-premiere-pro&logoColor=white)
-![After Effects](https://img.shields.io/badge/After_Effects-9999FF?style=for-the-badge&logo=adobe-after-effects&logoColor=white)
-![Lightroom](https://img.shields.io/badge/Lightroom-31A8FF?style=for-the-badge&logo=adobe-lightroom&logoColor=white)
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **UI** | React 18 | Component architecture |
+| **Styling** | Tailwind CSS + CSS Variables | Design tokens |
+| **Animation** | Framer Motion · Canvas API | Physics, transitions |
+| **Icons** | Lucide React | SVG icon system |
+| **Fonts** | Syne · DM Sans · Orbitron | Display · Body · Headings |
+| **Data** | GitHub REST API v3 | Live repos, stats, READMEs |
+| **CMS Storage** | Firebase Firestore | Content management |
+| **Images** | Cloudinary (free) | Photo/thumbnail storage |
+| **Build** | Create React App | Webpack bundler |
+| **Hosting** | Vercel | CI/CD via GitHub |
 
 ---
 
-## 📊 GitHub Stats
+## ✨ Features
 
-<div align="center">
+### 🌑 Home — Blackhole Hero
+- **Realistic blackhole** — accretion disk, event horizon glow, photon ring, swirl arms
+- 12 tech badges orbit in elliptical paths, get gravitationally pulled in, re-emerge
+- Canvas 2D with requestAnimationFrame physics simulation
+- Typewriter cycling through 8 roles
 
-<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=arupdas0825&layout=compact&theme=tokyonight&hide_border=true&bg_color=0d0b16&title_color=a78bfa&text_color=9d8ec4" width="40%"/>
+### 👤 About — Animated Profile
+- **CSS `@property` gradient border** — purple→cyan rotating animation on profile photo
+- Double-click photo to open hidden admin panel
+- Bio and skills driven from Firebase (editable without code)
 
-<img src="https://github-profile-trophy.vercel.app/?username=arupdas0825&theme=tokyonight&no-frame=true&column=4&margin-w=8" width="55%"/>
+### 💼 Work — GitHub-Driven
+- All repos auto-fetched from GitHub API (paginated)
+- Click any card → README modal with Markdown rendering
+- Admin: set each repo as Primary ⭐ or Secondary 📌
+- Admin: add custom description, thumbnail, tech tags per repo
 
-</div>
+### 📊 GitHub Stats
+- Real-time: Stars, Forks, Repos, Followers, Contributions
+- Language breakdown by actual bytes (parallel fetch)
+- Dual-source streak calculation
+
+### 📷 Photography
+- 10 cinematic shots with editorial titles + descriptions
+- Side-by-side lightbox (image left, description right)
+- Keyboard `←` `→` `Esc` navigation
+- Managed via admin panel (Cloudinary uploads)
+
+### ⚙️ Services — 3D Tilt
+- Liquid glass cards with `perspective(900px)` tilt on hover
+- Cursor-following glow per card accent color
+- Editable from admin panel
 
 ---
 
-## 🏗️ Portfolio Architecture
+## 🔐 Admin CMS
+
+Access: **Double-click your profile photo** → enter password → full CMS opens
+
+| Section | What you can edit |
+|---------|------------------|
+| 🏠 Home | Name, bio, social links, typewriter roles, orbital stats |
+| 👤 About | Profile photo (Cloudinary upload), bio paragraphs, skill tags |
+| 💼 Work | Per-repo: Primary/Secondary, description, thumbnail, tags |
+| 📷 Gallery | Add/edit/delete photos (Cloudinary upload) |
+| ⚙️ Services | All 6 cards — name, description, color, tags |
+| 📄 CV | Upload PDF via Cloudinary, edit labels |
+| 📬 Contact | Email, location, social links, availability status |
+
+**Security:** No public URL, no email login — password-only, session-based.
+
+---
+
+## 🗂️ Project Structure
 
 ```
-React 18 SPA — Single Page, Smooth Scroll
+portfolio-website/
+├── public/
+│   ├── favicon.ico · logo192.png · logo512.png
+│   ├── arup.jpg · CV.pdf
+│   └── photos/ (1.jpg → 10.jpg)
 │
-├── 🏠 Home          Cinematic Particle Cursor · Blackhole Gravity · Orbiting Tech Icons · Typewriter
-├── 👤 About         Bio · Skill group cards · Profile photo rings  
-├── 🧩 TechStack     6 liquid glass panels · Animated chip hover
-├── 💼 Work          GitHub API auto-fetch · README modal · MD renderer
-├── 📊 GithubStats   Live stats · Language bytes · Streak · CountUp animation
-├── 📷 Photography   10 cinematic shots · Side-by-side lightbox · Keyboard nav
-├── ⚙️ Services      6 service cards · Hover glow effects
-├── 📄 CV            Preview card · View + Download buttons
-└── 📬 Contact       Form · Social links · Location info
-        │
-        └── GitHub REST API v3
-            ├── /users/{u}              → profile, avatar
-            ├── /users/{u}/repos        → all projects
-            ├── /repos/{u}/{r}/readme   → live README fetch
-            ├── /repos/{u}/{r}/languages → bytes-accurate language %
-            └── /users/{u}/events       → streak calculation
+├── src/
+│   ├── App.js              Single-page root
+│   ├── App.css             Design system + CSS variables
+│   ├── firebase.js         Firestore config (no Auth needed)
+│   │
+│   ├── BlackholeVortex.js  Canvas blackhole physics
+│   ├── Home.js             Hero section
+│   ├── About.js            Bio + animated gradient border
+│   ├── TechStack.js        Glass panels
+│   ├── Work.js             GitHub fetch + README modal
+│   ├── GithubStats.js      Live stats dashboard
+│   ├── Gallery.js          Photo grid + lightbox
+│   ├── Services.js         3D tilt cards
+│   ├── CV.js               Resume preview
+│   ├── Contact.js          Contact form
+│   ├── Navbar.js           Scroll-spy floating nav
+│   │
+│   └── admin/
+│       ├── AdminPanel.js       Password overlay (3D glass)
+│       ├── AdminDashboard.js   Sidebar + tab routing
+│       ├── adminStyles.js      Shared UI helpers
+│       ├── cloudinary.js       Cloudinary upload utility
+│       ├── HomeEditor.js
+│       ├── AboutEditor.js      + photo upload
+│       ├── WorkManager.js      GitHub repos + customize
+│       ├── PhotoManager.js     Gallery CRUD
+│       ├── ServicesEditor.js
+│       ├── CVEditor.js
+│       └── ContactEditor.js
+│
+├── .env                    DISABLE_ESLINT_PLUGIN=true · CI=false
+└── README.md
 ```
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Getting Started
 
 ```bash
 git clone https://github.com/arupdas0825/portfolio-website.git
 cd portfolio-website
 npm install
-npm start          # → localhost:3000
+npm start   # → localhost:3000
 ```
 
+**Environment:**
 ```env
-# .env
 DISABLE_ESLINT_PLUGIN=true
 CI=false
+```
+
+**Firebase setup:**
+1. Create project at [console.firebase.google.com](https://console.firebase.google.com)
+2. Enable Firestore Database
+3. Paste your config in `src/firebase.js`
+4. Set Firestore rules: `allow read, write: if true;` (for personal use)
+
+**Cloudinary setup:**
+1. Free account at [cloudinary.com](https://cloudinary.com)
+2. Create unsigned upload preset named `portfolio_unsigned`
+3. Set `CLOUD_NAME` in `src/admin/cloudinary.js`
+
+---
+
+## 🌐 Deployment
+
+```bash
+git push origin main   # Vercel auto-deploys
+```
+
+Vercel env variables:
+- `CI=false`
+- `DISABLE_ESLINT_PLUGIN=true`
+
+---
+
+## 📝 Customization
+
+```js
+// Change admin password (AdminPanel.js)
+const ADMIN_PASSWORD = 'YourPassword';
+
+// Change GitHub username (Work.js, GithubStats.js)
+const GITHUB_USERNAME = 'your-username';
+
+// Add typewriter roles (Home.js)
+const ROLES = ['Your Role Here', ...];
+```
+
+---
+
+## 🎨 Color System
+
+```css
+--purple:       #8a5cf6
+--purple-light: #a78bfa
+--accent:       #c084fc
+--bg:           #0a0812
 ```
 
 ---
@@ -198,5 +289,7 @@ MIT © 2025 [Arup Das](https://github.com/arupdas0825)
 <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=8a5cf6&height=100&section=footer"/>
 
 **⭐ Star this repo if it helped you!**
+
+[🌐 Live](https://arup-portfolio-seven.vercel.app/) · [🐙 GitHub](https://github.com/arupdas0825) · [💼 LinkedIn](https://linkedin.com/in/arupdas0825)
 
 </div>
