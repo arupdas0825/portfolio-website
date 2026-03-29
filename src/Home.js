@@ -87,7 +87,7 @@ export default function Home() {
           <span>Follow me:</span>
           {['github','linkedin','instagram'].map(k => (
             <a key={k} className="social-icon"
-              href={k==='github'?'https://github.com/arupdas0825':k==='linkedin'?'https://linkedin.com/in/arupdas0825':'https://instagram.com/arupdas0825'}
+              href={k==='github'?'https://github.com/arupdas0825':k==='linkedin'?'https://www.linkedin.com/in/arup-das-381bb02a1/':'https://www.instagram.com/_arup_official_08/'}
               target="_blank" rel="noreferrer" title={k.charAt(0).toUpperCase()+k.slice(1)}>
               <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d={IconPath[k]}/></svg>
             </a>
