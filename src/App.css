@@ -1247,8 +1247,8 @@ body::before {
   background-size: 300% 300%;
   animation: gradientMove 3s ease infinite;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
   mask-composite: exclude;
 }
 
@@ -1310,36 +1310,31 @@ body::before {
   }
 }
 
-/* Blackhole canvas size */
-.hero-visual canvas {
-  width: 380px !important;
-  height: 380px !important;
-}
+/* ===== INFINITY VORTEX — hero visual wrapper ===== */
+.hero-visual { overflow: visible !important; }
 
-@media (max-width: 768px) {
-  .about-photo-gradient-border { width: 240px; height: 280px; }
-  .hero-visual canvas { width: 280px !important; height: 280px !important; }
-}
-
-/* ===== BLACKHOLE WRAPPER — no clip ===== */
 .blackhole-wrap {
-  width: 400px;
-  height: 400px;
+  width: 480px;
+  height: 480px;
   overflow: visible;
   position: relative;
+  flex-shrink: 0;
 }
 
-.blackhole-wrap canvas {
-  width: 400px !important;
-  height: 400px !important;
-  overflow: visible;
+@media (max-width: 1100px) {
+  .blackhole-wrap { width: 400px; height: 400px; }
 }
-
-.hero-visual {
-  overflow: visible !important;
-}
-
 @media (max-width: 900px) {
-  .blackhole-wrap,
-  .blackhole-wrap canvas { width: 300px !important; height: 300px !important; }
+  .blackhole-wrap { width: 340px; height: 340px; }
+}
+@media (max-width: 640px) {
+  .blackhole-wrap { width: 300px; height: 300px; margin: 0 auto; }
+}
+@media (max-width: 400px) {
+  .blackhole-wrap { width: 260px; height: 260px; }
+}
+
+/* Orbital logo scale fix on small screens */
+@media (max-width: 768px) {
+  .about-photo-gradient-border { width: 240px; height: 280px; }
 }

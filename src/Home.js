@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import BlackholeVortex from './BlackholeVortex';
+import InfinityVortex from './InfinityVortex';
 
 const ROLES = [
   'AI / ML Developer','React Developer','Android App Developer',
@@ -87,7 +87,7 @@ export default function Home() {
           <span>Follow me:</span>
           {['github','linkedin','instagram'].map(k => (
             <a key={k} className="social-icon"
-              href={k==='github'?'https://github.com/arupdas0825':k==='linkedin'?'https://www.linkedin.com/in/arup-das-381bb02a1/':'https://www.instagram.com/_arup_official_08/'}
+              href={k==='github'?'https://github.com/arupdas0825':k==='linkedin'?'https://linkedin.com/in/arupdas0825':'https://instagram.com/arupdas0825'}
               target="_blank" rel="noreferrer" title={k.charAt(0).toUpperCase()+k.slice(1)}>
               <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d={IconPath[k]}/></svg>
             </a>
@@ -95,10 +95,10 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Blackhole — overflow visible so icons don't clip */}
+      {/* Infinity Vortex — overflow visible so orbiting icons don't clip */}
       <div className="hero-visual fade-in" ref={addRef} style={{ animationDelay:'0.2s' }}>
         <div className="blackhole-wrap">
-          <BlackholeVortex />
+          <InfinityVortex />
         </div>
       </div>
     </section>
