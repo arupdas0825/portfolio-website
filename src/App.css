@@ -1037,8 +1037,8 @@ body::before {
   flex: 1;
   overflow: hidden;
   display: -webkit-box;
-  line-clamp: 5;
   -webkit-line-clamp: 5;
+  line-clamp: 5;
   -webkit-box-orient: vertical;
 }
 
@@ -1247,8 +1247,8 @@ body::before {
   background-size: 300% 300%;
   animation: gradientMove 3s ease infinite;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
 }
 
@@ -1365,6 +1365,7 @@ body::before {
     height: 240px !important;
   }
 }
+
 
 /* ================================================
    MOBILE RESPONSIVE — Full Fix
@@ -1497,4 +1498,144 @@ body::before {
 /* Admin panel on mobile */
 @media (max-width: 640px) {
   .admin-panel-scroll { padding: 16px !important; }
+}
+
+/* ================================================
+   MOBILE CRITICAL FIX — v3.1
+   ================================================ */
+
+/* Prevent horizontal overflow causing blank screen */
+html { overflow-x: hidden !important; }
+body { overflow-x: hidden !important; min-height: 100vh !important; }
+#root { overflow-x: hidden !important; }
+.app-wrapper { overflow-x: hidden !important; min-height: 100vh !important; }
+
+/* Canvas overflow fix — critical for mobile */
+canvas { max-width: 100%; }
+.hero-visual { overflow: visible !important; }
+.blackhole-wrap { overflow: visible !important; }
+
+/* Home section mobile */
+@media (max-width: 768px) {
+  .home-section {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 90px 5% 50px !important;
+    gap: 36px !important;
+    min-height: auto !important;
+    align-items: center !important;
+  }
+  .hero-left {
+    text-align: center !important;
+    order: 1 !important;
+    width: 100% !important;
+  }
+  .hero-visual {
+    order: 2 !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+  }
+  .hero-name { font-size: clamp(2rem, 9vw, 3.5rem) !important; }
+  .hero-role-wrap { justify-content: center !important; }
+  .hero-location { justify-content: center !important; }
+  .hero-btns { justify-content: center !important; flex-wrap: wrap !important; }
+  .hero-social { justify-content: center !important; }
+  .blackhole-wrap, .blackhole-wrap canvas {
+    width: 300px !important;
+    height: 220px !important;
+  }
+}
+
+/* About section mobile */
+@media (max-width: 768px) {
+  .about-inner {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 28px !important;
+    padding: 70px 5% 50px !important;
+  }
+  .about-photo-gradient-border { width: 200px !important; height: 240px !important; }
+  .about-content { text-align: center !important; }
+  .section-line { margin: 10px auto 18px !important; }
+  .about-sub { text-align: left !important; }
+  .about-skills { grid-template-columns: 1fr !important; gap: 12px !important; }
+}
+
+/* TechStack mobile */
+@media (max-width: 640px) {
+  .techstack-grid, .tech-grid { grid-template-columns: 1fr !important; }
+}
+
+/* Work section mobile */
+@media (max-width: 640px) {
+  .projects-grid { grid-template-columns: 1fr !important; }
+  .work-filters { flex-wrap: wrap !important; justify-content: center !important; }
+}
+
+/* Gallery mobile */
+@media (max-width: 640px) {
+  .gallery-grid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+  .lightbox-content { flex-direction: column !important; max-height: 90vh !important; overflow: auto !important; }
+  .lightbox-img-wrap { max-height: 50vw !important; border-radius: 12px 12px 0 0 !important; }
+  .lightbox-info { padding: 14px !important; }
+}
+
+/* Services mobile */
+@media (max-width: 640px) {
+  .svc-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+  .svc-card { aspect-ratio: unset !important; min-height: 180px !important; padding: 18px 14px !important; }
+}
+
+/* Contact mobile */
+@media (max-width: 640px) {
+  .contact-inner { flex-direction: column !important; gap: 24px !important; }
+  .contact-inner .contact-info,
+  .contact-inner .contact-form-wrap { width: 100% !important; }
+  .form-row { flex-direction: column !important; gap: 0 !important; }
+}
+
+/* Navbar mobile */
+@media (max-width: 600px) {
+  .navbar {
+    max-width: 95vw !important;
+    gap: 1px !important;
+    padding: 5px 6px !important;
+  }
+  .nav-item {
+    padding: 6px 8px !important;
+    font-size: 0.68rem !important;
+    white-space: nowrap !important;
+  }
+  .nav-active-indicator { display: none !important; }
+}
+
+/* Section padding mobile */
+@media (max-width: 640px) {
+  .section-inner { padding: 70px 5% 50px !important; }
+  .section-title { font-size: clamp(1.7rem, 7vw, 2.5rem) !important; }
+  .page-section { min-height: auto !important; }
+}
+
+/* GithubStats mobile */
+@media (max-width: 640px) {
+  .gh-stats-grid, .stats-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+  .lang-grid, .languages-grid { grid-template-columns: 1fr !important; }
+}
+
+/* CV mobile */
+@media (max-width: 640px) {
+  .cv-inner, .cv-layout { flex-direction: column !important; align-items: center !important; gap: 20px !important; }
+}
+
+/* Footer mobile */
+@media (max-width: 640px) {
+  .site-footer {
+    flex-direction: column !important;
+    gap: 6px !important;
+    text-align: center !important;
+    padding: 16px 5% !important;
+    font-size: 0.72rem !important;
+  }
 }
