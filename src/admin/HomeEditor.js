@@ -1,7 +1,6 @@
 // src/admin/HomeEditor.js
 import React, { useState, useEffect } from 'react';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { safeGetDoc, safeSetDoc } from './Firestorehelper';
 import { S, Msg, Field } from './AdminStyles';
 
 export default function HomeEditor() {
@@ -22,15 +21,18 @@ export default function HomeEditor() {
   const [msg, setMsg] = useState('');
 
   useEffect(() => {
-    getDoc(doc(db,'siteData','home')).then(s => s.exists() && setForm(f=>({...f,...s.data()})));
+    safeGetDoc('siteData','home').then(({data}) => { if(data) setForm(f=>({...f,...data})); });
   }, []);
 
   const f = k => ({ value:form[k], onChange:e=>setForm({...form,[k]:e.target.value}) });
 
   const save = async () => {
     setSaving(true); setMsg('');
-    try { await setDoc(doc(db,'siteData','home'), form); setMsg('✅ Home section saved!'); }
-    catch(e) { setMsg('❌ '+e.message); }
+    try {
+      const {error} = await safeSetDoc('siteData','home',form);
+      if(error){setMsg(error);setSaving(false);return;}
+      setMsg('✅ Home section saved!');
+    } catch(e) { setMsg('❌ '+e.message); }
     finally { setSaving(false); }
   };
 

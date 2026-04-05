@@ -1,7 +1,6 @@
 // src/admin/AboutEditor.js
 import React, { useState, useEffect } from 'react';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { safeGetDoc, safeSetDoc } from './Firestorehelper';
 import { uploadToCloudinary } from './cloudinary';
 import { S, Msg, Field } from './AdminStyles';
 
@@ -23,16 +22,14 @@ export default function AboutEditor() {
   const [msg, setMsg]               = useState('');
 
   useEffect(() => {
-    getDoc(doc(db, 'siteData', 'about'))
-      .then(snap => {
-        if (snap.exists()) {
-          const d = snap.data();
-          setForm(f => ({ ...f, ...d }));
-          if (d.photoUrl) setPhotoPreview(d.photoUrl);
+    safeGetDoc('siteData', 'about').then(({ data, error }) => {
+        if (error) setMsg(error);
+        if (data) {
+          setForm(f => ({ ...f, ...data }));
+          if (data.photoUrl) setPhotoPreview(data.photoUrl);
         }
-      })
-      .catch(e => setMsg('❌ Load error: ' + e.message))
-      .finally(() => setLoading(false));
+        setLoading(false);
+      });
   }, []);
 
   const f = k => ({
@@ -61,7 +58,8 @@ export default function AboutEditor() {
         setUploading(false); setProgress(0);
       }
 
-      await setDoc(doc(db, 'siteData', 'about'), finalForm, { merge: true });
+      const { error } = await safeSetDoc('siteData', 'about', finalForm);
+      if (error) { setMsg(error); setSaving(false); return; }
       setMsg('✅ About saved! Refresh portfolio to see changes.');
     } catch(e) {
       setMsg('❌ Save failed: ' + e.message);

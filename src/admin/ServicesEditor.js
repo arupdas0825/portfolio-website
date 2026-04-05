@@ -1,7 +1,6 @@
 // src/admin/ServicesEditor.js
 import React, { useState, useEffect } from 'react';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { safeGetDoc, safeSetDoc } from './Firestorehelper';
 import { S, Msg, Field } from './AdminStyles';
 
 const DEFAULT_SERVICES = [
@@ -19,7 +18,7 @@ export default function ServicesEditor() {
   const [msg, setMsg] = useState('');
 
   useEffect(() => {
-    getDoc(doc(db,'siteData','services')).then(s => s.exists() && setServices(s.data().list || DEFAULT_SERVICES));
+    safeGetDoc('siteData','services').then(({data}) => { if(data) setServices(data.list || DEFAULT_SERVICES); });
   }, []);
 
   const update = (i, key, val) => {
@@ -30,8 +29,11 @@ export default function ServicesEditor() {
 
   const save = async () => {
     setSaving(true); setMsg('');
-    try { await setDoc(doc(db,'siteData','services'), { list: services }); setMsg('✅ Services saved!'); }
-    catch(e) { setMsg('❌ '+e.message); }
+    try {
+      const {error} = await safeSetDoc('siteData','services',{ list: services });
+      if(error){setMsg(error);setSaving(false);return;}
+      setMsg('✅ Services saved!');
+    } catch(e) { setMsg('❌ '+e.message); }
     finally { setSaving(false); }
   };
 

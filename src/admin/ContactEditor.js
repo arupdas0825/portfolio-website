@@ -1,18 +1,17 @@
 // src/admin/ContactEditor.js
 import React, { useState, useEffect } from 'react';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { safeGetDoc, safeSetDoc } from './Firestorehelper';
 import { S, Msg, Field } from './AdminStyles';
 
 export default function ContactEditor() {
   const [form, setForm] = useState({
-    email:'arupdas0825@gmail.com',
+    email:'dasarup0804@gmail.com',
     location:'Kolkata, West Bengal, India',
     university:'Brainware University, Kolkata',
     github:'https://github.com/arupdas0825',
     linkedin:'https://linkedin.com/in/arupdas0825',
-    facebook:'https://facebook.com/arupdas0825',
-    instagram:'https://instagram.com/arupdas0825',
+    facebook:'https://facebook.com/arupofficial08',
+    instagram:'https://instagram.com/_arup_official_08',
     availableForWork: true,
   });
   const [saving, setSaving]   = useState(false);
@@ -20,10 +19,11 @@ export default function ContactEditor() {
   const [msg, setMsg]         = useState('');
 
   useEffect(() => {
-    getDoc(doc(db,'siteData','contact'))
-      .then(snap => { if (snap.exists()) setForm(f=>({...f,...snap.data()})); })
-      .catch(e => setMsg('❌ Load error: '+e.message))
-      .finally(() => setLoading(false));
+    safeGetDoc('siteData','contact').then(({data,error}) => {
+        if(error) setMsg(error);
+        if(data) setForm(f=>({...f,...data}));
+        setLoading(false);
+      });
   }, []);
 
   const f = k => ({ value: form[k]||'', onChange: e => setForm(p=>({...p,[k]:e.target.value})) });
@@ -31,8 +31,9 @@ export default function ContactEditor() {
   const save = async () => {
     setSaving(true); setMsg('');
     try {
-      await setDoc(doc(db,'siteData','contact'), form, { merge:true });
-      setMsg('✅ Contact saved! Refresh portfolio to see changes.');
+      const {error} = await safeSetDoc('siteData','contact',form);
+      if(error){setMsg(error);setSaving(false);return;}
+      setMsg('✅ Contact saved!');
     } catch(e) { setMsg('❌ Save failed: '+e.message); }
     finally { setSaving(false); }
   };

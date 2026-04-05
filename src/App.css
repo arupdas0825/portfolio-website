@@ -1037,8 +1037,8 @@ body::before {
   flex: 1;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 5;
   line-clamp: 5;
+  -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
 }
 
@@ -1310,31 +1310,191 @@ body::before {
   }
 }
 
-/* ===== INFINITY VORTEX — hero visual wrapper ===== */
-.hero-visual { overflow: visible !important; }
-
-.blackhole-wrap {
-  width: 480px;
-  height: 480px;
-  overflow: visible;
-  position: relative;
-  flex-shrink: 0;
+/* Blackhole canvas size */
+.hero-visual canvas {
+  width: 380px !important;
+  height: 380px !important;
 }
 
-@media (max-width: 1100px) {
-  .blackhole-wrap { width: 400px; height: 400px; }
-}
-@media (max-width: 900px) {
-  .blackhole-wrap { width: 340px; height: 340px; }
-}
-@media (max-width: 640px) {
-  .blackhole-wrap { width: 300px; height: 300px; margin: 0 auto; }
-}
-@media (max-width: 400px) {
-  .blackhole-wrap { width: 260px; height: 260px; }
-}
-
-/* Orbital logo scale fix on small screens */
 @media (max-width: 768px) {
   .about-photo-gradient-border { width: 240px; height: 280px; }
+  .hero-visual canvas { width: 280px !important; height: 280px !important; }
+}
+
+/* ===== BLACKHOLE WRAPPER — no clip ===== */
+.blackhole-wrap {
+  width: 400px;
+  height: 400px;
+  overflow: visible;
+  position: relative;
+}
+
+.blackhole-wrap canvas {
+  width: 400px !important;
+  height: 400px !important;
+  overflow: visible;
+}
+
+.hero-visual {
+  overflow: visible !important;
+}
+
+@media (max-width: 900px) {
+  .blackhole-wrap,
+  .blackhole-wrap canvas { width: 300px !important; height: 300px !important; }
+}
+
+/* ===== INFINITY VORTEX WRAPPER ===== */
+.blackhole-wrap {
+  width: 440px;
+  height: 320px;
+  overflow: visible;
+  position: relative;
+}
+
+.blackhole-wrap canvas {
+  width: 440px !important;
+  height: 320px !important;
+  overflow: visible;
+}
+
+@media (max-width: 900px) {
+  .blackhole-wrap,
+  .blackhole-wrap canvas {
+    width: 320px !important;
+    height: 240px !important;
+  }
+}
+
+/* ================================================
+   MOBILE RESPONSIVE — Full Fix
+   ================================================ */
+
+/* Navbar — horizontal scroll on small screens */
+@media (max-width: 640px) {
+  .navbar {
+    top: 12px !important;
+    padding: 6px !important;
+    gap: 2px !important;
+    max-width: 96vw !important;
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    scrollbar-width: none !important;
+  }
+  .navbar::-webkit-scrollbar { display: none; }
+  .nav-item {
+    padding: 7px 10px !important;
+    font-size: 0.72rem !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+  }
+}
+
+/* Home section — stack on mobile */
+@media (max-width: 768px) {
+  .home-section {
+    grid-template-columns: 1fr !important;
+    padding: 100px 5% 40px !important;
+    gap: 40px !important;
+    text-align: center !important;
+  }
+  .hero-name { font-size: clamp(2.2rem, 10vw, 4rem) !important; }
+  .hero-role-wrap { justify-content: center !important; }
+  .hero-desc { font-size: 0.9rem !important; }
+  .hero-location { justify-content: center !important; flex-wrap: wrap !important; }
+  .hero-btns { justify-content: center !important; }
+  .hero-social { justify-content: center !important; }
+  .hero-badge { display: inline-flex !important; }
+
+  /* Infinity canvas */
+  .blackhole-wrap,
+  .blackhole-wrap canvas {
+    width: 300px !important;
+    height: 220px !important;
+  }
+  .hero-visual {
+    justify-content: center !important;
+  }
+}
+
+/* About section */
+@media (max-width: 768px) {
+  .about-inner {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+  .about-img-wrap { justify-content: center !important; }
+  .about-photo-gradient-border { width: 220px !important; height: 260px !important; }
+  .about-content .section-title,
+  .about-content .section-label { text-align: center !important; }
+  .about-content .section-line { margin: 12px auto 20px !important; }
+  .about-sub { text-align: center !important; }
+  .about-skills { grid-template-columns: 1fr !important; }
+}
+
+/* TechStack */
+@media (max-width: 640px) {
+  #techstack > div > div:last-child {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Work / Projects */
+@media (max-width: 768px) {
+  .projects-grid { grid-template-columns: 1fr !important; }
+  .work-filters { gap: 6px !important; }
+  .work-filter-btn { font-size: 0.72rem !important; padding: 6px 12px !important; }
+}
+
+/* GitHub Stats */
+@media (max-width: 768px) {
+  /* top 5 stat cards → 2 col */
+  .gh-top { grid-template-columns: 1fr !important; }
+}
+
+/* Gallery */
+@media (max-width: 640px) {
+  .gallery-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+  .lightbox-content { grid-template-columns: 1fr !important; }
+  .lightbox-img-wrap { max-height: 45vh !important; }
+  .lightbox-info { border-left: none !important; border-top: 1px solid rgba(255,255,255,0.08) !important; padding: 16px !important; }
+}
+
+/* Services */
+@media (max-width: 640px) {
+  .svc-grid { grid-template-columns: 1fr !important; }
+  .svc-card { aspect-ratio: unset !important; padding: 24px 20px !important; }
+}
+
+/* CV */
+@media (max-width: 768px) {
+  .cv-inner { grid-template-columns: 1fr !important; }
+}
+
+/* Contact */
+@media (max-width: 768px) {
+  .contact-inner { grid-template-columns: 1fr !important; gap: 32px !important; }
+  .form-row { grid-template-columns: 1fr !important; }
+}
+
+/* Footer */
+@media (max-width: 640px) {
+  .site-footer {
+    flex-direction: column !important;
+    gap: 8px !important;
+    text-align: center !important;
+    font-size: 0.75rem !important;
+    padding: 18px 5% !important;
+  }
+}
+
+/* General section padding */
+@media (max-width: 640px) {
+  .section-inner { padding: 80px 5% 50px !important; }
+  .section-title { font-size: clamp(1.8rem, 8vw, 3rem) !important; }
+}
+
+/* Admin panel on mobile */
+@media (max-width: 640px) {
+  .admin-panel-scroll { padding: 16px !important; }
 }

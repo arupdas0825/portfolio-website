@@ -1,7 +1,6 @@
 // src/admin/CVEditor.js
 import React, { useState, useEffect } from 'react';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { safeGetDoc, safeSetDoc } from './Firestorehelper';
 import { uploadToCloudinary } from './cloudinary';
 import { S, Msg, Field } from './AdminStyles';
 
@@ -14,7 +13,7 @@ export default function CVEditor() {
   const [msg, setMsg]           = useState('');
 
   useEffect(() => {
-    getDoc(doc(db,'siteData','cv')).then(s => s.exists() && setForm(f=>({...f,...s.data()})));
+    safeGetDoc('siteData','cv').then(({data}) => { if(data) setForm(f=>({...f,...data})); });
   }, []);
 
   const f = k => ({ value:form[k], onChange:e=>setForm({...form,[k]:e.target.value}) });
@@ -32,8 +31,11 @@ export default function CVEditor() {
 
   const save = async () => {
     setSaving(true); setMsg('');
-    try { await setDoc(doc(db,'siteData','cv'), form); setMsg('✅ CV section saved!'); }
-    catch(e) { setMsg('❌ '+e.message); }
+    try {
+      const {error} = await safeSetDoc('siteData','cv',form);
+      if(error){setMsg(error);setSaving(false);return;}
+      setMsg('✅ CV section saved!');
+    } catch(e) { setMsg('❌ '+e.message); }
     finally { setSaving(false); }
   };
 
