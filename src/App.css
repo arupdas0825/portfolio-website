@@ -2119,7 +2119,7 @@ canvas { max-width: 100%; }
     transform: none !important;
   }
   
-  .blob, .noise-overlay, body::before {
+  .blob, .noise-overlay, body::before, canvas, #main-cursor, #cursor-particles, .background-effect {
     display: none !important;
   }
 }

@@ -28,27 +28,29 @@ export default function App() {
       <div className="blob blob-3" />
 
 
-      <Navbar />
+      <div style={{ position: 'relative', zIndex: 10 }}>
+        <Navbar />
 
-      <div id="home"><Home /></div>
-      {/* Pass toggle fn to About so double-click on photo opens admin */}
-      <div id="about"><About onPhotoDoubleClick={() => setAdminOpen(true)} /></div>
-      <div id="techstack"><TechStack /></div>
-      <div id="work"><Work /></div>
-      <div id="publications"><Publications /></div>
-      <div id="githubstats"><GithubStats /></div>
-      <div id="gallery"><Gallery /></div>
-      <div id="services"><Services /></div>
-      <div id="cv"><CV /></div>
-      <div id="contact"><Contact /></div>
+        <div id="home"><Home /></div>
+        {/* Pass toggle fn to About so double-click on photo opens admin */}
+        <div id="about"><About onPhotoDoubleClick={() => setAdminOpen(true)} /></div>
+        <div id="techstack"><TechStack /></div>
+        <div id="work"><Work /></div>
+        <div id="publications"><Publications /></div>
+        <div id="githubstats"><GithubStats /></div>
+        <div id="gallery"><Gallery /></div>
+        <div id="services"><Services /></div>
+        <div id="cv"><CV /></div>
+        <div id="contact"><Contact /></div>
 
-      <footer className="site-footer">
-        <span>© 2025 <a href="/">Arup Das</a>. Built with 💜 React & Tailwind.</span>
-        <span>B.Tech CSE (AIML) · Brainware University · Kolkata</span>
-      </footer>
+        <footer className="site-footer">
+          <span>© 2025 <a href="/">Arup Das</a>. Built with 💜 React & Tailwind.</span>
+          <span>B.Tech CSE (AIML) · Brainware University · Kolkata</span>
+        </footer>
 
-      {/* Hidden Admin Panel — triggered by photo double-click */}
-      {adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
+        {/* Hidden Admin Panel — triggered by photo double-click */}
+        {adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
+      </div>
     </div>
   );
 }
