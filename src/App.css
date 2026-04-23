@@ -21,9 +21,8 @@
 html { scroll-behavior: smooth; }
 body {
   font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
+  background: #0a0a0a;
   color: var(--text);
-  overflow-x: clip; /* clip is safer than hidden for mobile rendering */
 }
 a { text-decoration: none; color: inherit; }
 
@@ -1505,10 +1504,11 @@ body::before {
    ================================================ */
 
 /* Prevent horizontal overflow causing blank screen */
-html { overflow-x: clip !important; }
-body { overflow-x: clip !important; min-height: 100dvh !important; }
-#root { overflow-x: clip !important; }
-.app-wrapper { overflow-x: clip !important; min-height: 100dvh !important; }
+html, body, #root, .app-wrapper {
+  min-height: 100%;
+  height: auto;
+  overflow-x: hidden;
+}
 
 /* Canvas overflow fix — critical for mobile */
 canvas { max-width: 100%; }
@@ -1879,6 +1879,7 @@ canvas { max-width: 100%; }
   color: rgba(255, 255, 255, 0.6);
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2108,7 +2109,18 @@ canvas { max-width: 100%; }
    ========================================================================== */
 @media (max-width: 768px) {
   * {
-    animation-duration: 0.3s !important;
+    animation-duration: 0.001s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.001s !important;
+  }
+  
+  .fade-in {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  
+  .blob, .noise-overlay, body::before {
+    display: none !important;
   }
 }
 
