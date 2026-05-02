@@ -61,12 +61,22 @@ export default function OrbitingLogos({
 
   const baseAngles = useMemo(
     () => techs.map((_, i) => (i / N) * Math.PI * 2),
-    [N, techs]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [N]
   );
 
   const [positions, setPositions] = useState(() =>
     techs.map((_, i) => orbitPosition(baseAngles[i], RX, RY))
   );
+
+  // ── FIX: when isMobile flips, techs.length changes (12 ↔ 8).
+  // Reset positions immediately so sortedIndices never exceeds techs.length.
+  const prevTechsLenRef = useRef(N);
+  if (prevTechsLenRef.current !== N) {
+    prevTechsLenRef.current = N;
+    // Synchronous state reset during render — safe in React when guarded by ref
+    setPositions(techs.map((_, i) => orbitPosition(baseAngles[i], RX, RY)));
+  }
 
   const [hoveredIdx, setHoveredIdx] = useState(null);
 
@@ -124,33 +134,46 @@ export default function OrbitingLogos({
   const handleHoverOut = useCallback(() => setHoveredIdx(null), []);
 
   // Sort by depth: back logos render first (under front logos)
+  // SAFETY: bound to techs.length — positions may briefly be stale when isMobile flips
+  const safeLen = Math.min(positions.length, N);
   const sortedIndices = useMemo(
-    () => [...positions.keys()].sort((a, b) => positions[a].depth - positions[b].depth),
-    [positions]
+    () =>
+      Array.from({ length: safeLen }, (_, i) => i)
+        .sort((a, b) => (positions[a]?.depth ?? 0) - (positions[b]?.depth ?? 0)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [positions, safeLen]
   );
 
   return (
     <>
-      {sortedIndices.map((i) => (
-        <LogoItem
-          key={techs[i].label}
-          Icon={techs[i].Icon}
-          label={techs[i].label}
-          color={techs[i].color}
-          x={positions[i].x}
-          y={positions[i].y}
-          depth={positions[i].depth}
-          baseScale={positions[i].scale}
-          isAnyHovered={hoveredIdx !== null}
-          isHovered={hoveredIdx === i}
-          onHoverIn={() => handleHoverIn(i)}
-          onHoverOut={handleHoverOut}
-          magnetX={magnetOffsets[i].mx}
-          magnetY={magnetOffsets[i].my}
-          containerW={containerW}
-          containerH={containerH}
-        />
-      ))}
+      {sortedIndices.map((i) => {
+        // Guard: skip if either array is transiently out of sync
+        const tech = techs[i];
+        const pos  = positions[i];
+        const mag  = magnetOffsets[i];
+        if (!tech || !pos || !mag) return null;
+
+        return (
+          <LogoItem
+            key={tech.label}
+            Icon={tech.Icon}
+            label={tech.label}
+            color={tech.color}
+            x={pos.x}
+            y={pos.y}
+            depth={pos.depth}
+            baseScale={pos.scale}
+            isAnyHovered={hoveredIdx !== null}
+            isHovered={hoveredIdx === i}
+            onHoverIn={() => handleHoverIn(i)}
+            onHoverOut={handleHoverOut}
+            magnetX={mag.mx}
+            magnetY={mag.my}
+            containerW={containerW}
+            containerH={containerH}
+          />
+        );
+      })}
     </>
   );
 }
