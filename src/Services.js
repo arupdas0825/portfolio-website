@@ -1,11 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// IS_TOUCH — disable tilt on touch devices (no hover, wasted GPU)
 const IS_TOUCH = typeof window !== 'undefined' &&
   (window.matchMedia('(pointer: coarse)').matches ||
    'ontouchstart' in window ||
@@ -75,25 +74,26 @@ const services = [
   },
 ];
 
-/* ── 3D tilt card using Framer Motion spring ─────────────────────────────── */
 function ServiceCard({ service, index }) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  // Spring-smoothed rotation
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]), { stiffness: 200, damping: 20 });
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]), { stiffness: 200, damping: 20 });
+  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [15, -15]), { stiffness: 150, damping: 25 });
+  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-15, 15]), { stiffness: 150, damping: 25 });
+
+  // Specular shine movement
+  const shineX = useTransform(x, [-0.5, 0.5], ["0%", "100%"]);
+  const shineY = useTransform(y, [-0.5, 0.5], ["0%", "100%"]);
 
   const handleMouseMove = !IS_TOUCH ? (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
     x.set((e.clientX - rect.left) / rect.width - 0.5);
-    y.set((e.clientY - rect.top)  / rect.height - 0.5);
+    y.set((e.clientY - rect.top) / rect.height - 0.5);
 
-    // Cursor glow follow
     const glow = e.currentTarget.querySelector('.svc-glow');
     if (glow) {
       glow.style.left = (e.clientX - rect.left) + 'px';
-      glow.style.top  = (e.clientY - rect.top)  + 'px';
+      glow.style.top = (e.clientY - rect.top) + 'px';
       glow.style.opacity = '1';
     }
   } : undefined;
@@ -108,43 +108,64 @@ function ServiceCard({ service, index }) {
   return (
     <motion.div
       className="svc-card"
-      style={IS_TOUCH ? {} : { rotateX, rotateY, transformPerspective: 900 }}
+      style={IS_TOUCH ? {} : { 
+        rotateX, 
+        rotateY, 
+        transformStyle: 'preserve-3d',
+        perspective: '1200px'
+      }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      whileHover={IS_TOUCH ? {} : { scale: 1.02 }}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.5, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
     >
+      {/* Specular Shine Overlay */}
+      <motion.div 
+        className="svc-shine"
+        style={{
+          background: `radial-gradient(circle at ${shineX} ${shineY}, rgba(255,255,255,0.12) 0%, transparent 80%)`,
+          position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none'
+        }}
+      />
+
       {/* Cursor glow */}
-      <div className="svc-glow" style={{ background: `radial-gradient(circle 90px, ${service.color}22, transparent)` }} />
+      <div className="svc-glow" style={{ background: `radial-gradient(circle 120px, ${service.color}22, transparent)` }} />
 
-      {/* Top accent */}
-      <div className="svc-top-line" style={{ background: `linear-gradient(90deg, transparent, ${service.color}, transparent)` }} />
+      {/* 3D Layered Content */}
+      <div className="svc-inner-content" style={{ transformStyle: 'preserve-3d' }}>
+        <motion.div 
+          className="svc-icon" 
+          style={{ 
+            background: `${service.color}14`, 
+            border: `1px solid ${service.color}28`, 
+            color: service.color,
+            transform: 'translateZ(60px)'
+          }}
+        >
+          {service.icon}
+        </motion.div>
 
-      {/* Icon */}
-      <div className="svc-icon" style={{ background: `${service.color}14`, border: `1px solid ${service.color}28`, color: service.color }}>
-        {service.icon}
+        <motion.div className="svc-name" style={{ transform: 'translateZ(40px)' }}>
+          {service.name}
+        </motion.div>
+
+        <motion.div className="svc-desc" style={{ transform: 'translateZ(20px)' }}>
+          {service.desc}
+        </motion.div>
       </div>
 
-      {/* Title */}
-      <div className="svc-name">{service.name}</div>
-
-      {/* Desc */}
-      <div className="svc-desc">{service.desc}</div>
-
-      {/* Bottom line */}
       <div className="svc-bottom-line" style={{ background: `linear-gradient(90deg, ${service.color}bb, transparent)` }} />
     </motion.div>
   );
 }
 
-/* ── Section ─────────────────────────────────────────────────────────────── */
 export default function Services() {
   const titleRef = useRef(null);
+  const sectionRef = useRef(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
-  // GSAP ScrollTrigger on heading
   useEffect(() => {
     if (!titleRef.current) return;
     gsap.fromTo(titleRef.current,
@@ -161,9 +182,39 @@ export default function Services() {
     );
   }, []);
 
+  const handleGlobalMouseMove = (e) => {
+    if (IS_TOUCH) return;
+    const rect = sectionRef.current.getBoundingClientRect();
+    setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+
   return (
-    <section id="services" className="page-section">
-      <div className="section-inner">
+    <section 
+      id="services" 
+      className="page-section" 
+      ref={sectionRef}
+      onMouseMove={handleGlobalMouseMove}
+      style={{ position: 'relative', overflow: 'hidden' }}
+    >
+      {/* Section-wide Spotlight Background */}
+      {!IS_TOUCH && (
+        <div 
+          className="services-spotlight"
+          style={{
+            position: 'absolute',
+            left: mousePos.x,
+            top: mousePos.y,
+            width: '600px',
+            height: '600px',
+            background: 'radial-gradient(circle, rgba(138,92,246,0.04) 0%, transparent 70%)',
+            transform: 'translate(-50%, -50%)',
+            pointerEvents: 'none',
+            zIndex: 0
+          }}
+        />
+      )}
+
+      <div className="section-inner" style={{ position: 'relative', zIndex: 1 }}>
         <span className="section-label">✦ WHAT I OFFER ✦</span>
         <h2 className="section-title" ref={titleRef}>Features &amp; <span>Services</span></h2>
         <div className="section-line" />
