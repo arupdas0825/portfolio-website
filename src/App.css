@@ -1,4 +1,347 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=Share+Tech+Mono&display=swap');
+
+/* ═══════════════════════════════════════════════════════════
+   WELCOME SCREEN  +  MAINTENANCE GATE  — Cyberpunk style
+   Shared utilities used by both screens are prefixed ws-
+   Maintenance-only classes are prefixed mg-
+═══════════════════════════════════════════════════════════ */
+
+/* ── Root fullscreen container ── */
+.ws-root, .mg-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  /* Dark gradient — NOT pure black */
+  background: linear-gradient(135deg, #050813 0%, #0a0520 50%, #080d1a 100%);
+}
+
+/* Fade-in / out transitions */
+.ws-enter { animation: ws-fadein 0.45s ease forwards; }
+.ws-exit  { animation: ws-fadeout 0.50s ease forwards; }
+@keyframes ws-fadein  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ws-fadeout { from { opacity: 1; } to { opacity: 0; } }
+
+/* ── Grid background ── */
+.ws-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(138,92,246,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(138,92,246,0.06) 1px, transparent 1px);
+  background-size: 44px 44px;
+  animation: ws-grid-drift 18s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes ws-grid-drift {
+  from { background-position: 0 0; }
+  to   { background-position: 44px 44px; }
+}
+
+/* ── Scanlines ── */
+.ws-scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0,0,0,0.07) 3px,
+    rgba(0,0,0,0.07) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+  animation: ws-scan-move 8s linear infinite;
+}
+@keyframes ws-scan-move {
+  from { background-position: 0 0; }
+  to   { background-position: 0 100px; }
+}
+
+/* ── Corner brackets ── */
+.ws-corner {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  pointer-events: none;
+  z-index: 2;
+}
+.ws-corner-tl { top: 20px;    left: 20px;    border-top: 2px solid #8a5cf6; border-left: 2px solid #8a5cf6; }
+.ws-corner-tr { top: 20px;    right: 20px;   border-top: 2px solid #22d3ee; border-right: 2px solid #22d3ee; }
+.ws-corner-bl { bottom: 20px; left: 20px;    border-bottom: 2px solid #22d3ee; border-left: 2px solid #22d3ee; }
+.ws-corner-br { bottom: 20px; right: 20px;   border-bottom: 2px solid #8a5cf6; border-right: 2px solid #8a5cf6; }
+
+/* ── Centred content panel ── */
+.ws-center, .mg-center {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 24px;
+  padding: 0 24px;
+  max-width: 520px;
+  width: 100%;
+}
+
+/* ── Logo mark ── */
+.ws-logo {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+}
+.ws-logo-bracket { color: #22d3ee; }
+.ws-logo-text    { color: #a78bfa; }
+
+/* ── Terminal panel ── */
+.ws-terminal, .mg-term-body {
+  width: 100%;
+  max-width: 440px;
+  background: rgba(6, 3, 20, 0.85);
+  border: 1px solid rgba(138,92,246,0.35);
+  border-radius: 10px;
+  padding: 18px 22px;
+  text-align: left;
+  box-shadow: 0 0 0 1px rgba(138,92,246,0.08) inset,
+              0 0 40px rgba(138,92,246,0.12);
+  position: relative;
+  overflow: hidden;
+}
+.ws-terminal::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(138,92,246,0.7), transparent);
+}
+
+/* ── Terminal lines ── */
+.ws-line, .mg-line {
+  font-size: 0.85rem;
+  color: rgba(167,139,250,0.0);
+  line-height: 2;
+  transition: color 0.25s ease, opacity 0.25s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ws-line-visible { color: rgba(167,139,250,0.80); }
+.ws-line-hl      { color: #22d3ee !important; font-weight: 700; font-size: 0.92rem; }
+
+/* ── Blinking cursor ── */
+.ws-cursor {
+  display: inline-block;
+  color: #8a5cf6;
+  animation: ws-blink 0.9s step-end infinite;
+  margin-left: 2px;
+}
+@keyframes ws-blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ── CTA button ── */
+.ws-btn-wrap, .mg-btn-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+  pointer-events: none;
+}
+.ws-btn-visible, .mg-btn-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.ws-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #7c3aed, #2563eb);
+  color: #fff;
+  border: none;
+  padding: 14px 34px;
+  border-radius: 50px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  box-shadow: 0 0 28px rgba(124,58,237,0.5), 0 0 0 1px rgba(124,58,237,0.3);
+  transition: box-shadow 0.25s, transform 0.18s;
+}
+.ws-btn:hover {
+  box-shadow: 0 0 48px rgba(34,211,238,0.45), 0 0 0 1px rgba(34,211,238,0.4);
+  transform: scale(1.04);
+}
+.ws-btn-arrow { font-size: 1.1em; transition: transform 0.2s; }
+.ws-btn:hover .ws-btn-arrow { transform: translateX(4px); }
+
+.ws-skip-hint {
+  font-size: 0.72rem;
+  color: rgba(167,139,250,0.40);
+  margin: 0;
+  font-family: 'Share Tech Mono', monospace;
+}
+.ws-skip-hint kbd {
+  background: rgba(138,92,246,0.15);
+  border: 1px solid rgba(138,92,246,0.3);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 0.68rem;
+  color: rgba(167,139,250,0.70);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MAINTENANCE GATE extras
+═══════════════════════════════════════════════════════════ */
+.mg-root { cursor: default; }
+
+/* Spinning cog icon */
+.mg-icon {
+  position: relative;
+  width: 68px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mg-icon-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: #8a5cf6;
+  border-right-color: #22d3ee;
+  animation: mg-spin 2.2s linear infinite;
+}
+@keyframes mg-spin { to { transform: rotate(360deg); } }
+.mg-icon-inner {
+  font-size: 1.8rem;
+  color: #a78bfa;
+  animation: mg-spin 6s linear infinite reverse;
+}
+
+.mg-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+.mg-subtitle {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.88rem;
+  color: #f59e0b;
+  margin: -12px 0 0;
+  letter-spacing: 0.08em;
+}
+
+/* Terminal with title bar */
+.mg-terminal {
+  width: 100%;
+  max-width: 460px;
+  background: rgba(6, 3, 20, 0.90);
+  border: 1px solid rgba(138,92,246,0.35);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(138,92,246,0.14);
+}
+.mg-term-bar {
+  background: rgba(20, 12, 40, 0.95);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid rgba(138,92,246,0.18);
+}
+.mg-term-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.mg-term-title {
+  flex: 1;
+  text-align: center;
+  font-size: 11px;
+  color: rgba(167,139,250,0.45);
+  font-family: 'Share Tech Mono', monospace;
+}
+.mg-term-body {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 16px 20px;
+}
+.mg-term-body::before { display: none; }
+
+.mg-line         { color: rgba(167,139,250,0.0);  }
+.mg-line-visible { color: rgba(167,139,250,0.80); }
+.mg-line-warn.mg-line-visible { color: #f59e0b; font-weight: 700; }
+
+/* Bypass button — amber/orange toned */
+.mg-bypass-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #d97706, #9333ea);
+  color: #fff;
+  border: none;
+  padding: 14px 34px;
+  border-radius: 50px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  box-shadow: 0 0 28px rgba(217,119,6,0.45), 0 0 0 1px rgba(217,119,6,0.3);
+  transition: box-shadow 0.25s, transform 0.18s;
+}
+.mg-bypass-btn:hover {
+  box-shadow: 0 0 48px rgba(147,51,234,0.5), 0 0 0 1px rgba(147,51,234,0.4);
+  transform: scale(1.04);
+}
+
+/* Hidden secret dot — top-right area, 24×24, transparent */
+.mg-secret-dot {
+  position: fixed;
+  top: 16px; right: 16px;
+  width: 24px; height: 24px;
+  background: transparent;
+  border: none;
+  cursor: default;
+  z-index: 9999;
+  border-radius: 50%;
+  /* Barely visible on careful inspection */
+  box-shadow: 0 0 0 1px rgba(34,211,238,0.12);
+  transition: box-shadow 0.2s;
+}
+.mg-secret-dot:hover {
+  box-shadow: 0 0 0 2px rgba(34,211,238,0.45);
+  cursor: pointer;
+}
+
+/* ── Mobile adjustments ── */
+@media (max-width: 600px) {
+  .ws-logo        { font-size: 1.8rem; }
+  .mg-title       { font-size: 1.5rem; }
+  .ws-terminal, .mg-terminal { padding: 14px 16px; }
+  .ws-line, .mg-line { font-size: 0.78rem; }
+  .ws-corner      { width: 20px; height: 20px; }
+  .ws-grid        { background-size: 28px 28px; }
+}
+
+
 
 /* ===== CSS VARIABLES ===== */
 :root {

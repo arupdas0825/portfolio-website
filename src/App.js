@@ -14,13 +14,16 @@ import Contact        from './Contact';
 import AdminPanel     from './admin/AdminPanel';
 import CustomCursor   from './CustomCursor';
 import ThreeBackground from './components/ThreeBackground';
-import WorkPage       from './WorkPage';
+import WorkPage        from './WorkPage';
+import WelcomeScreen   from './WelcomeScreen';
+import MaintenanceGate, { MAINTENANCE_MODE } from './MaintenanceGate';
 import './App.css';
 
 const IS_TOUCH = typeof window !== 'undefined' &&
   (window.matchMedia('(pointer: coarse)').matches ||
    'ontouchstart' in window ||
    navigator.maxTouchPoints > 0);
+
 
 function PortfolioHome({ onAdminOpen }) {
   return (
@@ -46,7 +49,25 @@ function PortfolioHome({ onAdminOpen }) {
 
 export default function App() {
   const [adminOpen, setAdminOpen] = useState(false);
+  // 'welcome' | 'maintenance' | 'portfolio'
+  const [stage, setStage] = useState('welcome');
 
+  const handleWelcomeDone = () => {
+    setStage(MAINTENANCE_MODE ? 'maintenance' : 'portfolio');
+  };
+  const handleBypass = () => setStage('portfolio');
+
+  /* ── Stage: Welcome intro ── */
+  if (stage === 'welcome') {
+    return <WelcomeScreen onEnter={handleWelcomeDone} />;
+  }
+
+  /* ── Stage: Maintenance gate ── */
+  if (stage === 'maintenance') {
+    return <MaintenanceGate onBypass={handleBypass} />;
+  }
+
+  /* ── Stage: Main portfolio ── */
   return (
     <BrowserRouter>
       <div className="app-wrapper">
