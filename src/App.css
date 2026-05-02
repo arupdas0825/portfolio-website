@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;700&display=swap');
 
 /* ═══════════════════════════════════════════════════════════
    WELCOME SCREEN  +  MAINTENANCE GATE  — Cyberpunk style
@@ -565,10 +565,10 @@ body::before {
 /* ── 3D canvas wrapper ── */
 .hero3d-wrap {
   width: 100%;
-  height: 560px;
+  height: 600px;
   position: relative;
   overflow: visible;
-  filter: drop-shadow(0 28px 56px rgba(138, 92, 246, 0.20));
+  /* Use box-shadow on the inner canvas if needed, but avoid filter:drop-shadow on the wrapper as it can cause blur */
 }
 /* R3F injects a div + canvas — both must fill and stay visible */
 .hero3d-wrap > div {

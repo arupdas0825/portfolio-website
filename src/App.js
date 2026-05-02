@@ -63,36 +63,45 @@ export default function App() {
   };
   const handleBypass = () => setStage('portfolio');
 
-  /* ── Stage: Welcome intro ── */
-  if (stage === 'welcome') {
-    return <WelcomeScreen onEnter={handleWelcomeDone} />;
-  }
-
-  /* ── Stage: Maintenance gate ── */
-  if (stage === 'maintenance') {
-    return <MaintenanceGate onBypass={handleBypass} />;
-  }
-
-
-  /* ── Stage: Main portfolio ── */
   return (
     <BrowserRouter>
-      <div className="app-wrapper">
-        <ThreeBackground />
-        <div className="blob blob-1" />
-        <div className="blob blob-2" />
-        <div className="blob blob-3" />
-        {!IS_TOUCH && <CustomCursor />}
+      <div className="app-container" style={{ position: 'relative', width: '100%', height: '100%' }}>
+        
+        {/* ── STAGE 1: Welcome Intro (Overlay) ── */}
+        {stage === 'welcome' && (
+          <WelcomeScreen onEnter={handleWelcomeDone} />
+        )}
 
-        <div style={{ position: 'relative', zIndex: 10 }}>
-          <Routes>
-            <Route
-              path="/"
-              element={<PortfolioHome onAdminOpen={() => setAdminOpen(true)} />}
-            />
-            <Route path="/work" element={<WorkPage />} />
-          </Routes>
-          {adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
+        {/* ── STAGE 2: Maintenance Gate (Overlay) ── */}
+        {stage === 'maintenance' && (
+          <MaintenanceGate onBypass={handleBypass} />
+        )}
+
+        {/* ── STAGE 3: Main Portfolio (Persistent) ── */}
+        {/* We keep this mounted ALWAYS to prevent 3D canvas remount/shrink issues.
+            Visibility is controlled via z-index or opacity if needed, 
+            but here it stays behind the fixed overlays. */}
+        <div className="app-wrapper" style={{ 
+          visibility: stage === 'portfolio' ? 'visible' : 'hidden',
+          opacity: stage === 'portfolio' ? 1 : 0,
+          transition: 'opacity 0.8s ease-in-out'
+        }}>
+          <ThreeBackground />
+          <div className="blob blob-1" />
+          <div className="blob blob-2" />
+          <div className="blob blob-3" />
+          {!IS_TOUCH && <CustomCursor />}
+
+          <div style={{ position: 'relative', zIndex: 10 }}>
+            <Routes>
+              <Route
+                path="/"
+                element={<PortfolioHome onAdminOpen={() => setAdminOpen(true)} />}
+              />
+              <Route path="/work" element={<WorkPage />} />
+            </Routes>
+            {adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
+          </div>
         </div>
       </div>
     </BrowserRouter>
