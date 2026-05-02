@@ -49,10 +49,16 @@ function PortfolioHome({ onAdminOpen }) {
 
 export default function App() {
   const [adminOpen, setAdminOpen] = useState(false);
-  // 'welcome' | 'maintenance' | 'portfolio'
-  const [stage, setStage] = useState('welcome');
+
+  // Skip welcome if already seen this session (refresh-safe)
+  const [stage, setStage] = useState(() => {
+    const seen = sessionStorage.getItem('seenWelcome');
+    if (seen) return MAINTENANCE_MODE ? 'maintenance' : 'portfolio';
+    return 'welcome';
+  });
 
   const handleWelcomeDone = () => {
+    sessionStorage.setItem('seenWelcome', 'true');
     setStage(MAINTENANCE_MODE ? 'maintenance' : 'portfolio');
   };
   const handleBypass = () => setStage('portfolio');
@@ -66,6 +72,7 @@ export default function App() {
   if (stage === 'maintenance') {
     return <MaintenanceGate onBypass={handleBypass} />;
   }
+
 
   /* ── Stage: Main portfolio ── */
   return (
