@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { LucideExternalLink, LucideGithub, LucideStar, LucideGitFork, LucideX, LucideFileText, LucideLoader } from 'lucide-react';
+import { LucideExternalLink, LucideGithub, LucideStar, LucideGitFork, LucideX, LucideFileText, LucideLoader, LucideArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+
+const MOBILE_LIMIT = 4;
+const isMobileDevice = () => typeof window !== 'undefined' && window.innerWidth < 768;
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -406,6 +410,15 @@ const Work = () => {
   const [filter, setFilter] = useState('All');
   const [languages, setLanguages] = useState(['All']);
   const [selected, setSelected] = useState(null);
+  const [isMobile, setIsMobile] = useState(isMobileDevice);
+  const navigate = useNavigate();
+
+  // Track viewport changes
+  useEffect(() => {
+    const onResize = () => setIsMobile(isMobileDevice());
+    window.addEventListener('resize', onResize, { passive: true });
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   // GSAP ScrollTrigger on heading
   useEffect(() => {
@@ -486,6 +499,9 @@ const Work = () => {
 
   const addRef = el => { if (el && !fadeRefs.current.includes(el)) fadeRefs.current.push(el); };
   const filtered = filter === 'All' ? repos : repos.filter(r => r.language === filter);
+  // On mobile: cap at MOBILE_LIMIT cards in the homepage section
+  const visibleRepos = isMobile ? filtered.slice(0, MOBILE_LIMIT) : filtered;
+  const hasMore = isMobile && filtered.length > MOBILE_LIMIT;
 
   return (
     <section id="work" className="page-section">
@@ -497,8 +513,8 @@ const Work = () => {
           All my GitHub projects — live from the API. Click any card to read the README.
         </p>
 
-        {/* Filter pills */}
-        {!loading && (
+        {/* Filter pills — hidden on mobile to keep it clean */}
+        {!loading && !isMobile && (
           <div className="work-filters fade-in" ref={addRef}>
             {languages.map(lang => (
               <button key={lang} className={`work-filter-btn ${filter === lang ? 'active' : ''}`} onClick={() => setFilter(lang)}>
@@ -522,7 +538,7 @@ const Work = () => {
         {!loading && (
           <>
             <div className="projects-grid">
-              {filtered.map((repo, idx) => (
+              {visibleRepos.map((repo, idx) => (
                 <motion.div
                   key={repo.id}
                   className="project-card fade-in"
@@ -538,7 +554,6 @@ const Work = () => {
                       <span><LucideStar size={11}/> {repo.stargazers_count}</span>
                       <span><LucideGitFork size={11}/> {repo.forks_count}</span>
                     </div>
-                    {/* README hint */}
                     <div style={{
                       position:'absolute', bottom:10, left:12,
                       display:'flex', alignItems:'center', gap:5,
@@ -578,11 +593,33 @@ const Work = () => {
               <p style={{ textAlign:'center', color:'var(--text-muted)', marginTop:32 }}>No repos found for this language.</p>
             )}
 
-            <div className="work-view-all fade-in" ref={addRef}>
-              <a href={`https://github.com/${GITHUB_USERNAME}?tab=repositories`} target="_blank" rel="noreferrer" className="btn-secondary">
-                <LucideGithub size={16}/> View All on GitHub
-              </a>
-            </div>
+            {/* ── Mobile CTA: See More Work ── */}
+            {hasMore && (
+              <div className="work-see-more fade-in" ref={addRef}>
+                <motion.button
+                  className="work-see-more-btn"
+                  onClick={() => navigate('/work')}
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                >
+                  See More Work
+                  <LucideArrowRight size={16} />
+                </motion.button>
+                <p className="work-see-more-hint">
+                  {filtered.length - MOBILE_LIMIT} more projects available
+                </p>
+              </div>
+            )}
+
+            {/* Desktop: View All on GitHub */}
+            {!isMobile && (
+              <div className="work-view-all fade-in" ref={addRef}>
+                <a href={`https://github.com/${GITHUB_USERNAME}?tab=repositories`} target="_blank" rel="noreferrer" className="btn-secondary">
+                  <LucideGithub size={16}/> View All on GitHub
+                </a>
+              </div>
+            )}
           </>
         )}
       </div>
