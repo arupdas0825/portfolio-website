@@ -26,14 +26,14 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* Lenis handles smooth scrolling; native scroll-behavior conflicts with it */
 }
 
 body {
   font-family: 'DM Sans', sans-serif;
   background: var(--bg);
   color: var(--text);
-  overflow-x: hidden;
+  /* overflow-x: hidden on body breaks iOS native momentum scrolling */
 }
 
 /* Custom Scrollbar */
@@ -48,4 +48,23 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--purple);
   border-radius: 3px;
+}
+
+/* ============================================================
+   LENIS SMOOTH SCROLL BOILERPLATE
+   ============================================================ */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
 }
