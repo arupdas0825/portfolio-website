@@ -1,152 +1,133 @@
+/**
+ * CustomCursor.js — Particle Trail Only
+ * ─────────────────────────────────────────────────────────────────────────────
+ * ✅ Native OS cursor fully RESTORED (no cursor:none anywhere)
+ * ✅ Subtle purple/cyan particle trail emitted on mouse movement
+ * ✅ Single RAF loop — properly cleaned up on unmount
+ * ✅ Max 45 particles on screen at any time
+ * ✅ Only rendered on desktop (IS_TOUCH guard in App.js)
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
 import React, { useEffect, useRef } from 'react';
 import './customCursor.css';
 
-const CustomCursor = () => {
-  const mainCursor = useRef(null);
-  const particlesContainer = useRef(null);
+const MAX_PARTICLES = 45;
+const SPAWN_INTERVAL_MS = 28;   // emit one particle every 28ms of movement
+const PARTICLE_LIFETIME_MS = 700; // ms before fully faded
 
-  // Safe initial values — don't read window at module/component init
-  const mouse  = useRef({ x: 0, y: 0 });
-  const cursor = useRef({ x: 0, y: 0 });
-
-  const isBlackhole = useRef(false);
-  const hoverTarget = useRef(null);
-
-  const PARTICLE_COUNT = 25;
-  const particles = useRef([]);
-  const activeParticles = useRef([]);
-  const lastParticleTime = useRef(0);
+const CursorParticles = () => {
+  const containerRef      = useRef(null);
+  const pool              = useRef([]);        // all DOM particle elements
+  const active            = useRef([]);        // currently animating particles
+  const mousePos          = useRef({ x: -999, y: -999 });
+  const lastSpawnTime     = useRef(0);
+  const animId            = useRef(null);
+  const lastFrameTime     = useRef(performance.now());
 
   useEffect(() => {
-    // Safe: now inside useEffect (browser env guaranteed)
-    mouse.current  = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-    cursor.current = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    const el = containerRef.current;
+    if (!el) return;
 
-    if (particlesContainer.current && particles.current.length === 0) {
-      for (let i = 0; i < PARTICLE_COUNT; i++) {
-        const p = document.createElement('div');
-        p.className = 'cursor-particle';
-        p.style.opacity = '0';
-        particlesContainer.current.appendChild(p);
-        particles.current.push({
-          element: p, active: false,
-          x: 0, y: 0, vx: 0, vy: 0,
-          life: 0,
-          maxLife: 400 + Math.random() * 200,
-        });
-      }
+    /* ── Build DOM particle pool ── */
+    for (let i = 0; i < MAX_PARTICLES; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'cursor-particle';
+      dot.style.cssText = 'opacity:0;width:0;height:0;';
+      el.appendChild(dot);
+      pool.current.push({ el: dot, alive: false });
     }
 
-    const onMouseMove = e => {
-      mouse.current.x = e.clientX;
-      mouse.current.y = e.clientY;
-      const now = performance.now();
-      if (now - lastParticleTime.current > 30) {
-        spawnParticle(e.clientX, e.clientY);
-        lastParticleTime.current = now;
-      }
+    /* ── Mouse listener ── */
+    const onMove = (e) => {
+      mousePos.current.x = e.clientX;
+      mousePos.current.y = e.clientY;
     };
+    window.addEventListener('mousemove', onMove, { passive: true });
 
-    const handleMouseOver = e => {
-      const el = e.target.closest('.bh-anchor, .project-card');
-      if (el) { isBlackhole.current = true; hoverTarget.current = el; }
-    };
+    /* ── RAF render loop ── */
+    const tick = (now) => {
+      const dt = now - lastFrameTime.current;
+      lastFrameTime.current = now;
 
-    const handleMouseOut = e => {
-      const el = e.target.closest('.bh-anchor, .project-card');
-      if (el) { isBlackhole.current = false; hoverTarget.current = null; }
-    };
-
-    window.addEventListener('mousemove', onMouseMove, { passive: true });
-    document.addEventListener('mouseover', handleMouseOver, { passive: true });
-    document.addEventListener('mouseout',  handleMouseOut,  { passive: true });
-
-    let animId, lastTime = performance.now();
-
-    const render = time => {
-      const dt = time - lastTime;
-      lastTime = time;
-
-      let tx = mouse.current.x;
-      let ty = mouse.current.y;
-
-      const dx = tx - cursor.current.x;
-      const dy = ty - cursor.current.y;
-      const velocity = Math.sqrt(dx * dx + dy * dy);
-
-      if (isBlackhole.current && hoverTarget.current) {
-        const rect = hoverTarget.current.getBoundingClientRect();
-        const cx = rect.left + rect.width  / 2;
-        const cy = rect.top  + rect.height / 2;
-        tx = tx + (cx - tx) * 0.4;
-        ty = ty + (cy - ty) * 0.4;
+      /* Spawn */
+      if (now - lastSpawnTime.current > SPAWN_INTERVAL_MS && mousePos.current.x !== -999) {
+        lastSpawnTime.current = now;
+        spawnParticle(mousePos.current.x, mousePos.current.y);
       }
 
-      cursor.current.x += (tx - cursor.current.x) * 0.15;
-      cursor.current.y += (ty - cursor.current.y) * 0.15;
+      /* Update active particles */
+      for (let i = active.current.length - 1; i >= 0; i--) {
+        const p = active.current[i];
+        p.elapsed += dt;
 
-      if (mainCursor.current) {
-        const scale = 1 - Math.min(velocity * 0.002, 0.3);
-        mainCursor.current.style.transform =
-          `translate3d(${cursor.current.x}px,${cursor.current.y}px,0) scale(${scale})`;
-        mainCursor.current.classList.toggle('cursor-blackhole', isBlackhole.current);
+        if (p.elapsed >= PARTICLE_LIFETIME_MS) {
+          /* Retire */
+          p.alive = false;
+          p.el.style.opacity = '0';
+          active.current.splice(i, 1);
+          continue;
+        }
+
+        /* Progress 0→1 */
+        const t    = p.elapsed / PARTICLE_LIFETIME_MS;
+        const ease = 1 - Math.pow(t, 2);   // quadratic ease-out opacity
+
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vx *= 0.96;   // friction
+        p.vy *= 0.96;
+
+        const scale = (1 - t) * p.sizeScale;
+
+        p.el.style.transform = `translate3d(${p.x}px,${p.y}px,0) scale(${scale.toFixed(3)})`;
+        p.el.style.opacity   = (ease * 0.75).toFixed(3);
       }
 
-      updateParticles(dt);
-      animId = requestAnimationFrame(render);
+      animId.current = requestAnimationFrame(tick);
     };
 
-    animId = requestAnimationFrame(render);
+    animId.current = requestAnimationFrame(tick);
 
     return () => {
-      window.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseover', handleMouseOver);
-      document.removeEventListener('mouseout',  handleMouseOut);
-      cancelAnimationFrame(animId);
+      window.removeEventListener('mousemove', onMove);
+      cancelAnimationFrame(animId.current);
     };
   }, []);
 
-  const spawnParticle = x => {
-    const idx = particles.current.findIndex(p => !p.active);
-    if (idx === -1) return;
-    const p = particles.current[idx];
-    p.active = true; p.x = x; p.y = mouse.current.y;
-    p.vx = (Math.random() - 0.5) * 1.5;
-    p.vy = (Math.random() - 0.5) * 1.5;
-    p.life = p.maxLife;
-    p.element.style.transform = `translate3d(${x}px,${mouse.current.y}px,0) scale(1)`;
-    p.element.style.opacity = '0.7';
-    activeParticles.current.push(p);
+  /* ── Spawn helper ── */
+  const spawnParticle = (x, y) => {
+    const slot = pool.current.find(p => !p.alive);
+    if (!slot) return;  // pool full — skip
+
+    slot.alive   = true;
+    slot.elapsed = 0;
+
+    /* Random ejection direction — slight bias downward for trail feel */
+    const angle   = Math.random() * Math.PI * 2;
+    const speed   = 0.6 + Math.random() * 1.0;
+    slot.vx        = Math.cos(angle) * speed;
+    slot.vy        = Math.sin(angle) * speed + 0.3; // gentle gravity drift
+
+    /* Random size 3–6 px */
+    const size    = 3 + Math.random() * 3;
+    slot.sizeScale = 1;
+
+    slot.x = x;
+    slot.y = y;
+
+    /* Position relative to fixed container (top-left origin) */
+    slot.el.style.width     = `${size}px`;
+    slot.el.style.height    = `${size}px`;
+    slot.el.style.marginLeft = `-${size / 2}px`;
+    slot.el.style.marginTop  = `-${size / 2}px`;
+    slot.el.style.transform  = `translate3d(${x}px,${y}px,0) scale(1)`;
+    slot.el.style.opacity    = '0.75';
+
+    active.current.push(slot);
   };
 
-  const updateParticles = dt => {
-    for (let i = activeParticles.current.length - 1; i >= 0; i--) {
-      const p = activeParticles.current[i];
-      p.life -= dt;
-      if (p.life <= 0) {
-        p.active = false;
-        p.element.style.opacity = '0';
-        activeParticles.current.splice(i, 1);
-        continue;
-      }
-      p.x += p.vx; p.y += p.vy;
-      if (isBlackhole.current && hoverTarget.current) {
-        const rect = hoverTarget.current.getBoundingClientRect();
-        p.x += (rect.left + rect.width  / 2 - p.x) * 0.05;
-        p.y += (rect.top  + rect.height / 2 - p.y) * 0.05;
-      }
-      const prog = 1 - p.life / p.maxLife;
-      p.element.style.transform = `translate3d(${p.x}px,${p.y}px,0) scale(${1 - prog * 0.5})`;
-      p.element.style.opacity = ((1 - prog) * 0.7).toString();
-    }
-  };
-
-  return (
-    <>
-      <div id="cursor-particles" ref={particlesContainer} />
-      <div id="main-cursor" ref={mainCursor} />
-    </>
-  );
+  return <div id="cursor-particles" ref={containerRef} aria-hidden="true" />;
 };
 
-export default CustomCursor;
+export default CursorParticles;

@@ -1,11 +1,52 @@
 /**
  * Home.js — Hero section
- * Visual: replaced InfinityVortex with Hero3DComputer (3D interactive scene)
- * Content: ALL original text, buttons, socials, badge preserved exactly.
+ * Visual: Hero3DComputer (desktop) / MobileHero CSS fallback (touch)
+ * Content: ALL original text, buttons, socials preserved exactly.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, Component } from 'react';
 import Hero3DComputer from './components/Hero3DComputer';
+
+// Mobile detection — safe at module level in CRA (browser env)
+const IS_TOUCH = typeof window !== 'undefined' &&
+  (window.matchMedia('(pointer: coarse)').matches ||
+   'ontouchstart' in window ||
+   navigator.maxTouchPoints > 0);
+
+/* ── Error boundary wrapping the 3D canvas ──────────────────────────────── */
+class Hero3DBoundary extends Component {
+  constructor(props) { super(props); this.state = { crashed: false }; }
+  static getDerivedStateFromError() { return { crashed: true }; }
+  componentDidCatch(err) { console.warn('[Hero3DComputer] crashed, showing fallback:', err.message); }
+  render() {
+    return this.state.crashed ? <MobileHeroVisual /> : this.props.children;
+  }
+}
+
+/* ── Lightweight CSS-only mobile hero visual ─────────────────────────────── */
+function MobileHeroVisual() {
+  return (
+    <div className="mobile-hero-visual" aria-label="Developer illustration">
+      <div className="mhv-monitor">
+        <div className="mhv-screen">
+          <div className="mhv-dots"><span /><span /><span /></div>
+          <div className="mhv-line l1" />
+          <div className="mhv-line l2" />
+          <div className="mhv-line l3" />
+          <div className="mhv-line l4" />
+          <div className="mhv-line l5" />
+          <div className="mhv-cursor-blink" />
+        </div>
+      </div>
+      <div className="mhv-stand" />
+      <div className="mhv-base" />
+      {/* Floating badge */}
+      <div className="mhv-badge mhv-badge-1">const ai = new Model()</div>
+      <div className="mhv-badge mhv-badge-2">✓ Build successful</div>
+    </div>
+  );
+}
+
 
 const ROLES = [
   'AI / ML Developer', 'React Developer', 'Android App Developer',
@@ -102,9 +143,15 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── RIGHT: 3D computer scene ── */}
+      {/* ── RIGHT: 3D computer (desktop) or CSS mock (mobile) ── */}
       <div className='hero-visual fade-in' ref={addRef} style={{ animationDelay: '0.2s' }}>
-        <Hero3DComputer />
+        {IS_TOUCH ? (
+          <MobileHeroVisual />
+        ) : (
+          <Hero3DBoundary>
+            <Hero3DComputer />
+          </Hero3DBoundary>
+        )}
       </div>
     </section>
   );
