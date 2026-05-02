@@ -24,9 +24,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "cross-env NODE_OPTIONS=\"--no-deprecation\" react-scripts start",
+    "build": "cross-env NODE_OPTIONS=\"--no-deprecation\" react-scripts build",
+    "test": "cross-env NODE_OPTIONS=\"--no-deprecation\" react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -49,6 +49,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.24",
+    "cross-env": "^10.1.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.4"
   }
