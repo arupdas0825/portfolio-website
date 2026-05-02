@@ -67,13 +67,15 @@ export default function Navbar() {
         transition: 'background 0.3s',
       }}>
         {/* Logo */}
-        <div style={{
-          fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18,
-          background: 'linear-gradient(135deg,#a78bfa,#22d3ee)',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-        }}>
-          Arup Das
+        <div onClick={() => window.location.reload()} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+          <svg style={{ width: 22, height: 22, color: 'white' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2" />
+            <polyline points="2 17 12 22 22 17" />
+            <polyline points="2 12 12 17 22 12" />
+          </svg>
+          <span className="nav-logo-text" style={{ fontSize: 18 }}>
+            arup.dev
+          </span>
         </div>
 
         {/* Hamburger button */}
@@ -188,6 +190,14 @@ export default function Navbar() {
       className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}
       style={{ '--nav-blur': `${navBlur}px`, backdropFilter: `blur(${navBlur}px)`, WebkitBackdropFilter: `blur(${navBlur}px)` }}
     >
+      <div className="nav-logo-container" onClick={() => window.location.reload()} title="Refresh Page">
+        <svg className="nav-logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="12 2 2 7 12 12 22 7 12 2" />
+          <polyline points="2 17 12 22 22 17" />
+          <polyline points="2 12 12 17 22 12" />
+        </svg>
+        <span className="nav-logo-text">arup.dev</span>
+      </div>
       {navLinks.map(({ id, label }) => (
         <button
           key={id}
