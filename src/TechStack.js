@@ -7,226 +7,248 @@ gsap.registerPlugin(ScrollTrigger);
 
 const STACKS = [
   {
-    category: 'FRONTEND',
-    color: '#60a5fa',
+    category: 'Languages',
+    icon: '🗣️',
+    color: '#3b82f6',
     items: [
-      { name: 'React',      icon: '⚛️' },
-      { name: 'JavaScript', icon: '🟨' },
-      { name: 'HTML',       icon: '🟧' },
-      { name: 'CSS',        icon: '🟦' },
-      { name: 'Tailwind',   icon: '🎨' },
+      { name: 'Python', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg' },
+      { name: 'JavaScript', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg' },
+      { name: 'TypeScript', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg' },
+      { name: 'Java', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg' },
+      { name: 'C', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg' },
+      { name: 'C++', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg' },
+      { name: 'HTML5', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg' },
+      { name: 'CSS3', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg' },
+      { name: 'Kotlin', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg' },
     ],
   },
   {
-    category: 'BACKEND',
-    color: '#4ade80',
+    category: 'Frameworks & Libraries',
+    icon: '⚒️',
+    color: '#8b5cf6',
     items: [
-      { name: 'Python',   icon: '🐍' },
-      { name: 'Node.js',  icon: '🟩' },
-      { name: 'Java',     icon: '☕' },
-      { name: 'REST APIs',icon: '🔌' },
+      { name: 'React', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg' },
+      { name: 'Next.js', icon: 'https://cdn.simpleicons.org/nextdotjs/white' },
+      { name: 'Node.js', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg' },
+      { name: 'FastAPI', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg' },
+      { name: 'Flutter', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg' },
+      { name: 'Tailwind', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg' },
+      { name: 'Vite', icon: 'https://cdn.simpleicons.org/vite/white' },
+      { name: 'Firebase', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg' },
+    ],
+
+    badges: [
+      { name: 'PANDAS', color: '#150458' },
+      { name: 'NUMPY', color: '#013243' },
+      { name: 'MATPLOTLIB', color: '#11557c' },
+      { name: 'SCIKIT-LEARN', color: '#f7931e' },
+      { name: 'PLOTLY', color: '#3f4f75' },
+    ]
+  },
+  {
+    category: 'Databases',
+    icon: '💾',
+    color: '#10b981',
+    items: [
+      { name: 'MongoDB', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg' },
+      { name: 'MySQL', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg' },
+      { name: 'SQLite', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sqlite/sqlite-original.svg' },
+      { name: 'Supabase', icon: 'https://cdn.simpleicons.org/supabase/white' },
+      { name: 'Firebase', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg' },
     ],
   },
   {
-    category: 'DATABASE',
-    color: '#fb923c',
+    category: 'Cloud & DevOps',
+    icon: '🚀',
+    color: '#f43f5e',
     items: [
-      { name: 'Firebase',  icon: '🔥' },
-      { name: 'Supabase',  icon: '⚡' },
-      { name: 'MongoDB',   icon: '🍃' },
-      { name: 'SQL',       icon: '🗄️' },
+      { name: 'AWS', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg' },
+      { name: 'Google Cloud', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/googlecloud/googlecloud-original.svg' },
+      { name: 'Git', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg' },
+      { name: 'GitHub', icon: 'https://cdn.simpleicons.org/github/white' },
+      { name: 'Figma', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg' },
+      { name: 'Blender', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/blender/blender-original.svg' },
+      { name: 'Vercel', icon: 'https://cdn.simpleicons.org/vercel/white' },
+      { name: 'Netlify', icon: 'https://cdn.simpleicons.org/netlify/white' },
     ],
   },
-  {
-    category: 'TOOLS & PLATFORMS',
-    color: '#f472b6',
-    items: [
-      { name: 'Git',     icon: '🔀' },
-      { name: 'GitHub',  icon: '🐙' },
-      { name: 'VS Code', icon: '💙' },
-      { name: 'Vercel',  icon: '▲' },
-      { name: 'Netlify', icon: '🌐' },
-    ],
-  },
-  {
-    category: 'PROGRAMMING LANGUAGES',
-    color: '#a78bfa',
-    items: [
-      { name: 'C',          icon: '🔧' },
-      { name: 'C++',        icon: '⚙️' },
-      { name: 'Java',       icon: '☕' },
-      { name: 'Python',     icon: '🐍' },
-      { name: 'JavaScript', icon: '🟨' },
-      { name: 'Kotlin',     icon: '📱' },
-    ],
-  },
-  {
-    category: 'CURRENTLY EXPLORING',
-    color: '#facc15',
-    items: [
-      { name: 'AI / ML',       icon: '🤖' },
-      { name: 'System Design', icon: '🏗️' },
-      { name: 'Express',       icon: '🚂' },
-      { name: 'TypeScript',    icon: '🔷' },
-      { name: 'Docker',        icon: '🐳' },
-    ],
-  },
+
 ];
 
-/* ── Liquid Glass Panel (same as GithubStats) ── */
-const Panel = ({ children, color, style = {} }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 24 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    whileHover={{ y: -4, scale: 1.015 }}
-    transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-    style={{
-      position: 'relative',
-      background: 'rgba(255,255,255,0.035)',
-      border: '1px solid rgba(255,255,255,0.08)',
-      borderRadius: 20,
-      overflow: 'hidden',
-      boxShadow: '0 1px 0 rgba(255,255,255,0.06) inset, 0 12px 40px rgba(0,0,0,0.3)',
-      padding: '28px 24px',
-      ...style,
-    }}
-  >
-    {/* Top accent line — category colour */}
-    <div style={{
-      position: 'absolute', top: 0, left: 0, right: 0, height: 2,
-      background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
-      borderRadius: '20px 20px 0 0',
-    }} />
-    {/* Top sheen */}
-    <div style={{
-      position: 'absolute', top: 0, left: 0, right: 0, height: 1,
-      background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent)',
-      pointerEvents: 'none',
-    }} />
-    {children}
-  </motion.div>
-);
 
-/* ── Tech chip ── */
-const Chip = ({ name, icon, color }) => (
+const TechIcon = ({ src, name }) => {
+  // Only invert icons that are known to be dark by default (Devicon originals)
+  // SimpleIcons are already requested as /white
+  const isSimpleIcon = src.includes('simpleicons.org');
+  const isDarkDevicon = !isSimpleIcon && (name.toLowerCase() === 'next.js' || name.toLowerCase() === 'vercel' || name.toLowerCase() === 'github');
+  
+  return (
+    <motion.div
+      whileHover={{ scale: 1.1, y: -5 }}
+      className="tech-icon-box"
+      style={{
+        width: 64, height: 64,
+        background: 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(255,255,255,0.08)',
+        borderRadius: 12,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: 14,
+        cursor: 'pointer',
+        position: 'relative'
+      }}
+    >
+      <img 
+        src={src} 
+        alt={name} 
+        title={name} 
+        style={{ 
+          width: '100%', 
+          height: '100%', 
+          objectFit: 'contain',
+          filter: isDarkDevicon ? 'brightness(0) invert(1)' : 'none'
+        }} 
+      />
+      <div className="tech-tooltip">{name}</div>
+    </motion.div>
+  );
+};
+
+
+
+const TechBadge = ({ name, color }) => (
   <motion.div
-    whileHover={{ scale: 1.08, y: -2 }}
-    transition={{ type: 'spring', stiffness: 300, damping: 18 }}
+    whileHover={{ scale: 1.05 }}
     style={{
-      display: 'inline-flex', alignItems: 'center', gap: 7,
-      background: `${color}12`,
-      border: `1px solid ${color}28`,
-      borderRadius: 10, padding: '7px 13px',
-      cursor: 'default',
-      boxShadow: `0 0 0 0 ${color}00`,
-      transition: 'box-shadow 0.25s',
+      background: color,
+      color: '#fff',
+      padding: '6px 12px',
+      borderRadius: 4,
+      fontSize: '0.65rem',
+      fontWeight: 800,
+      letterSpacing: '1px',
+      display: 'flex', alignItems: 'center', gap: 6,
+      cursor: 'default'
     }}
-    onMouseEnter={e => e.currentTarget.style.boxShadow = `0 0 14px ${color}30`}
-    onMouseLeave={e => e.currentTarget.style.boxShadow = `0 0 0 0 ${color}00`}
   >
-    <span style={{ fontSize: 15, lineHeight: 1 }}>{icon}</span>
-    <span style={{
-      fontFamily: 'Syne, sans-serif', fontWeight: 700,
-      fontSize: 13, color: 'rgba(255,255,255,0.82)',
-      letterSpacing: '0.3px',
-    }}>
-      {name}
-    </span>
+    <span style={{ opacity: 0.7 }}>||</span> {name}
   </motion.div>
 );
 
 export default function TechStack() {
-  const sectionRef = useRef(null);
-  const titleRef   = useRef(null);
+  const titleRef = useRef(null);
 
-  // GSAP ScrollTrigger on heading — use start:'top 98%' so it fires
-  // as soon as the element is anywhere near the viewport.
-  // rAF delay ensures layout is flushed before ScrollTrigger measures positions.
   useEffect(() => {
     if (!titleRef.current) return;
-    const id = requestAnimationFrame(() => {
-      gsap.fromTo(titleRef.current,
-        { y: 32, opacity: 0 },
-        {
-          y: 0, opacity: 1, duration: 0.75,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: titleRef.current,
-            start: 'top 98%',
-            toggleActions: 'play none none none',
-            once: true,
-          },
-        }
-      );
-    });
-    return () => {
-      cancelAnimationFrame(id);
-      ScrollTrigger.getAll().forEach(t => t.kill());
-    };
+    gsap.fromTo(titleRef.current,
+      { y: 30, opacity: 0 },
+      {
+        y: 0, opacity: 1, duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: titleRef.current,
+          start: 'top 90%',
+          once: true,
+        },
+      }
+    );
   }, []);
 
-
   return (
-    <section
-      id="techstack"
-      ref={sectionRef}
-      style={{ background: 'transparent', padding: '100px 0 80px', position: 'relative', overflow: 'hidden' }}
-    >
-      {/* Ambient glow */}
-      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
-        <div style={{ position: 'absolute', top: '20%', right: '10%', width: 500, height: 500, background: 'radial-gradient(circle,rgba(138,92,246,0.07),transparent 70%)', borderRadius: '50%' }} />
-        <div style={{ position: 'absolute', bottom: '10%', left: '5%', width: 400, height: 400, background: 'radial-gradient(circle,rgba(192,132,252,0.05),transparent 70%)', borderRadius: '50%' }} />
-      </div>
-
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 32px', position: 'relative', zIndex: 1 }}>
-
-        {/* ── Title — portfolio heading style ── */}
-        <div className="fade-in" style={{ marginBottom: 16 }}>
-          <span className="section-label" style={{ textAlign:'left' }}>✦ WHAT I WORK WITH ✦</span>
-          <h2 className="section-title" ref={titleRef} style={{ textAlign: 'left', marginBottom: 8 }}>
-            Tech <span>Stack</span>
+    <section id="techstack" style={{ padding: '100px 0', background: 'transparent' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 32px' }}>
+        
+        {/* ── Standard Portfolio Header ── */}
+        <div style={{ marginBottom: 48 }}>
+          <span className="section-label" style={{ textAlign: 'left' }}>✦ WHAT I WORK WITH ✦</span>
+          <h2 className="section-title" ref={titleRef} style={{ textAlign: 'left', marginBottom: 12 }}>
+            Technology <span>Stack</span>
           </h2>
           <p style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: '0.92rem',
+            fontFamily: 'DM Sans, sans-serif', fontSize: '1rem',
             color: 'var(--text-muted)', marginBottom: 0, lineHeight: 1.7,
+            maxWidth: '600px'
           }}>
-            Organised by what I use them for — always learning more.
+            A curated list of languages, frameworks, and tools I use to build scalable, high-performance digital solutions.
           </p>
-          <div className="section-line" style={{ marginLeft: 0, marginTop: 18 }} />
+          <div className="section-line" style={{ marginLeft: 0, marginTop: 24, width: '80px' }} />
         </div>
 
-        {/* ── 2-column grid of panels ── */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 14,
-          marginTop: 36,
-        }}>
-          {STACKS.map((stack) => (
-            <Panel key={stack.category} color={stack.color}>
-              {/* Category label */}
-              <div style={{
-                fontFamily: 'Syne, sans-serif', fontWeight: 700,
-                fontSize: 11, letterSpacing: '2px',
-                color: stack.color,
-                marginBottom: 18,
-                textTransform: 'uppercase',
-              }}>
-                {stack.category}
+        {/* Categories */}
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 60 }}>
+          {STACKS.map((category) => (
+            <div key={category.category}>
+              {/* Category Header — Portfolio Style */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
+                <div style={{ 
+                  width: 3, height: 24, 
+                  background: category.color, 
+                  borderRadius: 4,
+                  boxShadow: `0 0 10px ${category.color}88`
+                }} />
+                <span style={{ fontSize: '1.6rem' }}>{category.icon}</span>
+                <h3 style={{ 
+                  fontFamily: 'Syne, sans-serif',
+                  fontSize: '1.25rem', 
+                  fontWeight: 800, 
+                  letterSpacing: '1.5px',
+                  textTransform: 'uppercase',
+                  color: '#fff', 
+                  margin: 0 
+                }}>
+                  {category.category}
+                </h3>
               </div>
 
-              {/* Chips */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {stack.items.map(item => (
-                  <Chip key={item.name} name={item.name} icon={item.icon} color={stack.color} />
+
+              {/* Icons Grid */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, paddingLeft: 40 }}>
+                {category.items.map((item) => (
+                  <TechIcon key={item.name} src={item.icon} name={item.name} />
                 ))}
               </div>
-            </Panel>
+
+              {/* Badges Row (for DS/ML) */}
+              {category.badges && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, paddingLeft: 40, marginTop: 20 }}>
+                  {category.badges.map((badge) => (
+                    <TechBadge key={badge.name} name={badge.name} color={badge.color} />
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </div>
 
       </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .tech-icon-box:hover {
+          background: rgba(255,255,255,0.08) !important;
+          border-color: rgba(138,92,246,0.4) !important;
+          box-shadow: 0 0 20px rgba(138,92,246,0.15);
+        }
+        .tech-tooltip {
+          position: absolute;
+          bottom: -30px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #1e1b4b;
+          color: #fff;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 11px;
+          opacity: 0;
+          pointer-events: none;
+          transition: 0.2s;
+          white-space: nowrap;
+          z-index: 10;
+        }
+        .tech-icon-box:hover .tech-tooltip {
+          opacity: 1;
+          bottom: -25px;
+        }
+      `}} />
     </section>
   );
 }
