@@ -16,7 +16,6 @@ import CustomCursor   from './CustomCursor';
 import ThreeBackground from './components/ThreeBackground';
 import WorkPage        from './WorkPage';
 import WelcomeScreen   from './WelcomeScreen';
-import MaintenanceGate, { MAINTENANCE_MODE } from './MaintenanceGate';
 import './App.css';
 
 const IS_TOUCH = typeof window !== 'undefined' &&
@@ -53,15 +52,13 @@ export default function App() {
   // Skip welcome if already seen this session (refresh-safe)
   const [stage, setStage] = useState(() => {
     const seen = sessionStorage.getItem('seenWelcome');
-    if (seen) return MAINTENANCE_MODE ? 'maintenance' : 'portfolio';
-    return 'welcome';
+    return seen ? 'portfolio' : 'welcome';
   });
 
   const handleWelcomeDone = () => {
     sessionStorage.setItem('seenWelcome', 'true');
-    setStage(MAINTENANCE_MODE ? 'maintenance' : 'portfolio');
+    setStage('portfolio');
   };
-  const handleBypass = () => setStage('portfolio');
 
   return (
     <BrowserRouter>
@@ -72,15 +69,7 @@ export default function App() {
           <WelcomeScreen onEnter={handleWelcomeDone} />
         )}
 
-        {/* ── STAGE 2: Maintenance Gate (Overlay) ── */}
-        {stage === 'maintenance' && (
-          <MaintenanceGate onBypass={handleBypass} />
-        )}
-
-        {/* ── STAGE 3: Main Portfolio (Persistent) ── */}
-        {/* We keep this mounted ALWAYS to prevent 3D canvas remount/shrink issues.
-            Visibility is controlled via z-index or opacity if needed, 
-            but here it stays behind the fixed overlays. */}
+        {/* ── STAGE 2: Main Portfolio (Persistent) ── */}
         <div className="app-wrapper" style={{ 
           visibility: stage === 'portfolio' ? 'visible' : 'hidden',
           opacity: stage === 'portfolio' ? 1 : 0,
