@@ -1,4 +1,15 @@
 import React, { useEffect, useRef } from 'react';
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
+
+// IS_TOUCH — disable tilt on touch devices (no hover, wasted GPU)
+const IS_TOUCH = typeof window !== 'undefined' &&
+  (window.matchMedia('(pointer: coarse)').matches ||
+   'ontouchstart' in window ||
+   navigator.maxTouchPoints > 0);
 
 const services = [
   {
@@ -64,78 +75,105 @@ const services = [
   },
 ];
 
-export default function Services() {
-  const sectionRef = useRef(null);
+/* ── 3D tilt card using Framer Motion spring ─────────────────────────────── */
+function ServiceCard({ service, index }) {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
 
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      es => es.forEach(e => e.isIntersecting && e.target.classList.add('visible')),
-      { threshold: 0.08 }
-    );
-    if (sectionRef.current)
-      sectionRef.current.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
-    return () => obs.disconnect();
-  }, []);
+  // Spring-smoothed rotation
+  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]), { stiffness: 200, damping: 20 });
+  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]), { stiffness: 200, damping: 20 });
 
-  const handleMouseMove = (e) => {
-    const card = e.currentTarget;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const cx = rect.width / 2;
-    const cy = rect.height / 2;
-    const rotX = ((y - cy) / cy) * -8;
-    const rotY = ((x - cx) / cx) * 8;
-    card.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.02,1.02,1.02)`;
-    const glow = card.querySelector('.svc-glow');
-    if (glow) { glow.style.left = x + 'px'; glow.style.top = y + 'px'; glow.style.opacity = '1'; }
-  };
+  const handleMouseMove = !IS_TOUCH ? (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    x.set((e.clientX - rect.left) / rect.width - 0.5);
+    y.set((e.clientY - rect.top)  / rect.height - 0.5);
 
-  const handleMouseLeave = (e) => {
-    e.currentTarget.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
+    // Cursor glow follow
+    const glow = e.currentTarget.querySelector('.svc-glow');
+    if (glow) {
+      glow.style.left = (e.clientX - rect.left) + 'px';
+      glow.style.top  = (e.clientY - rect.top)  + 'px';
+      glow.style.opacity = '1';
+    }
+  } : undefined;
+
+  const handleMouseLeave = !IS_TOUCH ? (e) => {
+    x.set(0);
+    y.set(0);
     const glow = e.currentTarget.querySelector('.svc-glow');
     if (glow) glow.style.opacity = '0';
-  };
+  } : undefined;
 
   return (
-    <section id="services" className="page-section" ref={sectionRef}>
+    <motion.div
+      className="svc-card"
+      style={IS_TOUCH ? {} : { rotateX, rotateY, transformPerspective: 900 }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      whileHover={IS_TOUCH ? {} : { scale: 1.02 }}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {/* Cursor glow */}
+      <div className="svc-glow" style={{ background: `radial-gradient(circle 90px, ${service.color}22, transparent)` }} />
+
+      {/* Top accent */}
+      <div className="svc-top-line" style={{ background: `linear-gradient(90deg, transparent, ${service.color}, transparent)` }} />
+
+      {/* Icon */}
+      <div className="svc-icon" style={{ background: `${service.color}14`, border: `1px solid ${service.color}28`, color: service.color }}>
+        {service.icon}
+      </div>
+
+      {/* Title */}
+      <div className="svc-name">{service.name}</div>
+
+      {/* Desc */}
+      <div className="svc-desc">{service.desc}</div>
+
+      {/* Bottom line */}
+      <div className="svc-bottom-line" style={{ background: `linear-gradient(90deg, ${service.color}bb, transparent)` }} />
+    </motion.div>
+  );
+}
+
+/* ── Section ─────────────────────────────────────────────────────────────── */
+export default function Services() {
+  const titleRef = useRef(null);
+
+  // GSAP ScrollTrigger on heading
+  useEffect(() => {
+    if (!titleRef.current) return;
+    gsap.fromTo(titleRef.current,
+      { y: 50, opacity: 0 },
+      {
+        y: 0, opacity: 1, duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: titleRef.current,
+          start: 'top 85%',
+          once: true,
+        },
+      }
+    );
+  }, []);
+
+  return (
+    <section id="services" className="page-section">
       <div className="section-inner">
-        <span className="section-label fade-in">✦ WHAT I OFFER ✦</span>
-        <h2 className="section-title fade-in">Features & <span>Services</span></h2>
-        <div className="section-line fade-in" />
-        <p className="section-sub fade-in">
+        <span className="section-label">✦ WHAT I OFFER ✦</span>
+        <h2 className="section-title" ref={titleRef}>Features &amp; <span>Services</span></h2>
+        <div className="section-line" />
+        <p className="section-sub">
           What I bring to the table — from intelligent systems to creative digital experiences.
         </p>
 
         <div className="svc-grid">
           {services.map((service, i) => (
-            <div
-              key={service.name}
-              className="svc-card fade-in"
-              style={{ animationDelay: `${i * 0.08}s` }}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-            >
-              {/* Cursor glow */}
-              <div className="svc-glow" style={{ background: `radial-gradient(circle 90px, ${service.color}22, transparent)` }} />
-
-              {/* Top accent */}
-              <div className="svc-top-line" style={{ background: `linear-gradient(90deg, transparent, ${service.color}, transparent)` }} />
-
-              {/* Icon */}
-              <div className="svc-icon" style={{ background: `${service.color}14`, border: `1px solid ${service.color}28`, color: service.color }}>
-                {service.icon}
-              </div>
-
-              {/* Title */}
-              <div className="svc-name">{service.name}</div>
-
-              {/* Desc */}
-              <div className="svc-desc">{service.desc}</div>
-
-              {/* Bottom line */}
-              <div className="svc-bottom-line" style={{ background: `linear-gradient(90deg, ${service.color}bb, transparent)` }} />
-            </div>
+            <ServiceCard key={service.name} service={service} index={i} />
           ))}
         </div>
       </div>

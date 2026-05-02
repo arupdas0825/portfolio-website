@@ -16,6 +16,7 @@ export default function Navbar() {
   const [active, setActive]       = useState('home');
   const [menuOpen, setMenuOpen]   = useState(false);
   const [isMobile, setIsMobile]   = useState(window.innerWidth < 768);
+  const [navBlur, setNavBlur]     = useState(8);
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 768);
@@ -26,6 +27,8 @@ export default function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
+      // Scroll-based blur: 8px at top → 20px after 50px scroll
+      setNavBlur(window.scrollY > 50 ? 20 : 8);
       const sections = navLinks.map(l => document.getElementById(l.id)).filter(Boolean);
       let current = 'home';
       sections.forEach(sec => {
@@ -33,7 +36,7 @@ export default function Navbar() {
       });
       setActive(current);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -179,9 +182,12 @@ export default function Navbar() {
     </>
   );
 
-  // ── DESKTOP NAV (unchanged) ──
+  // ── DESKTOP NAV (scroll-based blur) ──
   return (
-    <nav className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}>
+    <nav
+      className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}
+      style={{ '--nav-blur': `${navBlur}px`, backdropFilter: `blur(${navBlur}px)`, WebkitBackdropFilter: `blur(${navBlur}px)` }}
+    >
       {navLinks.map(({ id, label }) => (
         <button
           key={id}

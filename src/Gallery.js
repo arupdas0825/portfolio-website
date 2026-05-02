@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { LucideChevronLeft, LucideChevronRight, LucideX } from 'lucide-react';
+import { motion } from 'framer-motion';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const photos = [
   { id: 1, src: "/photos/1.jpg", title: "Amber Awakening", desc: "A meditation on perception and intimacy—the human eye becomes a universe unto itself. The warm, honey-toned iris captures light like a sunset, reminding us that every moment of seeing is an act of connection between inner consciousness and outer reality." },
@@ -17,7 +22,25 @@ const photos = [
 export default function Gallery() {
   const [selected, setSelected] = useState(null);
   const fadeRefs = useRef([]);
+  const titleRef = useRef(null);
   const addRef = (el) => { if (el && !fadeRefs.current.includes(el)) fadeRefs.current.push(el); };
+
+  // GSAP ScrollTrigger on heading
+  useEffect(() => {
+    if (!titleRef.current) return;
+    gsap.fromTo(titleRef.current,
+      { y: 50, opacity: 0 },
+      {
+        y: 0, opacity: 1, duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: titleRef.current,
+          start: 'top 85%',
+          once: true,
+        },
+      }
+    );
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -27,6 +50,7 @@ export default function Gallery() {
     fadeRefs.current.forEach(el => el && observer.observe(el));
     return () => observer.disconnect();
   }, []);
+
 
   // ✅ useCallback — ESLint exhaustive-deps fix
   const handlePrev = useCallback((e) => {
@@ -59,7 +83,7 @@ export default function Gallery() {
   return (
     <section id="photography" className="page-section gallery-section">
       <div className="section-inner">
-        <h2 className="section-title fade-in" ref={addRef}>
+        <h2 className="section-title fade-in" ref={r => { addRef(r); titleRef.current = r; }}>
           Cinematic <span>Photography</span>
         </h2>
         <div className="section-line fade-in" ref={addRef} />
@@ -67,14 +91,23 @@ export default function Gallery() {
           Capturing stories through light and shadow — a visual journey of perspectives.
         </p>
 
-        <div className="gallery-grid">
+        <motion.div
+          className="gallery-grid"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-60px' }}
+          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
+        >
           {photos.map((photo, index) => (
-            <div
+            <motion.div
               className="gallery-item fade-in"
               key={photo.id}
               ref={addRef}
-              style={{ animationDelay: `${(index % 5) * 0.1}s` }}
               onClick={() => setSelected(photo)}
+              variants={{
+                hidden: { opacity: 0, scale: 0.95 },
+                show:   { opacity: 1, scale: 1, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+              }}
             >
               <img
                 src={photo.src}
@@ -87,9 +120,9 @@ export default function Gallery() {
               <div className="gallery-item-overlay">
                 <span>{photo.title}</span>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
 
       {/* Lightbox */}

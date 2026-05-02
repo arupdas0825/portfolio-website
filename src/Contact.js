@@ -1,12 +1,35 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from './firebase';
+import { motion } from 'framer-motion';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Contact() {
   const fadeRefs = useRef([]);
+  const titleRef = useRef(null);
   const [contactData, setContactData] = useState(null);
   const [formData, setFormData] = useState({ name:'', email:'', subject:'', message:'' });
   const [sent, setSent] = useState(false);
+
+  // GSAP ScrollTrigger on heading
+  useEffect(() => {
+    if (!titleRef.current) return;
+    gsap.fromTo(titleRef.current,
+      { y: 50, opacity: 0 },
+      {
+        y: 0, opacity: 1, duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: titleRef.current,
+          start: 'top 85%',
+          once: true,
+        },
+      }
+    );
+  }, []);
 
   // Real-time listener
   useEffect(() => {
@@ -48,10 +71,17 @@ export default function Contact() {
     <section id="contact" className="page-section">
       <div className="section-inner contact-section">
         <span className="section-label fade-in" ref={addRef}>✦ REACH OUT ✦</span>
-        <h2 className="section-title fade-in" ref={addRef}>Get In <span>Touch</span></h2>
+        <h2 className="section-title fade-in" ref={r => { addRef(r); titleRef.current = r; }}>Get In <span>Touch</span></h2>
         <div className="section-line fade-in" ref={addRef}/>
 
-        <div className="contact-inner fade-in" ref={addRef}>
+        <motion.div
+          className="contact-inner fade-in"
+          ref={addRef}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
           {/* Info */}
           <div className="contact-info">
             <p className="contact-desc">Have a project in mind or just want to say hi? Feel free to reach out anytime.</p>
@@ -104,7 +134,7 @@ export default function Contact() {
               </button>
             </form>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

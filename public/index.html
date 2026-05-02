@@ -3,31 +3,68 @@
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <!-- CRITICAL: proper viewport for mobile -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ✅ CRITICAL: proper mobile viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- Mobile browser theme -->
     <meta name="theme-color" content="#0a0812" />
     <meta name="description" content="Arup Das — AI/ML Developer, React Developer, Portfolio" />
-    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- iOS Safari -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Arup Das" />
+
+    <!-- Android Chrome -->
+    <meta name="mobile-web-app-capable" content="yes" />
+
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=Orbitron:wght@400;700;800&display=swap" rel="stylesheet" />
+
     <title>Arup Das — Portfolio</title>
+
+    <!-- ✅ Critical inline CSS — prevents FOUC and blank screen -->
     <style>
-      /* Critical: prevent blank screen on mobile */
-      * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-      html, body { 
-        margin: 0; padding: 0; 
-        background: #0a0a0a; 
-        color: #e2d9f3;
-        min-height: 100dvh;
+      /* Reset & mobile safety */
+      *, *::before, *::after {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      html {
+        overflow-x: hidden;
         -webkit-text-size-adjust: 100%;
         text-size-adjust: 100%;
       }
-      #root { min-height: 100dvh; }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background: #0a0812;
+        color: #e2d9f3;
+        min-height: 100vh;
+        overflow-x: hidden;
+        /* Prevent elastic scroll from revealing white background */
+        overscroll-behavior: none;
+      }
+
+      #root {
+        min-height: 100vh;
+        background: #0a0812;
+        overflow-x: hidden;
+      }
+
+      /* Hide custom cursor on touch */
+      @media (pointer: coarse) {
+        #main-cursor, #cursor-particles { display: none !important; }
+        * { cursor: auto !important; }
+      }
     </style>
   </head>
   <body>

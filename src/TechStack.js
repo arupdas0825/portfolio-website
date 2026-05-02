@@ -1,5 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const STACKS = [
   {
@@ -134,15 +138,23 @@ const Chip = ({ name, icon, color }) => (
 
 export default function TechStack() {
   const sectionRef = useRef(null);
+  const titleRef   = useRef(null);
 
+  // GSAP ScrollTrigger on heading
   useEffect(() => {
-    const obs = new IntersectionObserver(
-      es => es.forEach(e => e.isIntersecting && e.target.classList.add('visible')),
-      { threshold: 0.08 }
+    if (!titleRef.current) return;
+    gsap.fromTo(titleRef.current,
+      { y: 50, opacity: 0 },
+      {
+        y: 0, opacity: 1, duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: titleRef.current,
+          start: 'top 85%',
+          once: true,
+        },
+      }
     );
-    if (sectionRef.current)
-      sectionRef.current.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
-    return () => obs.disconnect();
   }, []);
 
   return (
@@ -162,7 +174,7 @@ export default function TechStack() {
         {/* ── Title — portfolio heading style ── */}
         <div className="fade-in" style={{ marginBottom: 16 }}>
           <span className="section-label" style={{ textAlign:'left' }}>✦ WHAT I WORK WITH ✦</span>
-          <h2 className="section-title" style={{ textAlign: 'left', marginBottom: 8 }}>
+          <h2 className="section-title" ref={titleRef} style={{ textAlign: 'left', marginBottom: 8 }}>
             Tech <span>Stack</span>
           </h2>
           <p style={{

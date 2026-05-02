@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { LucideExternalLink, LucideGithub, LucideStar, LucideGitFork, LucideX, LucideFileText, LucideLoader } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const GITHUB_USERNAME = 'arupdas0825';
 
@@ -396,11 +400,29 @@ const FALLBACK_REPOS = [
 /* ── Main Work Component ── */
 const Work = () => {
   const fadeRefs = useRef([]);
+  const titleRef = useRef(null);
   const [repos, setRepos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
   const [languages, setLanguages] = useState(['All']);
-  const [selected, setSelected] = useState(null); // clicked repo
+  const [selected, setSelected] = useState(null);
+
+  // GSAP ScrollTrigger on heading
+  useEffect(() => {
+    if (!titleRef.current) return;
+    gsap.fromTo(titleRef.current,
+      { y: 50, opacity: 0 },
+      {
+        y: 0, opacity: 1, duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: titleRef.current,
+          start: 'top 85%',
+          once: true,
+        },
+      }
+    );
+  }, []);
 
   useEffect(() => {
     const CACHE_KEY = `gh_repos_${GITHUB_USERNAME}`;
@@ -469,7 +491,7 @@ const Work = () => {
     <section id="work" className="page-section">
       <div className="section-inner">
         <span className="section-label fade-in" ref={addRef}>✦ OPEN SOURCE WORK ✦</span>
-        <h2 className="section-title fade-in" ref={addRef}>My <span>Works</span></h2>
+        <h2 className="section-title fade-in" ref={r => { addRef(r); titleRef.current = r; }}>My <span>Works</span></h2>
         <div className="section-line fade-in" ref={addRef} />
         <p className="section-sub fade-in" ref={addRef}>
           All my GitHub projects — live from the API. Click any card to read the README.

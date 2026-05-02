@@ -1,9 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from './firebase';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function About({ onPhotoDoubleClick }) {
-  const fadeRefs = useRef([]);
+  const sectionRef  = useRef(null);
+  const titleRef    = useRef(null);
   const [aboutData, setAboutData] = useState(null);
 
   // Real-time listener from Firestore
@@ -13,6 +19,30 @@ export default function About({ onPhotoDoubleClick }) {
     }, () => {}); // silent fail if no Firebase config
     return unsub;
   }, []);
+
+  // ── GSAP ScrollTrigger on section heading ──────────────────────────────
+  useEffect(() => {
+    if (!titleRef.current) return;
+    gsap.fromTo(titleRef.current,
+      { y: 50, opacity: 0 },
+      {
+        y: 0, opacity: 1, duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: titleRef.current,
+          start: 'top 85%',
+          once: true,
+        },
+      }
+    );
+  }, []);
+
+  // ── Framer Motion scroll parallax on photo ─────────────────────────────
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+  const photoY = useTransform(scrollYProgress, [0, 1], [30, -30]);
 
   // Bio from Firestore or fallback
   const bio1 = aboutData?.bio1 || 'I am a detail-oriented Computer Science & Engineering student at Brainware University, specialising in Artificial Intelligence and Machine Learning. Based in Kolkata, I am passionate about bridging the gap between robust software architecture and intelligent system design.';
@@ -34,23 +64,12 @@ export default function About({ onPhotoDoubleClick }) {
     },
   ];
 
-  const addRef = el => { if (el && !fadeRefs.current.includes(el)) fadeRefs.current.push(el); };
-
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      es => es.forEach(e => e.isIntersecting && e.target.classList.add('visible')),
-      { threshold: 0.1 }
-    );
-    fadeRefs.current.forEach(el => el && obs.observe(el));
-    return () => obs.disconnect();
-  }, []);
-
   return (
-    <section className="page-section about-section">
+    <section className="page-section about-section" ref={sectionRef}>
       <div className="section-inner about-inner">
 
-        {/* Photo */}
-        <div className="about-img-wrap fade-in" ref={addRef}>
+        {/* Photo — wrapped with Framer Motion for parallax */}
+        <motion.div className="about-img-wrap" style={{ y: photoY }}>
           <div
             className="about-photo-gradient-border"
             onDoubleClick={onPhotoDoubleClick}
@@ -68,19 +87,25 @@ export default function About({ onPhotoDoubleClick }) {
               />
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Content */}
-        <div className="about-content fade-in" ref={addRef} style={{ animationDelay:'0.15s' }}>
+        {/* Content — Framer Motion whileInView entrance */}
+        <motion.div
+          className="about-content"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
           <span className="section-label">— WHO AM I —</span>
-          <h2 className="section-title">About <span>Me</span></h2>
-          <div className="section-line" style={{ marginLeft:0 }}/>
+          <h2 className="section-title" ref={titleRef}>About <span>Me</span></h2>
+          <div className="section-line" style={{ marginLeft: 0 }} />
           <p className="section-sub about-sub">
             {bio1.includes('Artificial Intelligence')
               ? (<>{bio1.split('Artificial Intelligence and Machine Learning')[0]}<strong style={{color:'var(--purple-light)'}}>Artificial Intelligence and Machine Learning</strong>{bio1.split('Artificial Intelligence and Machine Learning')[1]}</>)
               : bio1
             }
-            <br/><br/>{bio2}
+            <br /><br />{bio2}
           </p>
           <div className="about-skills">
             {skillGroups.map(g => (
@@ -92,7 +117,7 @@ export default function About({ onPhotoDoubleClick }) {
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
