@@ -26,19 +26,19 @@ const IS_TOUCH = typeof window !== 'undefined' &&
    Canvas re-drawn each frame by the Monitor component's useFrame.
 ══════════════════════════════════════════════════════════════════════════ */
 const CODE_LINES = [
-  { t: 'class AIEngineer {',                         c: '#c084fc' },
-  { t: '  constructor() {',                           c: '#a78bfa' },
-  { t: '    this.name = "Arup Das";',                 c: '#67e8f9' },
-  { t: '    this.stack = ["AI","ML","Full Stack"];',  c: '#86efac' },
-  { t: '  }',                                         c: '#a78bfa' },
-  { t: '',                                            c: '#fff'    },
-  { t: '  build() {',                                 c: '#c084fc' },
-  { t: '    return "Precision-driven systems.";',     c: '#fbbf24' },
-  { t: '  }',                                         c: '#a78bfa' },
-  { t: '}',                                           c: '#c084fc' },
-  { t: '',                                            c: '#fff'    },
-  { t: 'const dev = new AIEngineer();',               c: '#67e8f9' },
-  { t: 'dev.build(); // ✓ running',                   c: '#4ade80' },
+  { t: 'class AIEngineer {',                              c: '#c084fc' },
+  { t: '  constructor() {',                               c: '#a78bfa' },
+  { t: '    this.name = "Arup Das";',                     c: '#67e8f9' },
+  { t: '    this.expertise = ["AI","ML","Full Stack"];',  c: '#86efac' },
+  { t: '  }',                                             c: '#a78bfa' },
+  { t: '',                                                c: '#fff'    },
+  { t: '  buildSystem() {',                               c: '#c084fc' },
+  { t: '    return "Scalable intelligent systems.";',     c: '#fbbf24' },
+  { t: '  }',                                             c: '#a78bfa' },
+  { t: '}',                                               c: '#c084fc' },
+  { t: '',                                                c: '#fff'    },
+  { t: 'const engineer = new AIEngineer();',              c: '#67e8f9' },
+  { t: 'engineer.buildSystem(); // ✓ live',               c: '#4ade80' },
 ];
 const TOTAL_CHARS = CODE_LINES.reduce((s, l) => s + l.t.length, 0);
 
@@ -158,32 +158,39 @@ function Monitor() {
   const pauseTimer = useRef(0);
   const inPause    = useRef(false);
 
-  /* ── Premium body gradient material ── */
+  /* ── Premium body gradient — bright indigo ── */
   const bodyMat = useMemo(() => {
-    // Create a gradient canvas texture for the body
     const c = document.createElement('canvas');
-    c.width = 64; c.height = 64;
+    c.width = 128; c.height = 128;
     const ctx = c.getContext('2d');
-    const g = ctx.createLinearGradient(0, 0, 64, 64);
-    g.addColorStop(0, '#0f172a');   // deep navy
-    g.addColorStop(1, '#1e1b4b');   // deep indigo
+    // 3-stop bright indigo gradient matching portfolio accent
+    const g = ctx.createLinearGradient(0, 0, 128, 128);
+    g.addColorStop(0,   '#1e293b');   // slate-800
+    g.addColorStop(0.5, '#312e81');   // indigo-900
+    g.addColorStop(1,   '#4f46e5');   // indigo-600 — bright pop
     ctx.fillStyle = g;
-    ctx.fillRect(0, 0, 64, 64);
+    ctx.fillRect(0, 0, 128, 128);
+    // Subtle gloss streak in top-left
+    const gl = ctx.createLinearGradient(0, 0, 60, 60);
+    gl.addColorStop(0, 'rgba(255,255,255,0.10)');
+    gl.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = gl;
+    ctx.fillRect(0, 0, 128, 128);
     const tex = new THREE.CanvasTexture(c);
     return new THREE.MeshStandardMaterial({
       map: tex,
-      roughness: 0.45,
-      metalness: 0.55,
-      envMapIntensity: 1.2,
+      roughness: 0.30,
+      metalness: 0.65,
+      envMapIntensity: 1.5,
     });
   }, []);
 
   const trimMat  = useMemo(() => new THREE.MeshStandardMaterial({
-    color: '#312e81', roughness: 0.12, metalness: 0.9,
+    color: '#6366f1', roughness: 0.08, metalness: 0.95,
   }), []);
 
   const standMat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: '#0c0e22', roughness: 0.5, metalness: 0.5,
+    color: '#1e1b4b', roughness: 0.45, metalness: 0.6,
   }), []);
 
   useFrame(({ clock }, delta) => {
@@ -222,75 +229,90 @@ function Monitor() {
   });
 
   return (
-    <group position={[0, 0.1, 0]}>
-      {/* ── Bezel outer — gradient body ── */}
+    // Scaled up ~40% from v4 for dominant presence
+    <group position={[0, 0.15, 0]}>
+      {/* ── Bezel outer ── */}
       <mesh castShadow receiveShadow material={bodyMat}>
-        <boxGeometry args={[3.5, 2.2, 0.10]} />
+        <boxGeometry args={[4.9, 3.1, 0.13]} />
       </mesh>
 
-      {/* ── Neon edge highlight — thin inner trim ── */}
-      <mesh position={[0, 0, 0.051]} material={trimMat}>
-        <boxGeometry args={[3.30, 2.04, 0.007]} />
+      {/* ── Inner trim ring ── */}
+      <mesh position={[0, 0, 0.066]} material={trimMat}>
+        <boxGeometry args={[4.64, 2.88, 0.008]} />
       </mesh>
 
-      {/* ── Edge glow lines (top + sides) ── */}
-      {/* Top edge */}
-      <mesh position={[0, 1.08, 0.01]}>
-        <boxGeometry args={[3.5, 0.012, 0.11]} />
-        <meshStandardMaterial color='#818cf8' emissive='#818cf8' emissiveIntensity={1.5} transparent opacity={0.7} />
+      {/* ── Neon edge highlights ── */}
+      {/* Top */}
+      <mesh position={[0, 1.52, 0.012]}>
+        <boxGeometry args={[4.9, 0.014, 0.14]} />
+        <meshStandardMaterial color='#818cf8' emissive='#818cf8' emissiveIntensity={2.2} transparent opacity={0.85} />
       </mesh>
-      {/* Left edge */}
-      <mesh position={[-1.735, 0, 0.01]}>
-        <boxGeometry args={[0.012, 2.2, 0.11]} />
-        <meshStandardMaterial color='#8a5cf6' emissive='#8a5cf6' emissiveIntensity={1.2} transparent opacity={0.6} />
+      {/* Bottom */}
+      <mesh position={[0, -1.52, 0.012]}>
+        <boxGeometry args={[4.9, 0.014, 0.14]} />
+        <meshStandardMaterial color='#6366f1' emissive='#6366f1' emissiveIntensity={1.8} transparent opacity={0.7} />
       </mesh>
-      {/* Right edge */}
-      <mesh position={[1.735, 0, 0.01]}>
-        <boxGeometry args={[0.012, 2.2, 0.11]} />
-        <meshStandardMaterial color='#8a5cf6' emissive='#8a5cf6' emissiveIntensity={1.2} transparent opacity={0.6} />
+      {/* Left */}
+      <mesh position={[-2.435, 0, 0.012]}>
+        <boxGeometry args={[0.014, 3.1, 0.14]} />
+        <meshStandardMaterial color='#8a5cf6' emissive='#8a5cf6' emissiveIntensity={1.8} transparent opacity={0.75} />
+      </mesh>
+      {/* Right */}
+      <mesh position={[2.435, 0, 0.012]}>
+        <boxGeometry args={[0.014, 3.1, 0.14]} />
+        <meshStandardMaterial color='#8a5cf6' emissive='#8a5cf6' emissiveIntensity={1.8} transparent opacity={0.75} />
+      </mesh>
+
+      {/* ── Outer screen glow halo ── */}
+      <mesh position={[0, 0, 0.04]}>
+        <boxGeometry args={[4.75, 2.95, 0.005]} />
+        <meshStandardMaterial
+          color='#6366f1' emissive='#6366f1' emissiveIntensity={0.55}
+          transparent opacity={0.18} depthWrite={false}
+        />
       </mesh>
 
       {/* ── Live coding screen ── */}
-      <mesh ref={screenMesh} position={[0, 0, 0.057]}>
-        <boxGeometry args={[3.14, 1.90, 0.003]} />
+      <mesh ref={screenMesh} position={[0, 0.04, 0.072]}>
+        <boxGeometry args={[4.44, 2.68, 0.004]} />
         <meshStandardMaterial
           map={scrTex}
-          roughness={0.04}
+          roughness={0.03}
           metalness={0}
           emissiveMap={scrTex}
           emissive={new THREE.Color('#ffffff')}
-          emissiveIntensity={0.45}
+          emissiveIntensity={0.55}
         />
       </mesh>
 
       {/* ── Power LED ── */}
-      <mesh position={[0, -1.02, 0.055]}>
-        <sphereGeometry args={[0.030, 8, 8]} />
-        <meshStandardMaterial color='#22c55e' emissive='#22c55e' emissiveIntensity={3.5} />
+      <mesh position={[0, -1.44, 0.068]}>
+        <sphereGeometry args={[0.040, 8, 8]} />
+        <meshStandardMaterial color='#22c55e' emissive='#22c55e' emissiveIntensity={4.0} />
       </mesh>
 
       {/* ── Screen glow point light ── */}
-      <pointLight ref={screenGlow} position={[0, 0, 0.9]}
-        color='#818cf8' intensity={0.85} distance={3.5} decay={2} />
+      <pointLight ref={screenGlow} position={[0, 0, 1.2]}
+        color='#818cf8' intensity={1.2} distance={5.0} decay={2} />
 
       {/* ── Stand neck ── */}
-      <mesh position={[0, -1.32, -0.12]} material={standMat}>
-        <boxGeometry args={[0.18, 0.52, 0.14]} />
+      <mesh position={[0, -1.84, -0.16]} material={standMat}>
+        <boxGeometry args={[0.24, 0.72, 0.18]} />
       </mesh>
 
       {/* ── Stand base ── */}
-      <mesh position={[0, -1.60, -0.28]} receiveShadow material={standMat}>
-        <boxGeometry args={[1.20, 0.065, 0.58]} />
+      <mesh position={[0, -2.24, -0.36]} receiveShadow material={standMat}>
+        <boxGeometry args={[1.70, 0.080, 0.72]} />
       </mesh>
 
       {/* ── Keyboard ── */}
-      <mesh position={[0, -1.64, 0.60]} receiveShadow material={bodyMat}>
-        <boxGeometry args={[2.6, 0.050, 0.80]} />
+      <mesh position={[0, -2.30, 0.82]} receiveShadow material={bodyMat}>
+        <boxGeometry args={[3.6, 0.065, 1.10]} />
       </mesh>
       {/* Key bar rows */}
-      {[-0.24, -0.06, 0.10, 0.24].map((z, i) => (
-        <mesh key={i} position={[0, -1.617, 0.63 + z]} material={trimMat}>
-          <boxGeometry args={[2.35, 0.030, 0.13]} />
+      {[-0.33, -0.09, 0.14, 0.34].map((z, i) => (
+        <mesh key={i} position={[0, -2.268, 0.86 + z]} material={trimMat}>
+          <boxGeometry args={[3.26, 0.038, 0.17]} />
         </mesh>
       ))}
     </group>
@@ -338,15 +360,15 @@ const ALL_ICONS = [
   { label: '🔥', color: '#ff6d00' },
 ];
 
-/* Elliptical ring: rx=2.55, ry=1.45 — fits safely inside FOV at z=7.5 */
-const RX = 2.55, RY = 1.45;
+/* Elliptical ring: rx=3.4, ry=2.0 — scaled with bigger monitor, fits at z=10 */
+const RX = 3.4, RY = 2.0;
 const ICON_POSITIONS = ALL_ICONS.map((_, i) => {
   const n = ALL_ICONS.length;
   const a = (i / n) * Math.PI * 2 - Math.PI / 2;
   return [
     Math.cos(a) * RX,
     Math.sin(a) * RY,
-    i % 2 === 0 ? 0.4 : -0.5,   // alternating depth
+    i % 2 === 0 ? 0.5 : -0.6,   // alternating depth
   ];
 });
 
@@ -515,10 +537,12 @@ export default memo(function Hero3DComputer() {
     <div className="hero3d-wrap">
       <Canvas
         /*
-         * FOV 56° at z=7.8 gives ≥20% frustum margin beyond RX=2.55
-         * so icons at the ellipse edge are never clipped.
+         * Camera: z=10.5, FOV 58°
+         * Monitor is 4.9 wide → half = 2.45u. Icon ring RX=3.4.
+         * At z=10.5 the frustum half-width ≈ 10.5*tan(29°) ≈ 5.82u
+         * Gives ≥70% margin beyond icon edge at 3.4u — zero clipping.
          */
-        camera={{ position: [0, 0.15, 7.8], fov: 56, near: 0.1, far: 60 }}
+        camera={{ position: [0, 0.2, 10.5], fov: 58, near: 0.1, far: 80 }}
         gl={{
           antialias:       !IS_TOUCH,
           powerPreference: 'high-performance',

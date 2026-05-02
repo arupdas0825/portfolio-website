@@ -140,22 +140,32 @@ export default function TechStack() {
   const sectionRef = useRef(null);
   const titleRef   = useRef(null);
 
-  // GSAP ScrollTrigger on heading
+  // GSAP ScrollTrigger on heading — use start:'top 98%' so it fires
+  // as soon as the element is anywhere near the viewport.
+  // rAF delay ensures layout is flushed before ScrollTrigger measures positions.
   useEffect(() => {
     if (!titleRef.current) return;
-    gsap.fromTo(titleRef.current,
-      { y: 50, opacity: 0 },
-      {
-        y: 0, opacity: 1, duration: 0.8,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: titleRef.current,
-          start: 'top 85%',
-          once: true,
-        },
-      }
-    );
+    const id = requestAnimationFrame(() => {
+      gsap.fromTo(titleRef.current,
+        { y: 32, opacity: 0 },
+        {
+          y: 0, opacity: 1, duration: 0.75,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: titleRef.current,
+            start: 'top 98%',
+            toggleActions: 'play none none none',
+            once: true,
+          },
+        }
+      );
+    });
+    return () => {
+      cancelAnimationFrame(id);
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
   }, []);
+
 
   return (
     <section
