@@ -6,6 +6,7 @@ import About          from './About';
 import TechStack      from './TechStack';
 import Work           from './Work';
 import Publications   from './Publications';
+import Certificates   from './Certificates';
 import GithubStats    from './GithubStats';
 import Gallery        from './Gallery';
 import Services       from './Services';
@@ -33,6 +34,7 @@ function PortfolioHome({ onAdminOpen }) {
       <div id="techstack"><TechStack /></div>
       <div id="work"><Work /></div>
       <div id="publications"><Publications /></div>
+      <div id="certificates"><Certificates /></div>
       <div id="githubstats"><GithubStats /></div>
       <div id="gallery"><Gallery /></div>
       <div id="services"><Services /></div>

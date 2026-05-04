@@ -19,6 +19,27 @@ const langColors = {
   HTML:'#e34c26', Dart:'#00B4AB', default:'#8a5cf6',
 };
 
+const REPO_IMAGES = {
+  'scientific-calculator': '/scientific-calculator.png',
+  'ai-code-translator': '/ai-code-translator.png',
+  'arupdas0825': '/arupdas0825.jpeg',
+  'client-portfolio': '/client-portfolio.png',
+  'EverBond-Wealth': '/EverBond-Wealth.png',
+  'portfolio-website': '/portfolio-website.png',
+  'sentiment-analysis-project': '/sentiment-analysis-project.png',
+  'streamnest': '/streamnest.png',
+  'algorithm-visualizer': '/algorithm-visualizer.png',
+  'quiz-web': '/quiz-web.png',
+  'studytra': '/studytra.png',
+  'sahasrajit-foundation': '/sahasrajit-foundation.png',
+  'Hiresight-ai': '/Hiresight-ai.png',
+};
+
+const REPO_HOMEPAGES = {
+  'scientific-calculator': 'https://arupdas0825.github.io/scientific-calculator/scientific-complex-calculator.html',
+  'sentiment-analysis-project': 'https://sentiment-analysis-project-zvtb4q6vncknfc5qvkb63w.streamlit.app/',
+};
+
 function getEmoji(lang) {
   return { JavaScript:'⚡', Python:'🐍', Java:'☕', Kotlin:'📱', TypeScript:'🔷', CSS:'🎨', HTML:'🌐', Dart:'🎯', 'C++':'⚙️' }[lang] || '💻';
 }
@@ -99,7 +120,7 @@ function ReadmeModal({ repo, onClose }) {
 /* ── FALLBACK REPOS (same list as Work.js) ── */
 const FALLBACK_REPOS = [
   { id:1, name:'LocalCare-Finder-Android', language:'Kotlin', stargazers_count:1, forks_count:0, description:'Find nearby hospitals, pharmacies & blood banks. Built with Kotlin, Google Maps, Flask.', html_url:'https://github.com/arupdas0825/LocalCare-Finder-Android', homepage:'' },
-  { id:2, name:'sahazej8-foundation', language:'JavaScript', stargazers_count:2, forks_count:0, description:'Official website for Sahazej8 Foundation NGO. Firebase-powered admin panel.', html_url:'https://github.com/arupdas0825/sahazej8-foundation', homepage:'' },
+  { id:2, name:'sahasrajit-foundation', language:'JavaScript', stargazers_count:2, forks_count:0, description:'Official website for Sahasrajit Foundation NGO. Firebase-powered admin panel.', html_url:'https://github.com/arupdas0825/sahasrajit-foundation', homepage:'' },
   { id:3, name:'quiz-web', language:'JavaScript', stargazers_count:3, forks_count:1, description:'Online Examination System with ReactJs, 10-min countdown, grade calculation.', html_url:'https://github.com/arupdas0825/quiz-web', homepage:'https://quiz-web-demo.vercel.app' },
   { id:4, name:'arupdas0825', language:'JavaScript', stargazers_count:4, forks_count:0, description:'B.Tech CSE (AIML) | React Developer | Exploring AI, Algorithms & Full-Stack.', html_url:'https://github.com/arupdas0825', homepage:'' },
   { id:5, name:'algorithm-visualizer', language:'JavaScript', stargazers_count:2, forks_count:0, description:'React-based Algorithm Visualizer animating sorting algorithms in real-time.', html_url:'https://github.com/arupdas0825/algorithm-visualizer', homepage:'' },
@@ -149,7 +170,7 @@ export default function WorkPage() {
 
   return (
     <div className="workpage-root">
-      {/* ── Back button ── */}
+      <Navbar />
       <button className="workpage-back" onClick={() => navigate('/')}>
         <LucideArrowLeft size={16} /> Back to Home
       </button>
@@ -200,8 +221,14 @@ export default function WorkPage() {
                 transition={{ delay: (idx % 12) * 0.05, type: 'spring', stiffness: 240, damping: 22 }}
                 whileHover={{ y: -6, boxShadow: '0 20px 50px rgba(138,92,246,0.25)' }}
               >
-                <div className="project-thumb" style={{ background: `linear-gradient(135deg,${(langColors[repo.language] || langColors.default)}18,rgba(10,8,18,0.9))` }}>
-                  <div className="project-thumb-icon" style={{ fontSize: '2rem' }}>{getEmoji(repo.language)}</div>
+                <div className="project-thumb" style={{ 
+                  background: REPO_IMAGES[repo.name] 
+                    ? `url(${REPO_IMAGES[repo.name]}) center/cover no-repeat`
+                    : `linear-gradient(135deg,${(langColors[repo.language] || langColors.default)}18,rgba(10,8,18,0.9))` 
+                }}>
+                  {!REPO_IMAGES[repo.name] && (
+                    <div className="project-thumb-icon" style={{ fontSize: '2rem' }}>{getEmoji(repo.language)}</div>
+                  )}
                   <div className="repo-meta-overlay">
                     <span><LucideStar size={11} /> {repo.stargazers_count}</span>
                     <span><LucideGitFork size={11} /> {repo.forks_count}</span>
@@ -223,7 +250,7 @@ export default function WorkPage() {
                   </div>
                   <div className="project-links" onClick={e => e.stopPropagation()}>
                     <a href={repo.html_url} target="_blank" rel="noreferrer" className="project-link github"><LucideGithub size={14} /> GitHub</a>
-                    {repo.homepage && <a href={repo.homepage} target="_blank" rel="noreferrer" className="project-link demo"><LucideExternalLink size={14} /> Live Demo</a>}
+                    {(repo.homepage || REPO_HOMEPAGES[repo.name]) && <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="project-link demo"><LucideExternalLink size={14} /> Live Demo</a>}
                   </div>
                 </div>
               </motion.div>

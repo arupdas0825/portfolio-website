@@ -18,6 +18,27 @@ const langColors = {
   HTML:'#e34c26', Dart:'#00B4AB', default:'#8a5cf6',
 };
 
+const REPO_IMAGES = {
+  'scientific-calculator': '/scientific-calculator.png',
+  'ai-code-translator': '/ai-code-translator.png',
+  'arupdas0825': '/arupdas0825.jpeg',
+  'client-portfolio': '/client-portfolio.png',
+  'EverBond-Wealth': '/EverBond-Wealth.png',
+  'portfolio-website': '/portfolio-website.png',
+  'sentiment-analysis-project': '/sentiment-analysis-project.png',
+  'streamnest': '/streamnest.png',
+  'algorithm-visualizer': '/algorithm-visualizer.png',
+  'quiz-web': '/quiz-web.png',
+  'studytra': '/studytra.png',
+  'sahasrajit-foundation': '/sahasrajit-foundation.png',
+  'Hiresight-ai': '/Hiresight-ai.png',
+};
+
+const REPO_HOMEPAGES = {
+  'scientific-calculator': 'https://arupdas0825.github.io/scientific-calculator/scientific-complex-calculator.html',
+  'sentiment-analysis-project': 'https://sentiment-analysis-project-zvtb4q6vncknfc5qvkb63w.streamlit.app/',
+};
+
 function getRepoEmoji(lang) {
   const map = {
     JavaScript:'⚡', Python:'🐍', Java:'☕', Kotlin:'📱',
@@ -344,10 +365,10 @@ const FALLBACK_REPOS = [
     languages_url: '',
   },
   {
-    id: 2, name: 'sahazej8-foundation', fork: false,
-    description: 'Built the official website for Sahazej8 Foundation, a grassroots NGO. Firebase-powered admin panel.',
+    id: 2, name: 'sahasrajit-foundation', fork: false,
+    description: 'Built the official website for Sahasrajit Foundation, a grassroots NGO. Firebase-powered admin panel.',
     language: 'JavaScript', stargazers_count: 2, forks_count: 0,
-    html_url: 'https://github.com/arupdas0825/sahazej8-foundation', homepage: '',
+    html_url: 'https://github.com/arupdas0825/sahasrajit-foundation', homepage: '',
     languages_url: '',
   },
   {
@@ -548,8 +569,14 @@ const Work = () => {
                   whileHover={{ y:-6, boxShadow:'0 20px 50px rgba(138,92,246,0.25)' }}
                   transition={{ type:'spring', stiffness:260, damping:22 }}
                 >
-                  <div className="project-thumb" style={{ background:`linear-gradient(135deg,${(langColors[repo.language]||langColors.default)}18,rgba(10,8,18,0.9))` }}>
-                    <div className="project-thumb-icon" style={{ fontSize:'2rem' }}>{getRepoEmoji(repo.language)}</div>
+                  <div className="project-thumb" style={{ 
+                    background: REPO_IMAGES[repo.name] 
+                      ? `url(${REPO_IMAGES[repo.name]}) center/cover no-repeat`
+                      : `linear-gradient(135deg,${(langColors[repo.language]||langColors.default)}18,rgba(10,8,18,0.9))` 
+                  }}>
+                    {!REPO_IMAGES[repo.name] && (
+                      <div className="project-thumb-icon" style={{ fontSize:'2rem' }}>{getRepoEmoji(repo.language)}</div>
+                    )}
                     <div className="repo-meta-overlay">
                       <span><LucideStar size={11}/> {repo.stargazers_count}</span>
                       <span><LucideGitFork size={11}/> {repo.forks_count}</span>
@@ -578,8 +605,8 @@ const Work = () => {
                       <a href={repo.html_url} target="_blank" rel="noreferrer" className="project-link github">
                         <LucideGithub size={14}/> GitHub
                       </a>
-                      {repo.homepage && (
-                        <a href={repo.homepage} target="_blank" rel="noreferrer" className="project-link demo">
+                      {(repo.homepage || REPO_HOMEPAGES[repo.name]) && (
+                        <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="project-link demo">
                           <LucideExternalLink size={14}/> Live Demo
                         </a>
                       )}

@@ -25,9 +25,6 @@
   box-sizing: border-box;
 }
 
-html {
-  /* Lenis handles smooth scrolling; native scroll-behavior conflicts with it */
-}
 
 body {
   font-family: 'DM Sans', sans-serif;
