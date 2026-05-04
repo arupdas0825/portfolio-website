@@ -168,8 +168,13 @@ export default function WorkPage() {
 
   const filtered = filter === 'All' ? repos : repos.filter(r => r.language === filter);
 
+const IS_TOUCH = typeof window !== 'undefined' &&
+  (window.matchMedia('(pointer: coarse)').matches ||
+   'ontouchstart' in window ||
+   navigator.maxTouchPoints > 0);
+
   return (
-    <div className="workpage-root">
+    <div className="workpage-root" style={{ paddingBottom: IS_TOUCH ? '100px' : '0px' }}>
       <Navbar />
       <button className="workpage-back" onClick={() => navigate('/')}>
         <LucideArrowLeft size={16} /> Back to Home

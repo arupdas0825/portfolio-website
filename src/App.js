@@ -75,7 +75,8 @@ export default function App() {
         <div className="app-wrapper" style={{ 
           visibility: stage === 'portfolio' ? 'visible' : 'hidden',
           opacity: stage === 'portfolio' ? 1 : 0,
-          transition: 'opacity 0.8s ease-in-out'
+          transition: 'opacity 0.8s ease-in-out',
+          paddingBottom: IS_TOUCH ? '100px' : '0px'
         }}>
           <ThreeBackground />
           <div className="blob blob-1" />

@@ -55,53 +55,72 @@ export default function Navbar() {
     setMenuOpen(false);
   };
 
-  // ── MOBILE NAV ──
+  // ── MOBILE NAV (Bottom Floating Dock) ──
   if (isMobile) return (
     <>
       <nav style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '14px 20px',
-        background: scrolled ? 'rgba(10,8,18,0.95)' : 'rgba(10,8,18,0.7)',
-        backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(138,92,246,0.15)',
-        transition: 'background 0.3s',
+        position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+        zIndex: 200,
+        display: 'flex', alignItems: 'center', gap: 12,
+        padding: '10px 14px',
+        background: 'rgba(20, 15, 40, 0.65)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        borderRadius: 24,
+        border: '1px solid rgba(138, 92, 246, 0.3)',
+        boxShadow: '0 12px 40px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05)',
+        transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+        width: 'auto', maxWidth: '90vw',
       }}>
-        {/* Logo */}
-        <div onClick={() => window.location.reload()} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-          <svg style={{ width: 22, height: 22, color: 'white' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="12 2 2 7 12 12 22 7 12 2" />
-            <polyline points="2 17 12 22 22 17" />
-            <polyline points="2 12 12 17 22 12" />
-          </svg>
-          <span className="nav-logo-text" style={{ fontSize: 18 }}>
-            arup.dev
-          </span>
-        </div>
+        {/* Quick Links for Dock */}
+        {[
+          { id:'home',      icon:'🏠' },
+          { id:'work',      icon:'💼' },
+          { id:'gallery',   icon:'📷' },
+          { id:'contact',   icon:'📬' },
+        ].map(link => (
+          <button
+            key={link.id}
+            onClick={() => scrollTo(link.id)}
+            style={{
+              width: 44, height: 44, borderRadius: 16,
+              background: active === link.id ? 'rgba(138, 92, 246, 0.25)' : 'transparent',
+              border: active === link.id ? '1px solid rgba(138, 92, 246, 0.4)' : '1px solid transparent',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 20, cursor: 'pointer', transition: 'all 0.2s',
+              filter: active === link.id ? 'drop-shadow(0 0 8px rgba(138, 92, 246, 0.5))' : 'none',
+            }}
+          >
+            {link.icon}
+          </button>
+        ))}
 
-        {/* Hamburger button */}
+        {/* Divider */}
+        <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.1)' }} />
+
+        {/* More/Menu Toggle */}
         <button
           onClick={() => setMenuOpen(o => !o)}
           style={{
-            background: menuOpen ? 'rgba(138,92,246,0.2)' : 'rgba(255,255,255,0.05)',
-            border: `1px solid ${menuOpen ? 'rgba(138,92,246,0.5)' : 'rgba(255,255,255,0.1)'}`,
-            borderRadius: 10, width: 40, height: 40,
+            width: 44, height: 44, borderRadius: 16,
+            background: menuOpen ? 'rgba(138, 92, 246, 0.25)' : 'rgba(255,255,255,0.05)',
+            border: `1px solid ${menuOpen ? 'rgba(138, 92, 246, 0.4)' : 'rgba(255,255,255,0.1)'}`,
             display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center', gap: 5,
+            alignItems: 'center', justifyContent: 'center', gap: 4,
             cursor: 'pointer', padding: 0, transition: 'all 0.2s',
           }}
         >
           {[0,1,2].map(i => (
             <span key={i} style={{
               display: 'block',
-              width: menuOpen ? (i === 1 ? 0 : 22) : 22,
+              width: menuOpen ? (i === 1 ? 0 : 20) : 20,
               height: 2,
               background: menuOpen ? '#a78bfa' : 'rgba(255,255,255,0.7)',
               borderRadius: 2,
               transition: 'all 0.25s ease',
               transform: menuOpen
-                ? i === 0 ? 'rotate(45deg) translate(5px,5px)'
-                : i === 2 ? 'rotate(-45deg) translate(5px,-5px)'
+                ? i === 0 ? 'rotate(45deg) translate(4px,4px)'
+                : i === 2 ? 'rotate(-45deg) translate(4px,-4px)'
                 : 'scaleX(0)'
                 : 'none',
             }}/>
@@ -109,11 +128,12 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {/* Drawer */}
+      {/* Drawer (Bottom Sheet Style) */}
       <div style={{
         position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
         zIndex: 190,
         pointerEvents: menuOpen ? 'all' : 'none',
+        display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
       }}>
         {/* Backdrop */}
         <div
@@ -121,63 +141,70 @@ export default function Navbar() {
           style={{
             position: 'absolute', inset: 0,
             background: 'rgba(0,0,0,0.6)',
+            backdropFilter: 'blur(4px)',
             opacity: menuOpen ? 1 : 0,
-            transition: 'opacity 0.3s',
+            transition: 'opacity 0.4s ease',
           }}
         />
 
-        {/* Menu panel */}
+        {/* Menu panel (Bottom Sheet) */}
         <div style={{
-          position: 'absolute', top: 0, right: 0,
-          width: '75vw', maxWidth: 280,
-          height: '100%',
-          background: 'rgba(12,8,24,0.98)',
-          borderLeft: '1px solid rgba(138,92,246,0.25)',
-          boxShadow: '-20px 0 60px rgba(0,0,0,0.5)',
-          transform: menuOpen ? 'translateX(0)' : 'translateX(100%)',
-          transition: 'transform 0.32s cubic-bezier(0.34,1.2,0.64,1)',
+          position: 'relative',
+          width: '100%',
+          background: 'rgba(15, 12, 26, 0.95)',
+          backdropFilter: 'blur(30px)',
+          borderTop: '1px solid rgba(138, 92, 246, 0.3)',
+          borderTopLeftRadius: 32,
+          borderTopRightRadius: 32,
+          boxShadow: '0 -10px 40px rgba(0,0,0,0.5)',
+          transform: menuOpen ? 'translateY(0)' : 'translateY(100%)',
+          transition: 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)',
           display: 'flex', flexDirection: 'column',
-          padding: '80px 20px 40px',
-          gap: 6,
+          padding: '24px 20px 100px', // Extra bottom padding for dock
+          gap: 10,
+          maxHeight: '80vh',
+          overflowY: 'auto',
         }}>
-          {/* Purple top line */}
-          <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:'linear-gradient(90deg,transparent,#8a5cf6,#22d3ee,transparent)' }}/>
+          {/* Handle */}
+          <div style={{
+            width: 40, height: 4, background: 'rgba(255,255,255,0.2)',
+            borderRadius: 2, margin: '0 auto 20px',
+          }} />
 
-          <div style={{ fontFamily:"'Syne',sans-serif", fontSize:11, fontWeight:700, letterSpacing:'2px', color:'rgba(255,255,255,0.3)', marginBottom:8 }}>
-            NAVIGATE
+          <div style={{ fontFamily:"'Syne',sans-serif", fontSize:11, fontWeight:700, letterSpacing:'2px', color:'rgba(255,255,255,0.3)', marginBottom:8, textAlign:'center' }}>
+            FULL NAVIGATION
           </div>
 
-          {navLinks.map((link, i) => (
-            <button
-              key={link.id}
-              onClick={() => scrollTo(link.id)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 12,
-                padding: '13px 16px', borderRadius: 12,
-                background: active === link.id ? 'rgba(138,92,246,0.2)' : 'transparent',
-                border: active === link.id ? '1px solid rgba(138,92,246,0.4)' : '1px solid transparent',
-                color: active === link.id ? '#a78bfa' : 'rgba(255,255,255,0.65)',
-                fontSize: 14, fontWeight: 600,
-                fontFamily: "'Syne',sans-serif",
-                cursor: 'pointer', textAlign: 'left',
-                transition: 'all 0.2s',
-                transform: menuOpen ? 'translateX(0)' : 'translateX(30px)',
-                opacity: menuOpen ? 1 : 0,
-                transitionDelay: menuOpen ? `${i * 0.04}s` : '0s',
-              }}
-            >
-              <span style={{ fontSize: 16 }}>{link.icon}</span>
-              {link.label}
-              {active === link.id && (
-                <span style={{ marginLeft:'auto', width:6, height:6, borderRadius:'50%', background:'#8a5cf6', boxShadow:'0 0 8px #8a5cf6' }}/>
-              )}
-            </button>
-          ))}
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:10 }}>
+            {navLinks.map((link, i) => (
+              <button
+                key={link.id}
+                onClick={() => scrollTo(link.id)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '16px', borderRadius: 16,
+                  background: active === link.id ? 'rgba(138,92,246,0.15)' : 'rgba(255,255,255,0.03)',
+                  border: active === link.id ? '1px solid rgba(138,92,246,0.3)' : '1px solid rgba(255,255,255,0.06)',
+                  color: active === link.id ? '#a78bfa' : 'rgba(255,255,255,0.65)',
+                  fontSize: 14, fontWeight: 600,
+                  fontFamily: "'Syne',sans-serif",
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  opacity: menuOpen ? 1 : 0,
+                  transform: menuOpen ? 'translateY(0)' : 'translateY(20px)',
+                  transitionDelay: menuOpen ? `${i * 0.03}s` : '0s',
+                }}
+              >
+                <span style={{ fontSize: 18 }}>{link.icon}</span>
+                {link.label}
+              </button>
+            ))}
+          </div>
 
           {/* Bottom */}
-          <div style={{ marginTop:'auto', paddingTop:20, borderTop:'1px solid rgba(255,255,255,0.06)' }}>
-            <div style={{ fontSize:11, color:'rgba(255,255,255,0.25)', fontFamily:"'Syne',sans-serif", textAlign:'center' }}>
-              Arup Das · Portfolio v2.1
+          <div style={{ marginTop:20, paddingTop:20, borderTop:'1px solid rgba(255,255,255,0.06)', textAlign:'center' }}>
+            <div style={{ fontSize:11, color:'rgba(255,255,255,0.25)', fontFamily:"'Syne',sans-serif" }}>
+              Arup Das · Portfolio v3.0
             </div>
           </div>
         </div>
