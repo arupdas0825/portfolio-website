@@ -6,8 +6,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const isMobileDevice = () => typeof window !== 'undefined' && window.innerWidth < 768;
-
 const photos = [
   { id: 1, src: "/photos/1.jpg", title: "Amber Awakening", desc: "A meditation on perception and intimacy—the human eye becomes a universe unto itself. The warm, honey-toned iris captures light like a sunset, reminding us that every moment of seeing is an act of connection between inner consciousness and outer reality." },
   { id: 2, src: "/photos/2.jpg", title: "Offerings of Devotion", desc: "In the chaos of the crowd, one man stands anchored in faith. The marigold garlands symbolize the persistence of tradition in modern India—a bridge between the spiritual and the everyday, where commerce and devotion share the same sacred space." },
@@ -23,21 +21,19 @@ const photos = [
 
 export default function Gallery() {
   const [selected, setSelected] = useState(null);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isMobile, setIsMobile] = useState(isMobileDevice());
-  const fadeRefs = useRef([]);
-  const titleRef = useRef(null);
-  const addRef = (el) => { if (el && !fadeRefs.current.includes(el)) fadeRefs.current.push(el); };
+  const [isMobile, setIsMobile] = useState(false);
+  const navigate = require('react-router-dom').useNavigate();
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(isMobileDevice());
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const MOBILE_LIMIT = 4;
-  const visiblePhotos = (isMobile && !isExpanded) ? photos.slice(0, MOBILE_LIMIT) : photos;
-  const showButton = isMobile && !isExpanded && photos.length > MOBILE_LIMIT;
+  const fadeRefs = useRef([]);
+  const titleRef = useRef(null);
+  const addRef = (el) => { if (el && !fadeRefs.current.includes(el)) fadeRefs.current.push(el); };
 
   // GSAP ScrollTrigger on heading
   useEffect(() => {
@@ -58,27 +54,12 @@ export default function Gallery() {
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            e.target.classList.add('visible');
-            observer.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.05 }
+      (entries) => entries.forEach(e => e.isIntersecting && e.target.classList.add('visible')),
+      { threshold: 0.08 }
     );
-    
-    // Use a small delay to ensure refs are populated after state changes
-    const timeout = setTimeout(() => {
-      fadeRefs.current.forEach(el => el && observer.observe(el));
-    }, 100);
-
-    return () => {
-      clearTimeout(timeout);
-      observer.disconnect();
-    };
-  }, [isMobile, isExpanded]);
+    fadeRefs.current.forEach(el => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
 
 
   // ✅ useCallback — ESLint exhaustive-deps fix
@@ -127,7 +108,7 @@ export default function Gallery() {
           viewport={{ once: true, margin: '-60px' }}
           variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
         >
-          {visiblePhotos.map((photo, index) => (
+          {(isMobile ? photos.slice(0, 4) : photos).map((photo, index) => (
             <motion.div
               className="gallery-item fade-in"
               key={photo.id}
@@ -153,25 +134,17 @@ export default function Gallery() {
           ))}
         </motion.div>
 
-        {/* ── Mobile CTA: See More Photos ── */}
-        {showButton && (
-          <div className="work-see-more visible" style={{ marginTop: 40, opacity: 1 }}>
+        {isMobile && (
+          <div style={{ textAlign: 'center', marginTop: '32px' }}>
             <motion.button
-              className="work-see-more-btn"
-              onClick={() => setIsExpanded(true)}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              className="pg-see-more-btn"
+              onClick={() => navigate('/photography-gallery')}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               See More Photos
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 8 }}>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
+              <LucideChevronRight size={18} />
             </motion.button>
-            <p className="work-see-more-hint">
-              {photos.length - MOBILE_LIMIT} more cinematic shots available
-            </p>
           </div>
         )}
       </div>

@@ -17,6 +17,7 @@ import CustomCursor   from './CustomCursor';
 import ThreeBackground from './components/ThreeBackground';
 import WorkPage        from './WorkPage';
 import WelcomeScreen   from './WelcomeScreen';
+import PhotographyGallery from './PhotographyGallery';
 import './App.css';
 
 const IS_TOUCH = typeof window !== 'undefined' &&
@@ -91,6 +92,7 @@ export default function App() {
                 element={<PortfolioHome onAdminOpen={() => setAdminOpen(true)} />}
               />
               <Route path="/work" element={<WorkPage />} />
+              <Route path="/photography-gallery" element={<PhotographyGallery />} />
             </Routes>
             {adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
           </div>
