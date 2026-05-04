@@ -20,9 +20,23 @@ const ALL_PUBLICATIONS = [
     publishedAt: "https://example.com/publication",
     color: "#8a5cf6",
   },
+  {
+    id: 2,
+    title: "EverBond Wealth: Collaborative Financial Planning & Milestone Integration",
+    journal: "Journal of Modern Fintech Solutions",
+    year: 2024,
+    abstract: "This paper presents the design and implementation of EverBond Wealth, a sophisticated platform for collaborative wealth management. It details the integration of milestone-based goal tracking, dynamic risk-adjusted asset allocation, and a high-fidelity visual engine, providing a unified financial dashboard for modern couples.",
+    tags: ["FinTech", "Web App", "Security"],
+    status: "Published",
+    doi: "https://doi.org/10.5678/everbond",
+    citations: 0,
+    pdf: "/EverBond_Wealth_Research_Paper.pdf",
+    publishedAt: "https://everbondwealth.com/research",
+    color: "#10b981",
+  },
 ];
 
-const FILTERS = ["All", "AI", "ML", "Web", "NLP"];
+const FILTERS = ["All", "AI", "ML", "Web", "NLP", "FinTech"];
 
 export default function Publications({ featuredOnly = false }) {
   const [activeFilter, setActiveFilter] = useState("All");
