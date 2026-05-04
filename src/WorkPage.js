@@ -10,6 +10,7 @@ import {
   LucideArrowLeft, LucideGithub, LucideExternalLink,
   LucideStar, LucideGitFork, LucideX, LucideFileText, LucideLoader,
 } from 'lucide-react';
+import Navbar from './Navbar';
 
 const GITHUB_USERNAME = 'arupdas0825';
 

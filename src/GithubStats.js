@@ -134,6 +134,14 @@ export default function GithubStats() {
     languages:[], avatarUrl:'', name:'Arup Das',
   });
   const [loaded, setLoaded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 992);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const fetchData = useCallback(async () => {
     const CACHE_KEY = 'gh_stats_' + USERNAME;
@@ -311,7 +319,7 @@ export default function GithubStats() {
     <section
       id="githubstats"
       ref={sectionRef}
-      style={{ background:'transparent', padding:'100px 0 80px', position:'relative', overflow:'hidden' }}
+      style={{ background:'transparent', padding: isMobile ? '60px 0 40px' : '100px 0 80px', position:'relative', overflow:'hidden' }}
     >
       {/* Purple glow ambience — matches portfolio */}
       <div style={{ position:'absolute', inset:0, pointerEvents:'none', zIndex:0 }}>
@@ -319,7 +327,7 @@ export default function GithubStats() {
         <div style={{ position:'absolute', bottom:'5%', right:'5%', width:500, height:500, background:'radial-gradient(circle,rgba(192,132,252,0.05) 0%,transparent 70%)', borderRadius:'50%' }}/>
       </div>
 
-      <div style={{ maxWidth:1100, margin:'0 auto', padding:'0 32px', position:'relative', zIndex:1 }}>
+      <div style={{ maxWidth:1100, margin:'0 auto', padding: isMobile ? '0 16px' : '0 32px', position:'relative', zIndex:1 }}>
 
         {/* ── Title — matches portfolio heading style ── */}
         <div className="fade-in" style={{ textAlign:'center', marginBottom:56 }}>
@@ -333,8 +341,13 @@ export default function GithubStats() {
           </p>
         </div>
 
-        {/* ── Top 5 cards ── */}
-        <div className="fade-in" style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:12, marginBottom:14 }}>
+        {/* ── Top stats cards ── */}
+        <div className="fade-in" style={{ 
+          display:'grid', 
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)', 
+          gap: isMobile ? 8 : 12, 
+          marginBottom: 14 
+        }}>
           {topCards.map(({ icon:Icon, label, val, color })=>(
             <Panel key={label} accent={false} style={{ padding:'20px 12px', textAlign:'center' }}>
               {/* Coloured top bar */}
@@ -346,7 +359,7 @@ export default function GithubStats() {
               }}>
                 <Icon size={18} style={{ color }} />
               </div>
-              <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:24, color:'#fff', lineHeight:1 }}>
+              <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize: isMobile ? 20 : 24, color:'#fff', lineHeight:1 }}>
                 <CountUp value={val}/>
               </div>
               <div style={{ fontSize:11, color:'rgba(255,255,255,0.35)', marginTop:6, fontFamily:'Syne,sans-serif', letterSpacing:'0.4px' }}>
@@ -357,11 +370,16 @@ export default function GithubStats() {
         </div>
 
         {/* ── Main row ── */}
-        <div className="fade-in" style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:14, marginBottom:14 }}>
+        <div className="fade-in" style={{ 
+          display:'grid', 
+          gridTemplateColumns: isMobile ? '1fr' : '1.6fr 1fr', 
+          gap: 14, 
+          marginBottom: 14 
+        }}>
 
           {/* Left — profile + metrics + ring */}
-          <Panel hover={false} style={{ padding:30 }}>
-            <div style={{ display:'flex', gap:24, alignItems:'flex-start' }}>
+          <Panel hover={false} style={{ padding: isMobile ? 20 : 30 }}>
+            <div style={{ display:'flex', gap:24, alignItems:'flex-start', flexDirection: isMobile ? 'column' : 'row' }}>
               <div style={{ flex:1 }}>
                 {/* Profile */}
                 <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:26 }}>
@@ -407,8 +425,8 @@ export default function GithubStats() {
               <div style={{
                 background:'rgba(138,92,246,0.06)',
                 border:'1px solid rgba(138,92,246,0.18)',
-                borderRadius:18, padding:'22px 18px',
-                display:'flex', flexDirection:'column', alignItems:'center', gap:10, minWidth:150,
+                 borderRadius:18, padding:'22px 18px',
+                display:'flex', flexDirection:'column', alignItems:'center', gap:10, minWidth: isMobile ? '100%' : 150,
               }}>
                 <div style={{ fontSize:10, color:'rgba(255,255,255,0.3)', fontFamily:'Syne,sans-serif', fontWeight:700, letterSpacing:'1.5px', textTransform:'uppercase' }}>Top Language</div>
                 <Ring pct={data.topLangPct} color={LANG_COLORS[data.topLang]||'#8a5cf6'} size={110} stroke={8}>
@@ -438,7 +456,11 @@ export default function GithubStats() {
         </div>
 
         {/* ── Streak row ── */}
-        <div className="fade-in" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14 }}>
+        <div className="fade-in" style={{ 
+          display:'grid', 
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', 
+          gap: 14 
+        }}>
           {streakCards.map(({ icon:Icon, label, val, color, pct, suffix })=>(
             <Panel key={label} accent style={{ padding:'22px 26px' }}>
               <div style={{ display:'flex', alignItems:'center', gap:18 }}>
@@ -446,7 +468,7 @@ export default function GithubStats() {
                   <Icon size={16} style={{ color }}/>
                 </Ring>
                 <div>
-                  <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:28, color:'#fff', lineHeight:1 }}>
+                  <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize: isMobile ? 24 : 28, color:'#fff', lineHeight:1 }}>
                     <CountUp value={val}/>
                     {suffix && <span style={{ fontSize:13, color:'rgba(255,255,255,0.35)', marginLeft:4 }}>{suffix}</span>}
                   </div>

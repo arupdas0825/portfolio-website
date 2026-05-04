@@ -136,6 +136,14 @@ const TechBadge = ({ name, color }) => (
 
 export default function TechStack() {
   const titleRef = useRef(null);
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (!titleRef.current) return;
@@ -202,7 +210,7 @@ export default function TechStack() {
 
 
               {/* Icons Grid */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, paddingLeft: 40 }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: isMobile ? 10 : 16, paddingLeft: isMobile ? 0 : 40 }}>
                 {category.items.map((item) => (
                   <TechIcon key={item.name} src={item.icon} name={item.name} />
                 ))}
@@ -210,7 +218,7 @@ export default function TechStack() {
 
               {/* Badges Row (for DS/ML) */}
               {category.badges && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, paddingLeft: 40, marginTop: 20 }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingLeft: isMobile ? 0 : 40, marginTop: 20 }}>
                   {category.badges.map((badge) => (
                     <TechBadge key={badge.name} name={badge.name} color={badge.color} />
                   ))}
