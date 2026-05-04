@@ -21,9 +21,22 @@ const photos = [
 
 export default function Gallery() {
   const [selected, setSelected] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
   const fadeRefs = useRef([]);
   const titleRef = useRef(null);
   const addRef = (el) => { if (el && !fadeRefs.current.includes(el)) fadeRefs.current.push(el); };
+
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const MOBILE_LIMIT = 4;
+  const visiblePhotos = (isMobile && !isExpanded) ? photos.slice(0, MOBILE_LIMIT) : photos;
+  const hasMore = isMobile && !isExpanded && photos.length > MOBILE_LIMIT;
 
   // GSAP ScrollTrigger on heading
   useEffect(() => {
@@ -98,7 +111,7 @@ export default function Gallery() {
           viewport={{ once: true, margin: '-60px' }}
           variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
         >
-          {photos.map((photo, index) => (
+          {visiblePhotos.map((photo, index) => (
             <motion.div
               className="gallery-item fade-in"
               key={photo.id}
@@ -123,6 +136,28 @@ export default function Gallery() {
             </motion.div>
           ))}
         </motion.div>
+
+        {/* ── Mobile CTA: See More Photos ── */}
+        {hasMore && (
+          <div className="work-see-more fade-in" style={{ marginTop: 40 }} ref={addRef}>
+            <motion.button
+              className="work-see-more-btn"
+              onClick={() => setIsExpanded(true)}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            >
+              See More Photos
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 8 }}>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </motion.button>
+            <p className="work-see-more-hint">
+              {photos.length - MOBILE_LIMIT} more cinematic shots available
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Lightbox */}
