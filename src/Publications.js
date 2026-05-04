@@ -17,6 +17,7 @@ const ALL_PUBLICATIONS = [
     doi: "https://doi.org/10.1234/example",
     citations: 0,
     pdf: "/AI_Code_Translator_Research_Paper.pdf",
+    image: "/AI_Code_Translator_Research_Paper.png",
     publishedAt: "https://example.com/publication",
     color: "#8a5cf6",
   },
@@ -31,6 +32,7 @@ const ALL_PUBLICATIONS = [
     doi: "https://doi.org/10.5678/everbond",
     citations: 0,
     pdf: "/EverBond_Wealth_Research_Paper.pdf",
+    image: "/EverBond_Wealth_Research_Paper.png",
     publishedAt: "https://everbondwealth.com/research",
     color: "#10b981",
   },
@@ -137,6 +139,18 @@ export default function Publications({ featuredOnly = false }) {
                 </span>
                 <span className="pub-badge-year">{pub.year}</span>
               </div>
+
+              {/* Preview Image */}
+              {pub.image && (
+                <div className="pub-preview-img-container" onClick={() => { setModalPdf(pub.pdf); setPdfLoading(true); }}>
+                  <img src={pub.image} alt={pub.title} className="pub-preview-img" />
+                  <div className="pub-preview-overlay">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                    </svg>
+                  </div>
+                </div>
+              )}
 
               {/* Title */}
               <h3 className="pub-title-v2">{pub.title}</h3>
@@ -262,14 +276,20 @@ export default function Publications({ featuredOnly = false }) {
                   <p>Loading PDF…</p>
                 </div>
               )}
-              <iframe
-                src={modalPdf}
-                title="PDF Preview"
-                className="pub-pdf-iframe"
-                loading="lazy"
-                onLoad={() => setPdfLoading(false)}
-                style={{ opacity: pdfLoading ? 0 : 1, transition: 'opacity 0.3s' }}
-              />
+              {modalPdf.endsWith('.pdf') ? (
+                <iframe
+                  src={modalPdf}
+                  title="PDF Preview"
+                  className="pub-pdf-iframe"
+                  loading="lazy"
+                  onLoad={() => setPdfLoading(false)}
+                  style={{ opacity: pdfLoading ? 0 : 1, transition: 'opacity 0.3s' }}
+                />
+              ) : (
+                <div className="pub-image-preview-wrap">
+                  <img src={modalPdf} alt="Preview" className="pub-preview-full-img" onLoad={() => setPdfLoading(false)} />
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}

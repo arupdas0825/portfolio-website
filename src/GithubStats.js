@@ -124,6 +124,132 @@ const Ring = ({ pct, color, size=90, stroke=6, children }) => {
   );
 };
 
+/* ─── Contribution Heatmap ─── */
+const ContributionHeatmap = ({ rawData, isMobile }) => {
+  if (!rawData || rawData.length === 0) return null;
+
+  // Filter last 12 months
+  const lastYear = rawData.slice(-365);
+  
+  // Group by weeks (7 days each)
+  const weeks = [];
+  for (let i = 0; i < lastYear.length; i += 7) {
+    weeks.push(lastYear.slice(i, i + 7));
+  }
+
+  const getColor = (count) => {
+    if (count === 0) return 'rgba(255,255,255,0.04)';
+    if (count < 3) return '#0e4429';
+    if (count < 6) return '#006d32';
+    if (count < 9) return '#26a641';
+    return '#39d353';
+  };
+
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const monthLabels = [];
+  let lastMonth = -1;
+  
+  lastYear.forEach((d, i) => {
+    const date = new Date(d.date);
+    const m = date.getMonth();
+    if (m !== lastMonth) {
+      monthLabels.push({ name: months[m], index: Math.floor(i / 7) });
+      lastMonth = m;
+    }
+  });
+
+  return (
+    <div style={{ marginTop: 30, marginBottom: 40 }}>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: 12,
+        padding: isMobile ? '0 4px' : '0'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 12, height: 12, borderRadius: 2, background: '#39d353' }} />
+          <span style={{ fontSize: 13, fontFamily: 'Syne, sans-serif', fontWeight: 700, color: '#fff' }}>
+            Contribution Activity
+          </span>
+        </div>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Syne, sans-serif' }}>
+          Last 365 Days
+        </div>
+      </div>
+
+      <div style={{ 
+        background: 'rgba(255,255,255,0.02)', 
+        border: '1px solid rgba(255,255,255,0.06)', 
+        borderRadius: 16, 
+        padding: isMobile ? '12px 8px' : '18px 14px',
+        overflowX: 'auto',
+        position: 'relative'
+      }} className="hide-scrollbar">
+        <div style={{ minWidth: isMobile ? 750 : 'auto', display: 'flex', flexDirection: 'column', gap: 3 }}>
+          {/* Month labels */}
+          <div style={{ display: 'flex', height: 18, position: 'relative', marginBottom: 2 }}>
+            {monthLabels.map((m, i) => (
+              <span key={i} style={{ 
+                position: 'absolute', 
+                left: m.index * 13 + 28, 
+                fontSize: 9, 
+                color: 'rgba(255,255,255,0.3)',
+                fontFamily: 'Syne, sans-serif'
+              }}>
+                {m.name}
+              </span>
+            ))}
+          </div>
+
+          <div style={{ display: 'flex', gap: 3 }}>
+            {/* Day labels */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginRight: 6, marginTop: 2 }}>
+              {['Mon', 'Wed', 'Fri'].map(d => (
+                <span key={d} style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', height: 10, lineHeight: '10px' }}>{d}</span>
+              ))}
+            </div>
+
+            {/* Grid */}
+            <div style={{ display: 'flex', gap: 3 }}>
+              {weeks.map((week, wi) => (
+                <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  {week.map((day, di) => (
+                    <motion.div
+                      key={di}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: (wi * 0.01) + (di * 0.005) }}
+                      viewport={{ once: true }}
+                      style={{
+                        width: 10,
+                        height: 10,
+                        borderRadius: 2,
+                        background: getColor(day.count),
+                        cursor: 'pointer'
+                      }}
+                      title={`${day.date}: ${day.count} contributions`}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Legend */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end', marginTop: 12 }}>
+            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>Less</span>
+            {[0, 2, 5, 8, 12].map(c => (
+              <div key={c} style={{ width: 9, height: 9, borderRadius: 2, background: getColor(c) }} />
+            ))}
+            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>More</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function GithubStats() {
   const sectionRef = useRef(null);
   const [data, setData] = useState({
@@ -132,6 +258,7 @@ export default function GithubStats() {
     contributions:0, currentStreak:0, longestStreak:0,
     topLang:'JavaScript', topLangPct:67,
     languages:[], avatarUrl:'', name:'Arup Das',
+    rawContributions: [],
   });
   const [loaded, setLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -151,9 +278,9 @@ export default function GithubStats() {
     try {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
-        const { data, ts } = JSON.parse(cached);
-        if (Date.now() - ts < CACHE_TTL) {
-          setData(data); setLoaded(true); return;
+        const { data: cachedData, ts } = JSON.parse(cached);
+        if (Date.now() - ts < CACHE_TTL && cachedData.rawContributions && cachedData.rawContributions.length > 0) {
+          setData(cachedData); setLoaded(true); return;
         }
       }
     } catch(_) {}
@@ -193,7 +320,7 @@ export default function GithubStats() {
         }));
 
       /* 4 — Contributions via jogruber (all years) */
-      let contributions=0, currentStreak=0, longestStreak=0;
+      let contributions=0, currentStreak=0, longestStreak=0, rawContributions=[];
       try {
         const cd = await fetch(
           `https://github-contributions-api.jogruber.de/v4/${USERNAME}`
@@ -220,6 +347,9 @@ export default function GithubStats() {
           if(j>=0 && sorted[j].count===0) j--;
           while(j>=0 && sorted[j].count>0){ cs++; j--; }
           currentStreak = cs;
+          
+          // Store raw for heatmap
+          rawContributions = sorted;
         }
       } catch(e){ console.error('Contrib API error:', e); }
 
@@ -277,6 +407,7 @@ export default function GithubStats() {
         languages:sortedLangs,
         avatarUrl:user.avatar_url||'',
         name:user.name||'Arup Das',
+        rawContributions: rawContributions,
       };
       setData(freshData);
       // Save to cache
@@ -340,6 +471,7 @@ export default function GithubStats() {
             Real-time stats pulled live from GitHub API — bytes-accurate language breakdown.
           </p>
         </div>
+
 
         {/* ── Top stats cards ── */}
         <div className="fade-in" style={{ 
@@ -479,6 +611,11 @@ export default function GithubStats() {
               </div>
             </Panel>
           ))}
+        </div>
+
+        {/* ── Contribution Heatmap ── */}
+        <div className="fade-in">
+          <ContributionHeatmap rawData={data.rawContributions} isMobile={isMobile} />
         </div>
 
         {/* ── View profile ── */}
