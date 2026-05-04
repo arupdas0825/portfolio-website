@@ -6,6 +6,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const isMobileDevice = () => typeof window !== 'undefined' && window.innerWidth < 768;
+
 const photos = [
   { id: 1, src: "/photos/1.jpg", title: "Amber Awakening", desc: "A meditation on perception and intimacy—the human eye becomes a universe unto itself. The warm, honey-toned iris captures light like a sunset, reminding us that every moment of seeing is an act of connection between inner consciousness and outer reality." },
   { id: 2, src: "/photos/2.jpg", title: "Offerings of Devotion", desc: "In the chaos of the crowd, one man stands anchored in faith. The marigold garlands symbolize the persistence of tradition in modern India—a bridge between the spiritual and the everyday, where commerce and devotion share the same sacred space." },
@@ -22,21 +24,20 @@ const photos = [
 export default function Gallery() {
   const [selected, setSelected] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isMobile, setIsMobile] = useState(isMobileDevice());
   const fadeRefs = useRef([]);
   const titleRef = useRef(null);
   const addRef = (el) => { if (el && !fadeRefs.current.includes(el)) fadeRefs.current.push(el); };
 
-  const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
+    const checkMobile = () => setIsMobile(isMobileDevice());
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   const MOBILE_LIMIT = 4;
   const visiblePhotos = (isMobile && !isExpanded) ? photos.slice(0, MOBILE_LIMIT) : photos;
-  const hasMore = isMobile && !isExpanded && photos.length > MOBILE_LIMIT;
+  const showButton = isMobile && !isExpanded && photos.length > MOBILE_LIMIT;
 
   // GSAP ScrollTrigger on heading
   useEffect(() => {
@@ -57,12 +58,27 @@ export default function Gallery() {
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => entries.forEach(e => e.isIntersecting && e.target.classList.add('visible')),
-      { threshold: 0.08 }
+      (entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            observer.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.05 }
     );
-    fadeRefs.current.forEach(el => el && observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+    
+    // Use a small delay to ensure refs are populated after state changes
+    const timeout = setTimeout(() => {
+      fadeRefs.current.forEach(el => el && observer.observe(el));
+    }, 100);
+
+    return () => {
+      clearTimeout(timeout);
+      observer.disconnect();
+    };
+  }, [isMobile, isExpanded]);
 
 
   // ✅ useCallback — ESLint exhaustive-deps fix
@@ -138,8 +154,8 @@ export default function Gallery() {
         </motion.div>
 
         {/* ── Mobile CTA: See More Photos ── */}
-        {hasMore && (
-          <div className="work-see-more fade-in" style={{ marginTop: 40 }} ref={addRef}>
+        {showButton && (
+          <div className="work-see-more visible" style={{ marginTop: 40, opacity: 1 }}>
             <motion.button
               className="work-see-more-btn"
               onClick={() => setIsExpanded(true)}
