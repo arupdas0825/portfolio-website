@@ -1,11 +1,10 @@
 /**
  * Home.js — Hero section
- * Visual: Hero3DComputer (desktop) / MobileHero CSS fallback (touch)
+ * Visual: Clean futuristic CSS coding monitor (all devices)
  * Content: ALL original text, buttons, socials preserved exactly.
  */
 
-import React, { useEffect, useRef, useState, Component } from 'react';
-import Hero3DComputer from './components/Hero3DComputer';
+import React, { useEffect, useRef, useState } from 'react';
 
 // Mobile detection — safe at module level in CRA (browser env)
 const IS_TOUCH = typeof window !== 'undefined' &&
@@ -13,36 +12,115 @@ const IS_TOUCH = typeof window !== 'undefined' &&
    'ontouchstart' in window ||
    navigator.maxTouchPoints > 0);
 
-/* ── Error boundary wrapping the 3D canvas ──────────────────────────────── */
-class Hero3DBoundary extends Component {
-  constructor(props) { super(props); this.state = { crashed: false }; }
-  static getDerivedStateFromError() { return { crashed: true }; }
-  componentDidCatch(err) { console.warn('[Hero3DComputer] crashed, showing fallback:', err.message); }
-  render() {
-    return this.state.crashed ? <MobileHeroVisual /> : this.props.children;
-  }
-}
+/* ── Futuristic Coding Monitor ──────────────────────────────────────────── */
+const CODE_LINES = [
+  { text: 'const ai = await NeuralEngine.init();', color: '#c084fc' },
+  { text: 'const portfolio = new Portfolio({', color: '#818cf8' },
+  { text: '  owner: "Arup Das",', color: '#67e8f9' },
+  { text: '  role: "AI/ML Engineer",', color: '#67e8f9' },
+  { text: '  stack: ["React", "Python", "Node"],', color: '#86efac' },
+  { text: '  status: "building the future"', color: '#fbbf24' },
+  { text: '});', color: '#818cf8' },
+  { text: '', color: 'transparent' },
+  { text: 'await portfolio.deploy(); // ✓ Live', color: '#4ade80' },
+];
 
-/* ── Lightweight CSS-only mobile hero visual ─────────────────────────────── */
-function MobileHeroVisual() {
+function FuturisticMonitor() {
+  const [typedLines, setTypedLines] = useState(0);
+  const [cursorVisible, setCursorVisible] = useState(true);
+
+  // Typing animation — reveal lines one by one
+  useEffect(() => {
+    if (typedLines >= CODE_LINES.length) {
+      // Reset after a pause
+      const reset = setTimeout(() => setTypedLines(0), 4000);
+      return () => clearTimeout(reset);
+    }
+    const timer = setTimeout(() => {
+      setTypedLines(prev => prev + 1);
+    }, 400 + Math.random() * 200);
+    return () => clearTimeout(timer);
+  }, [typedLines]);
+
+  // Cursor blink
+  useEffect(() => {
+    const interval = setInterval(() => setCursorVisible(v => !v), 530);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="mobile-hero-visual" aria-label="Developer illustration">
-      <div className="mhv-monitor">
-        <div className="mhv-screen">
-          <div className="mhv-dots"><span /><span /><span /></div>
-          <div className="mhv-line l1" />
-          <div className="mhv-line l2" />
-          <div className="mhv-line l3" />
-          <div className="mhv-line l4" />
-          <div className="mhv-line l5" />
-          <div className="mhv-cursor-blink" />
+    <div className="fm-container">
+      {/* Ambient glow behind monitor */}
+      <div className="fm-ambient-glow" />
+
+      {/* Floating badge — top left */}
+      <div className="fm-badge fm-badge--top">
+        <span className="fm-badge__dot" />
+        const ai = new Model()
+      </div>
+
+      {/* Floating badge — bottom right */}
+      <div className="fm-badge fm-badge--bottom">
+        <svg width="12" height="12" fill="none" stroke="#4ade80" strokeWidth="2.5" viewBox="0 0 24 24">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+        Build successful
+      </div>
+
+      {/* Monitor */}
+      <div className="fm-monitor">
+        {/* Neon border glow */}
+        <div className="fm-monitor__glow" />
+
+        {/* Screen */}
+        <div className="fm-screen">
+          {/* Top bar */}
+          <div className="fm-screen__topbar">
+            <div className="fm-screen__dots">
+              <span className="fm-dot fm-dot--red" />
+              <span className="fm-dot fm-dot--yellow" />
+              <span className="fm-dot fm-dot--green" />
+            </div>
+            <span className="fm-screen__title">neural-core.sh</span>
+            <div className="fm-screen__dots-spacer" />
+          </div>
+
+          {/* Code area */}
+          <div className="fm-code">
+            {CODE_LINES.map((line, i) => (
+              <div
+                key={i}
+                className={`fm-code__line ${i < typedLines ? 'fm-code__line--visible' : ''}`}
+                style={{ transitionDelay: `${i * 0.05}s` }}
+              >
+                <span className="fm-code__num">{String(i + 1).padStart(2, '0')}</span>
+                <span className="fm-code__text" style={{ color: line.color }}>
+                  {line.text}
+                </span>
+                {i === typedLines - 1 && cursorVisible && (
+                  <span className="fm-code__cursor" />
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom status bar */}
+          <div className="fm-screen__statusbar">
+            <span>UTF-8</span>
+            <span>JavaScript</span>
+            <span className="fm-status__live">
+              <span className="fm-status__dot" />
+              Live
+            </span>
+          </div>
         </div>
       </div>
-      <div className="mhv-stand" />
-      <div className="mhv-base" />
-      {/* Floating badge */}
-      <div className="mhv-badge mhv-badge-1">const ai = new Model()</div>
-      <div className="mhv-badge mhv-badge-2">✓ Build successful</div>
+
+      {/* Stand */}
+      <div className="fm-stand">
+        <div className="fm-stand__neck" />
+        <div className="fm-stand__base" />
+      </div>
     </div>
   );
 }
@@ -143,15 +221,9 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── RIGHT: 3D computer (desktop) or CSS mock (mobile) ── */}
+      {/* ── RIGHT: Clean futuristic monitor ── */}
       <div className='hero-visual fade-in' ref={addRef} style={{ animationDelay: '0.2s' }}>
-        {IS_TOUCH ? (
-          <MobileHeroVisual />
-        ) : (
-          <Hero3DBoundary>
-            <Hero3DComputer />
-          </Hero3DBoundary>
-        )}
+        <FuturisticMonitor />
       </div>
     </section>
   );
