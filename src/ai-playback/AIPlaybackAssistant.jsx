@@ -135,7 +135,7 @@ function SpeedSelector({ speed, onChangeSpeed }) {
   );
 }
 
-// ── Floating Start Button ─────────────────────────────────────────────────
+// ── Floating Start Button (Desktop) ───────────────────────────────────────
 function StartButton({ onClick }) {
   return (
     <motion.button
@@ -156,6 +156,32 @@ function StartButton({ onClick }) {
       <svg className="ai-start-btn__arrow" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
         <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
+    </motion.button>
+  );
+}
+
+// ── Compact AI Trigger (Mobile) ───────────────────────────────────────────
+function CompactTrigger({ onClick }) {
+  return (
+    <motion.button
+      className="ai-compact-trigger"
+      onClick={onClick}
+      initial={{ opacity: 0, scale: 0.5, rotate: -20 }}
+      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+      exit={{ opacity: 0, scale: 0.5, rotate: 20 }}
+      whileTap={{ scale: 0.9 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+    >
+      <div className="ai-compact-trigger__glow" />
+      <div className="ai-compact-trigger__orb">
+        <AIOrb isActive={false} size={36} />
+      </div>
+      <div className="ai-compact-trigger__pulse" />
+      
+      {/* Tooltip-like label */}
+      <div className="ai-compact-trigger__label">
+        <span>AI PLAYBACK</span>
+      </div>
     </motion.button>
   );
 }
@@ -502,10 +528,14 @@ export default function AIPlaybackAssistant() {
 
   return (
     <>
-      {/* Start Button — shown when idle */}
+      {/* Start Trigger — shown when idle */}
       <AnimatePresence>
         {!playback.isActive && (
-          <StartButton onClick={handleStart} />
+          isMobile ? (
+            <CompactTrigger onClick={handleStart} />
+          ) : (
+            <StartButton onClick={handleStart} />
+          )
         )}
       </AnimatePresence>
 

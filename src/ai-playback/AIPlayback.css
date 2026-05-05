@@ -147,13 +147,140 @@
   opacity: 1; transform: translateX(3px);
 }
 
-/* Mobile start button */
+/* Mobile start button — replaced by compact trigger */
 @media (max-width: 767px) {
   .ai-start-btn {
-    bottom: 110px; right: 16px; left: 16px;
-    justify-content: center; border-radius: 20px;
-    padding: 16px 20px;
+    display: none;
   }
+}
+
+/* ── COMPACT TRIGGER (MOBILE) ────────────────────────────────────────── */
+.ai-compact-trigger {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 10px) + 12px);
+  right: 16px;
+  z-index: 10001; /* Above almost everything */
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 12, 26, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(138, 92, 246, 0.4);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 
+    0 8px 32px rgba(0,0,0,0.4),
+    0 0 15px rgba(138, 92, 246, 0.2);
+  animation: compactBreathing 4s ease-in-out infinite;
+}
+
+@keyframes compactBreathing {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.ai-compact-trigger__glow {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(138, 92, 246, 0.3) 0%, transparent 70%);
+  filter: blur(8px);
+  z-index: -1;
+  animation: compactGlowPulse 3s ease-in-out infinite;
+}
+
+.ai-compact-trigger__pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(138, 92, 246, 0.6);
+  pointer-events: none;
+  animation: compactPulse 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+}
+
+.ai-compact-trigger__label {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: rgba(15, 12, 26, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(138, 92, 246, 0.3);
+  padding: 4px 10px;
+  border-radius: 8px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.ai-compact-trigger__label span {
+  font-family: 'Syne', sans-serif;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #a78bfa;
+}
+
+@keyframes compactGlowPulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes compactPulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* ── MOBILE TOPBAR BRANDING ────────────────────────────────────────── */
+.mobile-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding-top: env(safe-area-inset-top, 10px);
+  height: auto;
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 16px;
+  padding-right: 16px;
+  z-index: 10000;
+  pointer-events: none; /* Let clicks pass through except on children */
+}
+
+.mobile-logo-wrap {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(20, 15, 40, 0.6);
+  backdrop-filter: blur(20px);
+  padding: 8px 16px;
+  border-radius: 40px;
+  border: 1px solid rgba(138, 92, 246, 0.3);
+  margin-top: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.mobile-logo-icon {
+  width: 18px;
+  height: 18px;
+  color: #fff;
+}
+
+.mobile-logo-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #a78bfa 0%, #8a5cf6 30%, #22d3ee 70%, #a78bfa 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: gradientLoop 3s linear infinite;
 }
 
 /* ══════════════════════════════════════════════════════════════════════
