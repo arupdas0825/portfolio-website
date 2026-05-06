@@ -160,31 +160,8 @@ function StartButton({ onClick }) {
   );
 }
 
-// ── Compact AI Trigger (Mobile) ───────────────────────────────────────────
-function CompactTrigger({ onClick }) {
-  return (
-    <motion.button
-      className="ai-compact-trigger"
-      onClick={onClick}
-      initial={{ opacity: 0, scale: 0.5, rotate: -20 }}
-      animate={{ opacity: 1, scale: 1, rotate: 0 }}
-      exit={{ opacity: 0, scale: 0.5, rotate: 20 }}
-      whileTap={{ scale: 0.9 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-    >
-      <div className="ai-compact-trigger__glow" />
-      <div className="ai-compact-trigger__orb">
-        <AIOrb isActive={false} size={36} />
-      </div>
-      <div className="ai-compact-trigger__pulse" />
-      
-      {/* Tooltip-like label */}
-      <div className="ai-compact-trigger__label">
-        <span>AI PLAYBACK</span>
-      </div>
-    </motion.button>
-  );
-}
+// Removed CompactTrigger - now integrated into MobileHeader
+
 
 // ══════════════════════════════════════════════════════════════════════════
 // ── DESKTOP PANEL ─────────────────────────────────────────────────────────
@@ -528,16 +505,13 @@ export default function AIPlaybackAssistant() {
 
   return (
     <>
-      {/* Start Trigger — shown when idle */}
+      {/* Start Trigger — shown when idle (Desktop Only now) */}
       <AnimatePresence>
-        {!playback.isActive && (
-          isMobile ? (
-            <CompactTrigger onClick={handleStart} />
-          ) : (
-            <StartButton onClick={handleStart} />
-          )
+        {!playback.isActive && !isMobile && (
+          <StartButton onClick={handleStart} />
         )}
       </AnimatePresence>
+
 
       {/* Active Playback UI */}
       <AnimatePresence>

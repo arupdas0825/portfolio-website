@@ -19,28 +19,52 @@ import WorkPage        from './WorkPage';
 import WelcomeScreen   from './WelcomeScreen';
 import PhotographyGallery from './PhotographyGallery';
 import AIPlaybackAssistant from './ai-playback/AIPlaybackAssistant';
+import usePlaybackStore from './ai-playback/usePlaybackStore';
 import './App.css';
+
 
 const IS_TOUCH = typeof window !== 'undefined' &&
   (window.matchMedia('(pointer: coarse)').matches ||
    'ontouchstart' in window ||
    navigator.maxTouchPoints > 0);
 
-function MobileTopBar() {
+function MobileHeader() {
+  const playback = usePlaybackStore();
   if (!IS_TOUCH) return null;
+
   return (
-    <div className="mobile-topbar">
-      <div className="mobile-logo-wrap" onClick={() => window.location.reload()}>
-        <svg className="mobile-logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <polygon points="12 2 2 7 12 12 22 7 12 2" />
-          <polyline points="2 17 12 22 22 17" />
-          <polyline points="2 12 12 17 22 12" />
-        </svg>
-        <span className="mobile-logo-text">arup.dev</span>
+    <div className="mobile-header-container">
+      <div className="mobile-header-glass">
+        {/* Logo Section */}
+        <div className="mobile-logo-wrap" onClick={() => window.location.reload()}>
+          <svg className="mobile-logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2" />
+            <polyline points="2 17 12 22 22 17" />
+            <polyline points="2 12 12 17 22 12" />
+          </svg>
+          <span className="mobile-logo-text">arup.dev</span>
+        </div>
+
+        {/* Separator */}
+        <div className="mobile-header-sep" />
+
+        {/* AI Playback Trigger */}
+        <button 
+          className={`mobile-ai-trigger ${playback.isActive ? 'active' : ''}`}
+          onClick={() => !playback.isActive && playback.start()}
+        >
+          <div className="mobile-ai-orb">
+            <div className="ai-orb-inner" />
+          </div>
+          <span className="mobile-ai-label">
+            {playback.isActive ? 'PRESENTING' : 'AI PLAYBACK'}
+          </span>
+        </button>
       </div>
     </div>
   );
 }
+
 
 
 function PortfolioHome({ onAdminOpen }) {
@@ -101,8 +125,12 @@ export default function App() {
           <div className="blob blob-2" />
           <div className="blob blob-3" />
           {!IS_TOUCH && <CustomCursor />}
+          
+          {/* ── Mobile Header (Logo + AI) ── */}
+          <MobileHeader />
 
           <div style={{ position: 'relative', zIndex: 10 }}>
+
             <Routes>
               <Route
                 path="/"
@@ -113,10 +141,8 @@ export default function App() {
             </Routes>
             {adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
 
-            {/* ── Mobile Top Navigation (Logo) ── */}
-            <MobileTopBar />
-
             {/* ── AI Playback Assistant (floating overlay) ── */}
+
             <AIPlaybackAssistant />
           </div>
         </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { LucideChevronLeft, LucideChevronRight, LucideX } from 'lucide-react';
+import { LucideChevronLeft, LucideChevronRight, LucideX, LucideArrowRight } from 'lucide-react';
+
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -139,11 +140,14 @@ export default function Gallery() {
             <motion.button
               className="pg-see-more-btn"
               onClick={() => navigate('/photography-gallery')}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+
             >
               See More Photos
-              <LucideChevronRight size={18} />
+              <LucideArrowRight size={16} />
+
             </motion.button>
           </div>
         )}
