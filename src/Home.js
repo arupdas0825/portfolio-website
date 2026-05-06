@@ -12,7 +12,39 @@ const IS_TOUCH = typeof window !== 'undefined' &&
    'ontouchstart' in window ||
    navigator.maxTouchPoints > 0);
 
+/* ── Neural Core Visual (Mobile Premium) ─────────────────────────────────── */
+const NeuralCoreVisual = () => {
+  return (
+    <div className="nc-container">
+      <div className="nc-core">
+        <div className="nc-orb">
+          <div className="nc-orb-inner" />
+          <div className="nc-orb-pulse" />
+        </div>
+        <div className="nc-ring nc-ring--1" />
+        <div className="nc-ring nc-ring--2" />
+        <div className="nc-ring nc-ring--3" />
+        <div className="nc-glow" />
+      </div>
+      
+      {/* Abstract floating data fragments */}
+      <div className="nc-data-cloud">
+        <div className="nc-data-point p1" />
+        <div className="nc-data-point p2" />
+        <div className="nc-data-point p3" />
+        <div className="nc-data-point p4" />
+      </div>
+
+      <div className="nc-label">
+        <span className="nc-label-dot" />
+        NEURAL SYSTEM ACTIVE
+      </div>
+    </div>
+  );
+};
+
 /* ── Futuristic Coding Monitor ──────────────────────────────────────────── */
+
 const CODE_LINES = [
   { text: 'const ai = await NeuralEngine.init();', color: '#c084fc' },
   { text: 'const portfolio = new Portfolio({', color: '#818cf8' },
@@ -160,7 +192,17 @@ const IconPath = {
 
 export default function Home() {
   const fadeRefs  = useRef([]);
+  const [isMobile, setIsMobile] = useState(false);
+
   const typedText = useTypewriter(ROLES);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -178,17 +220,18 @@ export default function Home() {
     <section className='home-section'>
       {/* ── LEFT: all original text & buttons ── */}
       <div className='hero-left fade-in' ref={addRef}>
-        <div className='hero-badge'><span className='badge-dot' />Available for opportunities</div>
-        <div className='hero-code-tag'>&lt; HELLO WORLD /&gt;</div>
+        <div className='hero-badge'><span className='badge-dot' />Senior AI & Full-Stack Architect</div>
+        <div className='hero-code-tag'>&lt; SYSTEM ARCHITECT /&gt;</div>
         <h1 className='hero-name'>Hi, I'm Arup Das</h1>
         <div className='hero-role-wrap'>
           <span className='hero-role-text'>{typedText}</span>
           <span className='hero-cursor'>|</span>
         </div>
         <p className='hero-desc'>
-          I'm a B.Tech CSE (AIML) student at Brainware University, Kolkata — building immersive
-          AI-powered digital systems with design precision and engineering excellence.
+          Engineering next-generation AI platforms and high-performance digital architectures. 
+          Focusing on cinematic user experiences and scalable technical excellence.
         </p>
+
         <div className='hero-location'>
           <span>
             <svg width='14' height='14' fill='currentColor' viewBox='0 0 24 24'><path d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z' /></svg>
@@ -221,10 +264,11 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── RIGHT: Clean futuristic monitor ── */}
+      {/* ── RIGHT: Visual Section ── */}
       <div className='hero-visual fade-in' ref={addRef} style={{ animationDelay: '0.2s' }}>
-        <FuturisticMonitor />
+        {isMobile ? <NeuralCoreVisual /> : <FuturisticMonitor />}
       </div>
+
     </section>
   );
 }
