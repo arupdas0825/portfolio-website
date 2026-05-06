@@ -20,12 +20,11 @@ const langColors = {
 
 const REPO_IMAGES = {
   'scientific-calculator': '/scientific-calculator.jpeg',
-
   'ai-code-translator': '/ai-code-translator.png',
   'arupdas0825': '/arupdas0825.jpeg',
   'client-portfolio': '/client-portfolio.png',
   'EverBond-Wealth': '/EverBond-Wealth.png',
-  'portfolio-website': '/portfolio-website.png',
+  'portfolio-website': '/portfolio-website.jpeg',
   'sentiment-analysis-project': '/sentiment-analysis-project.png',
   'streamnest': '/streamnest.png',
   'algorithm-visualizer': '/algorithm-visualizer.png',
@@ -33,6 +32,7 @@ const REPO_IMAGES = {
   'studytra': '/studytra.png',
   'sahasrajit-foundation': '/sahasrajit-foundation.png',
   'Hiresight-ai': '/Hiresight-ai.png',
+  'LocalCare-Finder-Android': '/LocalCare-Finder-Android.jpeg',
 };
 
 const REPO_HOMEPAGES = {
