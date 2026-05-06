@@ -19,7 +19,8 @@ const langColors = {
 };
 
 const REPO_IMAGES = {
-  'scientific-calculator': '/scientific-calculator.png',
+  'scientific-calculator': '/scientific-calculator.jpeg',
+
   'ai-code-translator': '/ai-code-translator.png',
   'arupdas0825': '/arupdas0825.jpeg',
   'client-portfolio': '/client-portfolio.png',
