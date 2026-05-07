@@ -3,7 +3,8 @@ import { motion, animate } from 'framer-motion';
 import {
   Star, GitFork, Package, Users, UserPlus,
   Github, Trophy, Zap, Clock, Code2,
-  GitCommitHorizontal, GitPullRequest, CircleDot, GitBranch
+  GitCommitHorizontal, GitPullRequest, CircleDot, GitBranch,
+  Brain, Rocket
 } from 'lucide-react';
 
 const USERNAME = 'arupdas0825';
@@ -124,20 +125,98 @@ const Ring = ({ pct, color, size=90, stroke=6, children }) => {
   );
 };
 
+/* ─── Side Panel Component ─── */
+const SidePanel = ({ title, items, icon: Icon, color }) => (
+  <Panel style={{ padding: '24px 20px', flex: 1 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+      <div style={{ 
+        width: 32, height: 32, borderRadius: 8, 
+        background: `${color}12`, border: `1px solid ${color}25`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center'
+      }}>
+        <Icon size={16} style={{ color }} />
+      </div>
+      <span style={{ 
+        fontFamily: 'Syne, sans-serif', 
+        fontWeight: 800, 
+        fontSize: 11, 
+        color: '#fff', 
+        letterSpacing: '1.5px', 
+        textTransform: 'uppercase' 
+      }}>
+        {title}
+      </span>
+    </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {items.map((item, idx) => (
+        <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ 
+            width: 5, 
+            height: 5, 
+            borderRadius: '50%', 
+            background: color, 
+            boxShadow: `0 0 8px ${color}` 
+          }} />
+          <span style={{ 
+            fontSize: 12, 
+            color: 'rgba(255,255,255,0.55)', 
+            fontFamily: 'DM Sans, sans-serif',
+            fontWeight: 500
+          }}>
+            {item}
+          </span>
+        </div>
+      ))}
+    </div>
+  </Panel>
+);
+
 /* ─── Contribution Heatmap ─── */
-const ContributionHeatmap = ({ rawData, isMobile }) => {
+const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
   if (!rawData || rawData.length === 0) return null;
 
-  // Filter last 12 months
-  const lastYear = rawData.slice(-365);
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const yearToUse = selectedYear || 2026;
+  const contribMap = new Map(rawData.map(d => [d.date, d]));
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  // 1. Generate full year grid (Jan 1 to Dec 31)
+  const startDate = new Date(Date.UTC(yearToUse, 0, 1));
+  const endDate = new Date(Date.UTC(yearToUse, 11, 31));
   
-  // Group by weeks (7 days each)
+  // Align to Monday on or before Jan 1
+  let iterDate = new Date(startDate);
+  while (iterDate.getUTCDay() !== 1) {
+    iterDate.setUTCDate(iterDate.getUTCDate() - 1);
+  }
+  
   const weeks = [];
-  for (let i = 0; i < lastYear.length; i += 7) {
-    weeks.push(lastYear.slice(i, i + 7));
+  let currentWeek = new Array(7).fill(null);
+  
+  while (iterDate <= endDate || currentWeek.some(d => d !== null)) {
+    const dayIdx = (iterDate.getUTCDay() + 6) % 7;
+    const dateStr = iterDate.toISOString().split('T')[0];
+    
+    let dayData = null;
+    if (iterDate.toISOString().split('T')[0] > todayStr) {
+       dayData = { date: dateStr, count: null };
+    } else {
+       const contrib = contribMap.get(dateStr);
+       dayData = contrib || { date: dateStr, count: 0 };
+    }
+    
+    currentWeek[dayIdx] = dayData;
+    
+    if (dayIdx === 6) {
+      weeks.push(currentWeek);
+      currentWeek = new Array(7).fill(null);
+      if (iterDate >= endDate) break;
+    }
+    iterDate.setUTCDate(iterDate.getUTCDate() + 1);
   }
 
   const getColor = (count) => {
+    if (count === null) return 'rgba(255,255,255,0.02)'; // Future
     if (count === 0) return 'rgba(255,255,255,0.04)';
     if (count < 3) return '#0e4429';
     if (count < 6) return '#006d32';
@@ -145,16 +224,20 @@ const ContributionHeatmap = ({ rawData, isMobile }) => {
     return '#39d353';
   };
 
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  // 3. Generate month labels
   const monthLabels = [];
   let lastMonth = -1;
-  
-  lastYear.forEach((d, i) => {
-    const date = new Date(d.date);
-    const m = date.getMonth();
-    if (m !== lastMonth) {
-      monthLabels.push({ name: months[m], index: Math.floor(i / 7) });
-      lastMonth = m;
+  weeks.forEach((week, wi) => {
+    const firstValidDay = week.find(d => d !== null);
+    if (firstValidDay) {
+      const dObj = new Date(firstValidDay.date);
+      if (dObj.getUTCFullYear() === yearToUse) {
+        const m = dObj.getUTCMonth();
+        if (m !== lastMonth) {
+          monthLabels.push({ name: months[m], index: wi });
+          lastMonth = m;
+        }
+      }
     }
   });
 
@@ -205,8 +288,16 @@ const ContributionHeatmap = ({ rawData, isMobile }) => {
           <div style={{ display: 'flex', gap: 3 }}>
             {/* Day labels */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginRight: 6, marginTop: 2 }}>
-              {['Mon', 'Wed', 'Fri'].map(d => (
-                <span key={d} style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', height: 10, lineHeight: '10px' }}>{d}</span>
+              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => (
+                <span key={d} style={{ 
+                  fontSize: 9, 
+                  color: 'rgba(255,255,255,0.2)', 
+                  height: 10, 
+                  lineHeight: '10px',
+                  fontFamily: 'Syne, sans-serif'
+                }}>
+                  {d}
+                </span>
               ))}
             </div>
 
@@ -225,10 +316,10 @@ const ContributionHeatmap = ({ rawData, isMobile }) => {
                         width: 10,
                         height: 10,
                         borderRadius: 2,
-                        background: getColor(day.count),
-                        cursor: 'pointer'
+                        background: day ? getColor(day.count) : 'transparent',
+                        cursor: day ? 'pointer' : 'default'
                       }}
-                      title={`${day.date}: ${day.count} contributions`}
+                      title={day ? `${day.date}: ${day.count} contributions` : ''}
                     />
                   ))}
                 </div>
@@ -262,6 +353,7 @@ export default function GithubStats() {
   });
   const [loaded, setLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [selectedYear, setSelectedYear] = useState(2026);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 992);
@@ -613,9 +705,59 @@ export default function GithubStats() {
           ))}
         </div>
 
-        {/* ── Contribution Heatmap ── */}
-        <div className="fade-in">
-          <ContributionHeatmap rawData={data.rawContributions} isMobile={isMobile} />
+        {/* ── Contribution Section ── */}
+        <div className="fade-in" style={{ 
+          display: 'grid', 
+          gridTemplateColumns: isMobile ? '1fr' : '1fr auto', 
+          gap: isMobile ? 20 : 30,
+          alignItems: 'start'
+        }}>
+          {/* Left — Heatmap */}
+          <div style={{ flex: 1, overflow: 'hidden' }}>
+            <ContributionHeatmap 
+              rawData={data.rawContributions} 
+              isMobile={isMobile} 
+              selectedYear={selectedYear}
+            />
+          </div>
+
+          {/* Right — Vertical Year Sidebar */}
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: isMobile ? 'row' : 'column', 
+            gap: 8, 
+            marginTop: isMobile ? 0 : 30,
+            justifyContent: isMobile ? 'flex-start' : 'flex-start',
+            minWidth: isMobile ? 'auto' : 80
+          }}>
+            {[2026, 2025, 2024].map(y => {
+              const active = selectedYear === y;
+              return (
+                <button 
+                  key={y}
+                  onClick={() => setSelectedYear(y)}
+                  style={{
+                    padding: isMobile ? '6px 16px' : '10px 0',
+                    borderRadius: 10,
+                    fontSize: 13,
+                    fontFamily: 'Syne, sans-serif',
+                    fontWeight: 800,
+                    background: active ? 'rgba(138, 92, 246, 0.15)' : 'rgba(255,255,255,0.03)',
+                    border: `1px solid ${active ? 'rgba(138, 92, 246, 0.4)' : 'rgba(255,255,255,0.06)'}`,
+                    color: active ? '#fff' : 'rgba(255,255,255,0.3)',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    boxShadow: active ? '0 0 20px rgba(138, 92, 246, 0.2)' : 'none',
+                    textAlign: 'center',
+                    minWidth: isMobile ? 'auto' : 70,
+                    letterSpacing: '1px'
+                  }}
+                >
+                  {y}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* ── View profile ── */}

@@ -434,6 +434,7 @@ const Work = () => {
   const [languages, setLanguages] = useState(['All']);
   const [selected, setSelected] = useState(null);
   const [isMobile, setIsMobile] = useState(isMobileDevice);
+  const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
 
   // Track viewport changes
@@ -511,6 +512,18 @@ const Work = () => {
     fetchAllRepos();
   }, []);
 
+  const filtered = filter === 'All' ? repos : repos.filter(r => r.language === filter);
+  
+  const DESKTOP_LIMIT = 6;
+  // On mobile: cap at MOBILE_LIMIT cards in the homepage section
+  // On desktop: cap at DESKTOP_LIMIT cards initially
+  const visibleRepos = isMobile 
+    ? filtered.slice(0, MOBILE_LIMIT) 
+    : (isExpanded ? filtered : filtered.slice(0, DESKTOP_LIMIT));
+    
+  const hasMoreMobile = isMobile && filtered.length > MOBILE_LIMIT;
+  const hasMoreDesktop = !isMobile && filtered.length > DESKTOP_LIMIT;
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }),
@@ -518,13 +531,9 @@ const Work = () => {
     );
     fadeRefs.current.forEach(el => el && observer.observe(el));
     return () => observer.disconnect();
-  }, [repos]);
+  }, [visibleRepos]);
 
   const addRef = el => { if (el && !fadeRefs.current.includes(el)) fadeRefs.current.push(el); };
-  const filtered = filter === 'All' ? repos : repos.filter(r => r.language === filter);
-  // On mobile: cap at MOBILE_LIMIT cards in the homepage section
-  const visibleRepos = isMobile ? filtered.slice(0, MOBILE_LIMIT) : filtered;
-  const hasMore = isMobile && filtered.length > MOBILE_LIMIT;
 
   return (
     <section id="work" className="page-section">
@@ -561,61 +570,67 @@ const Work = () => {
         {!loading && (
           <>
             <div className="projects-grid">
-              {visibleRepos.map((repo, idx) => (
-                <motion.div
-                  key={repo.id}
-                  className="project-card fade-in"
-                  ref={addRef}
-                  style={{ animationDelay: `${(idx % 6) * 0.08}s`, cursor: 'pointer' }}
-                  onClick={() => setSelected(repo)}
-                  whileHover={{ y: -6, boxShadow: '0 20px 50px rgba(138,92,246,0.25)' }}
-                  transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-                >
-                  <div className="project-thumb" style={{
-                    background: REPO_IMAGES[repo.name]
-                      ? `url(${REPO_IMAGES[repo.name]}) center/cover no-repeat`
-                      : `linear-gradient(135deg,${(langColors[repo.language] || langColors.default)}18,rgba(10,8,18,0.9))`
-                  }}>
-                    {!REPO_IMAGES[repo.name] && (
-                      <div className="project-thumb-icon" style={{ fontSize: '2rem' }}>{getRepoEmoji(repo.language)}</div>
-                    )}
-                    <div className="repo-meta-overlay">
-                      <span><LucideStar size={11} /> {repo.stargazers_count}</span>
-                      <span><LucideGitFork size={11} /> {repo.forks_count}</span>
-                    </div>
-                    <div style={{
-                      position: 'absolute', bottom: 10, left: 12,
-                      display: 'flex', alignItems: 'center', gap: 5,
-                      fontSize: 10, color: 'rgba(255,255,255,0.4)',
-                      fontFamily: 'Syne,sans-serif',
+              <AnimatePresence mode="popLayout">
+                {visibleRepos.map((repo, idx) => (
+                  <motion.div
+                    key={repo.id}
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="project-card fade-in"
+                    ref={addRef}
+                    style={{ animationDelay: `${(idx % 6) * 0.08}s`, cursor: 'pointer' }}
+                    onClick={() => setSelected(repo)}
+                    whileHover={{ y: -6, boxShadow: '0 20px 50px rgba(138,92,246,0.25)' }}
+                    transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+                  >
+                    <div className="project-thumb" style={{
+                      background: REPO_IMAGES[repo.name]
+                        ? `url(${REPO_IMAGES[repo.name]}) center/cover no-repeat`
+                        : `linear-gradient(135deg,${(langColors[repo.language] || langColors.default)}18,rgba(10,8,18,0.9))`
                     }}>
-                      <LucideFileText size={10} /> Click to read README
-                    </div>
-                  </div>
-                  <div className="project-body">
-                    <div className="project-name">{repo.name}</div>
-                    <div className="project-desc">{repo.description || 'No description provided.'}</div>
-                    <div className="project-tags">
-                      {repo.language && (
-                        <span className="project-tag" style={{ borderColor: `${langColors[repo.language] || langColors.default}55` }}>
-                          <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: langColors[repo.language] || langColors.default, marginRight: 5, flexShrink: 0 }} />
-                          {repo.language}
-                        </span>
+                      {!REPO_IMAGES[repo.name] && (
+                        <div className="project-thumb-icon" style={{ fontSize: '2rem' }}>{getRepoEmoji(repo.language)}</div>
                       )}
+                      <div className="repo-meta-overlay">
+                        <span><LucideStar size={11} /> {repo.stargazers_count}</span>
+                        <span><LucideGitFork size={11} /> {repo.forks_count}</span>
+                      </div>
+                      <div style={{
+                        position: 'absolute', bottom: 10, left: 12,
+                        display: 'flex', alignItems: 'center', gap: 5,
+                        fontSize: 10, color: 'rgba(255,255,255,0.4)',
+                        fontFamily: 'Syne,sans-serif',
+                      }}>
+                        <LucideFileText size={10} /> Click to read README
+                      </div>
                     </div>
-                    <div className="project-links" onClick={e => e.stopPropagation()}>
-                      <a href={repo.html_url} target="_blank" rel="noreferrer" className="project-link github">
-                        <LucideGithub size={14} /> GitHub
-                      </a>
-                      {(repo.homepage || REPO_HOMEPAGES[repo.name]) && (
-                        <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="project-link demo">
-                          <LucideExternalLink size={14} /> Live Demo
+                    <div className="project-body">
+                      <div className="project-name">{repo.name}</div>
+                      <div className="project-desc">{repo.description || 'No description provided.'}</div>
+                      <div className="project-tags">
+                        {repo.language && (
+                          <span className="project-tag" style={{ borderColor: `${langColors[repo.language] || langColors.default}55` }}>
+                            <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: langColors[repo.language] || langColors.default, marginRight: 5, flexShrink: 0 }} />
+                            {repo.language}
+                          </span>
+                        )}
+                      </div>
+                      <div className="project-links" onClick={e => e.stopPropagation()}>
+                        <a href={repo.html_url} target="_blank" rel="noreferrer" className="project-link github">
+                          <LucideGithub size={14} /> GitHub
                         </a>
-                      )}
+                        {(repo.homepage || REPO_HOMEPAGES[repo.name]) && (
+                          <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="project-link demo">
+                            <LucideExternalLink size={14} /> Live Demo
+                          </a>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
 
             {filtered.length === 0 && (
@@ -623,7 +638,7 @@ const Work = () => {
             )}
 
             {/* ── Mobile CTA: See More Work ── */}
-            {hasMore && (
+            {hasMoreMobile && (
               <div className="work-see-more fade-in" ref={addRef}>
                 <motion.button
                   className="work-see-more-btn"
@@ -641,12 +656,27 @@ const Work = () => {
               </div>
             )}
 
-            {/* Desktop: View All on GitHub */}
+            {/* ── Desktop CTA: Toggle Expand / View All ── */}
             {!isMobile && (
-              <div className="work-view-all fade-in" ref={addRef}>
-                <a href={`https://github.com/${GITHUB_USERNAME}?tab=repositories`} target="_blank" rel="noreferrer" className="btn-secondary">
-                  <LucideGithub size={16} /> View All on GitHub
-                </a>
+              <div className="work-see-more fade-in" ref={addRef} style={{ marginTop: '48px' }}>
+                {hasMoreDesktop && (
+                  <motion.button
+                    className="work-see-more-btn"
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                    style={{ marginBottom: isExpanded ? '24px' : '0' }}
+                  >
+                    {isExpanded ? 'Show Less' : '✨ See More Work'}
+                  </motion.button>
+                )}
+                
+                <div className="work-view-all" style={{ marginTop: isExpanded ? '0' : (hasMoreDesktop ? '20px' : '0') }}>
+                  <a href={`https://github.com/${GITHUB_USERNAME}?tab=repositories`} target="_blank" rel="noreferrer" className="btn-secondary">
+                    <LucideGithub size={16} /> View All on GitHub
+                  </a>
+                </div>
               </div>
             )}
           </>
