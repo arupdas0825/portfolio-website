@@ -13,9 +13,9 @@ gsap.registerPlugin(ScrollTrigger);
 const GITHUB_USERNAME = 'arupdas0825';
 
 const langColors = {
-  JavaScript:'#f1e05a', Python:'#3572A5', Java:'#b07219',
-  Kotlin:'#A97BFF', TypeScript:'#2b7489', CSS:'#563d7c',
-  HTML:'#e34c26', Dart:'#00B4AB', default:'#8a5cf6',
+  JavaScript: '#f1e05a', Python: '#3572A5', Java: '#b07219',
+  Kotlin: '#A97BFF', TypeScript: '#2b7489', CSS: '#563d7c',
+  HTML: '#e34c26', Dart: '#00B4AB', default: '#8a5cf6',
 };
 
 const REPO_IMAGES = {
@@ -33,6 +33,7 @@ const REPO_IMAGES = {
   'sahasrajit-foundation': '/sahasrajit-foundation.png',
   'Hiresight-ai': '/Hiresight-ai.png',
   'LocalCare-Finder-Android': '/LocalCare-Finder-Android.jpeg',
+  'NEURAL-RIFT': '/NEURAL-RIFT.png',
 };
 
 const REPO_HOMEPAGES = {
@@ -42,9 +43,9 @@ const REPO_HOMEPAGES = {
 
 function getRepoEmoji(lang) {
   const map = {
-    JavaScript:'⚡', Python:'🐍', Java:'☕', Kotlin:'📱',
-    TypeScript:'🔷', CSS:'🎨', HTML:'🌐', Dart:'🎯',
-    'C++':'⚙️', C:'🔧', Go:'🐹', Rust:'🦀',
+    JavaScript: '⚡', Python: '🐍', Java: '☕', Kotlin: '📱',
+    TypeScript: '🔷', CSS: '🎨', HTML: '🌐', Dart: '🎯',
+    'C++': '⚙️', C: '🔧', Go: '🐹', Rust: '🦀',
   };
   return map[lang] || '💻';
 }
@@ -57,7 +58,7 @@ function renderMarkdown(md) {
   const codeBlocks = [];
   md = md.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
     const idx = codeBlocks.length;
-    codeBlocks.push(`<pre class="rm-pre"><code class="rm-code">${code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code></pre>`);
+    codeBlocks.push(`<pre class="rm-pre"><code class="rm-code">${code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`);
     return `%%CODEBLOCK_${idx}%%`;
   });
 
@@ -65,7 +66,7 @@ function renderMarkdown(md) {
   const inlineCodes = [];
   md = md.replace(/`([^`]+)`/g, (_, code) => {
     const idx = inlineCodes.length;
-    inlineCodes.push(`<code class="rm-inline">${code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code>`);
+    inlineCodes.push(`<code class="rm-inline">${code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code>`);
     return `%%INLINE_${idx}%%`;
   });
 
@@ -105,15 +106,15 @@ function renderMarkdown(md) {
 
   // 9. Tables
   md = md.replace(/^\|(.+)\|$/gm, (line) => {
-    const cells = line.split('|').slice(1,-1).map(c => c.trim());
-    if(cells.every(c => /^[-: ]+$/.test(c))) return '%%TABLE_SEP%%';
+    const cells = line.split('|').slice(1, -1).map(c => c.trim());
+    if (cells.every(c => /^[-: ]+$/.test(c))) return '%%TABLE_SEP%%';
     return '<tr>' + cells.map(c => `<td class="rm-td">${c}</td>`).join('') + '</tr>';
   });
   md = md.replace(/(<tr>.*?<\/tr>\n?)+/gs, (table) => {
     const rows = table.trim().split('\n').filter(r => !r.includes('%%TABLE_SEP%%'));
-    if(rows.length === 0) return '';
+    if (rows.length === 0) return '';
     const [header, ...body] = rows;
-    const thead = header.replace(/td/g,'th class="rm-th"').replace(/class="rm-td"/g,'class="rm-th"');
+    const thead = header.replace(/td/g, 'th class="rm-th"').replace(/class="rm-td"/g, 'class="rm-th"');
     return `<table class="rm-table"><thead>${thead}</thead><tbody>${body.join('')}</tbody></table>`;
   });
   md = md.replace(/%%TABLE_SEP%%\n?/g, '');
@@ -206,7 +207,7 @@ function ReadmeModal({ repo, onClose }) {
           <div style={{
             position: 'absolute', top: 0, left: 0, right: 0, height: 1,
             background: 'linear-gradient(90deg,transparent,rgba(138,92,246,0.6),transparent)',
-          }}/>
+          }} />
 
           {/* Header */}
           <div style={{
@@ -227,98 +228,98 @@ function ReadmeModal({ repo, onClose }) {
             </div>
 
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:17, color:'#fff', marginBottom:3 }}>
+              <div style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 17, color: '#fff', marginBottom: 3 }}>
                 {repo.name}
               </div>
-              <div style={{ fontSize:12, color:'rgba(255,255,255,0.4)', fontFamily:'DM Sans,sans-serif', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontFamily: 'DM Sans,sans-serif', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {repo.description || 'No description'}
               </div>
             </div>
 
-            <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
               {/* Language */}
               {repo.language && (
                 <span style={{
-                  display:'flex', alignItems:'center', gap:5,
-                  background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.08)',
-                  borderRadius:20, padding:'4px 12px',
-                  fontSize:11, fontFamily:'Syne,sans-serif', fontWeight:700,
-                  color:'rgba(255,255,255,0.6)',
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: 20, padding: '4px 12px',
+                  fontSize: 11, fontFamily: 'Syne,sans-serif', fontWeight: 700,
+                  color: 'rgba(255,255,255,0.6)',
                 }}>
-                  <span style={{ width:7, height:7, borderRadius:'50%', background:langColors[repo.language]||langColors.default, display:'inline-block' }}/>
+                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: langColors[repo.language] || langColors.default, display: 'inline-block' }} />
                   {repo.language}
                 </span>
               )}
               {/* Stars */}
-              <span style={{ display:'flex', alignItems:'center', gap:4, fontSize:12, color:'rgba(255,255,255,0.4)' }}>
-                <LucideStar size={12}/> {repo.stargazers_count}
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+                <LucideStar size={12} /> {repo.stargazers_count}
               </span>
               {/* GitHub link */}
               <a
                 href={repo.html_url} target="_blank" rel="noreferrer"
                 style={{
-                  display:'flex', alignItems:'center', gap:6,
-                  background:'var(--purple)', color:'#fff',
-                  padding:'7px 14px', borderRadius:20,
-                  fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:12,
-                  textDecoration:'none',
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  background: 'var(--purple)', color: '#fff',
+                  padding: '7px 14px', borderRadius: 20,
+                  fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 12,
+                  textDecoration: 'none',
                 }}
               >
-                <LucideGithub size={13}/> GitHub
+                <LucideGithub size={13} /> GitHub
               </a>
               {repo.homepage && (
                 <a
                   href={repo.homepage} target="_blank" rel="noreferrer"
                   style={{
-                    display:'flex', alignItems:'center', gap:6,
-                    background:'transparent', color:'var(--purple-light)',
-                    border:'1px solid var(--purple)',
-                    padding:'7px 14px', borderRadius:20,
-                    fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:12,
-                    textDecoration:'none',
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    background: 'transparent', color: 'var(--purple-light)',
+                    border: '1px solid var(--purple)',
+                    padding: '7px 14px', borderRadius: 20,
+                    fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 12,
+                    textDecoration: 'none',
                   }}
                 >
-                  <LucideExternalLink size={13}/> Live Demo
+                  <LucideExternalLink size={13} /> Live Demo
                 </a>
               )}
               {/* Close */}
               <button
                 onClick={onClose}
                 style={{
-                  width:34, height:34, borderRadius:'50%',
-                  background:'rgba(255,255,255,0.06)',
-                  border:'1px solid rgba(255,255,255,0.1)',
-                  color:'rgba(255,255,255,0.7)', cursor:'pointer',
-                  display:'flex', alignItems:'center', justifyContent:'center',
-                  transition:'all 0.2s',
+                  width: 34, height: 34, borderRadius: '50%',
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: 'rgba(255,255,255,0.7)', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.2s',
                 }}
-                onMouseEnter={e=>{ e.currentTarget.style.background='rgba(138,92,246,0.3)'; e.currentTarget.style.color='#fff'; }}
-                onMouseLeave={e=>{ e.currentTarget.style.background='rgba(255,255,255,0.06)'; e.currentTarget.style.color='rgba(255,255,255,0.7)'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(138,92,246,0.3)'; e.currentTarget.style.color = '#fff'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
               >
-                <LucideX size={15}/>
+                <LucideX size={15} />
               </button>
             </div>
           </div>
 
           {/* README body */}
-          <div style={{ flex:1, overflowY:'auto', padding:'28px 36px' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '28px 36px' }}>
             {loading && (
-              <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:200, gap:16, color:'rgba(255,255,255,0.35)' }}>
-                <LucideLoader size={28} style={{ animation:'spin 1s linear infinite', color:'var(--purple)' }}/>
-                <span style={{ fontFamily:'Syne,sans-serif', fontSize:13 }}>Fetching README...</span>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 200, gap: 16, color: 'rgba(255,255,255,0.35)' }}>
+                <LucideLoader size={28} style={{ animation: 'spin 1s linear infinite', color: 'var(--purple)' }} />
+                <span style={{ fontFamily: 'Syne,sans-serif', fontSize: 13 }}>Fetching README...</span>
               </div>
             )}
 
             {!loading && notFound && (
-              <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:200, gap:12, color:'rgba(255,255,255,0.3)' }}>
-                <LucideFileText size={40} style={{ color:'rgba(138,92,246,0.4)' }}/>
-                <div style={{ fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:15, color:'rgba(255,255,255,0.5)' }}>No README found</div>
-                <p style={{ fontSize:13, textAlign:'center', maxWidth:300, lineHeight:1.6 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 200, gap: 12, color: 'rgba(255,255,255,0.3)' }}>
+                <LucideFileText size={40} style={{ color: 'rgba(138,92,246,0.4)' }} />
+                <div style={{ fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 15, color: 'rgba(255,255,255,0.5)' }}>No README found</div>
+                <p style={{ fontSize: 13, textAlign: 'center', maxWidth: 300, lineHeight: 1.6 }}>
                   This repository doesn't have a README yet.
                 </p>
                 <a href={repo.html_url} target="_blank" rel="noreferrer"
-                  style={{ display:'flex', alignItems:'center', gap:6, background:'var(--purple)', color:'#fff', padding:'8px 18px', borderRadius:20, fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:13, textDecoration:'none' }}>
-                  <LucideGithub size={14}/> View on GitHub
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--purple)', color: '#fff', padding: '8px 18px', borderRadius: 20, fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 13, textDecoration: 'none' }}>
+                  <LucideGithub size={14} /> View on GitHub
                 </a>
               </div>
             )}
@@ -476,7 +477,7 @@ const Work = () => {
             return;
           }
         }
-      } catch (_) {}
+      } catch (_) { }
 
       // ── 2. Fetch from API ──
       try {
@@ -495,7 +496,7 @@ const Work = () => {
         // Cache in localStorage
         try {
           localStorage.setItem(CACHE_KEY, JSON.stringify({ data: ownRepos, ts: Date.now() }));
-        } catch (_) {}
+        } catch (_) { }
 
         setRepos(ownRepos);
         setLanguages(['All', ...new Set(ownRepos.map(r => r.language).filter(Boolean))]);
@@ -565,30 +566,30 @@ const Work = () => {
                   key={repo.id}
                   className="project-card fade-in"
                   ref={addRef}
-                  style={{ animationDelay:`${(idx%6)*0.08}s`, cursor:'pointer' }}
+                  style={{ animationDelay: `${(idx % 6) * 0.08}s`, cursor: 'pointer' }}
                   onClick={() => setSelected(repo)}
-                  whileHover={{ y:-6, boxShadow:'0 20px 50px rgba(138,92,246,0.25)' }}
-                  transition={{ type:'spring', stiffness:260, damping:22 }}
+                  whileHover={{ y: -6, boxShadow: '0 20px 50px rgba(138,92,246,0.25)' }}
+                  transition={{ type: 'spring', stiffness: 260, damping: 22 }}
                 >
-                  <div className="project-thumb" style={{ 
-                    background: REPO_IMAGES[repo.name] 
+                  <div className="project-thumb" style={{
+                    background: REPO_IMAGES[repo.name]
                       ? `url(${REPO_IMAGES[repo.name]}) center/cover no-repeat`
-                      : `linear-gradient(135deg,${(langColors[repo.language]||langColors.default)}18,rgba(10,8,18,0.9))` 
+                      : `linear-gradient(135deg,${(langColors[repo.language] || langColors.default)}18,rgba(10,8,18,0.9))`
                   }}>
                     {!REPO_IMAGES[repo.name] && (
-                      <div className="project-thumb-icon" style={{ fontSize:'2rem' }}>{getRepoEmoji(repo.language)}</div>
+                      <div className="project-thumb-icon" style={{ fontSize: '2rem' }}>{getRepoEmoji(repo.language)}</div>
                     )}
                     <div className="repo-meta-overlay">
-                      <span><LucideStar size={11}/> {repo.stargazers_count}</span>
-                      <span><LucideGitFork size={11}/> {repo.forks_count}</span>
+                      <span><LucideStar size={11} /> {repo.stargazers_count}</span>
+                      <span><LucideGitFork size={11} /> {repo.forks_count}</span>
                     </div>
                     <div style={{
-                      position:'absolute', bottom:10, left:12,
-                      display:'flex', alignItems:'center', gap:5,
-                      fontSize:10, color:'rgba(255,255,255,0.4)',
-                      fontFamily:'Syne,sans-serif',
+                      position: 'absolute', bottom: 10, left: 12,
+                      display: 'flex', alignItems: 'center', gap: 5,
+                      fontSize: 10, color: 'rgba(255,255,255,0.4)',
+                      fontFamily: 'Syne,sans-serif',
                     }}>
-                      <LucideFileText size={10}/> Click to read README
+                      <LucideFileText size={10} /> Click to read README
                     </div>
                   </div>
                   <div className="project-body">
@@ -596,19 +597,19 @@ const Work = () => {
                     <div className="project-desc">{repo.description || 'No description provided.'}</div>
                     <div className="project-tags">
                       {repo.language && (
-                        <span className="project-tag" style={{ borderColor:`${langColors[repo.language]||langColors.default}55` }}>
-                          <span style={{ display:'inline-block', width:8, height:8, borderRadius:'50%', background:langColors[repo.language]||langColors.default, marginRight:5, flexShrink:0 }}/>
+                        <span className="project-tag" style={{ borderColor: `${langColors[repo.language] || langColors.default}55` }}>
+                          <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: langColors[repo.language] || langColors.default, marginRight: 5, flexShrink: 0 }} />
                           {repo.language}
                         </span>
                       )}
                     </div>
                     <div className="project-links" onClick={e => e.stopPropagation()}>
                       <a href={repo.html_url} target="_blank" rel="noreferrer" className="project-link github">
-                        <LucideGithub size={14}/> GitHub
+                        <LucideGithub size={14} /> GitHub
                       </a>
                       {(repo.homepage || REPO_HOMEPAGES[repo.name]) && (
                         <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="project-link demo">
-                          <LucideExternalLink size={14}/> Live Demo
+                          <LucideExternalLink size={14} /> Live Demo
                         </a>
                       )}
                     </div>
@@ -618,7 +619,7 @@ const Work = () => {
             </div>
 
             {filtered.length === 0 && (
-              <p style={{ textAlign:'center', color:'var(--text-muted)', marginTop:32 }}>No repos found for this language.</p>
+              <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: 32 }}>No repos found for this language.</p>
             )}
 
             {/* ── Mobile CTA: See More Work ── */}
@@ -644,7 +645,7 @@ const Work = () => {
             {!isMobile && (
               <div className="work-view-all fade-in" ref={addRef}>
                 <a href={`https://github.com/${GITHUB_USERNAME}?tab=repositories`} target="_blank" rel="noreferrer" className="btn-secondary">
-                  <LucideGithub size={16}/> View All on GitHub
+                  <LucideGithub size={16} /> View All on GitHub
                 </a>
               </div>
             )}

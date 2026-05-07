@@ -72,6 +72,21 @@ const STACKS = [
       { name: 'Netlify', icon: 'https://cdn.simpleicons.org/netlify/white' },
     ],
   },
+  {
+    category: 'AI TOOLS USE',
+    icon: '✨',
+    color: '#0ea5e9',
+    items: [
+      { name: 'Codex', icon: '/icons/ai/codex.png' },
+      { name: 'Emergent', icon: '/icons/ai/emergent.png' },
+      { name: 'Antigravity', icon: '/icons/ai/antigravity.png' },
+      { name: 'Claude', icon: '/icons/ai/claude.WEBP' },
+      { name: 'Manus', icon: '/icons/ai/manus.png' },
+      { name: 'GitHub Copilot', icon: '/icons/ai/copilot.png' },
+      { name: 'Cursor', icon: '/icons/ai/cursor.jpg' },
+      { name: 'DeepSeek', icon: '/icons/ai/deepseek.jpeg' },
+    ],
+  },
 
 ];
 
@@ -81,7 +96,7 @@ const TechIcon = ({ src, name }) => {
   // SimpleIcons are already requested as /white
   const isSimpleIcon = src.includes('simpleicons.org');
   const isDarkDevicon = !isSimpleIcon && (name.toLowerCase() === 'next.js' || name.toLowerCase() === 'vercel' || name.toLowerCase() === 'github');
-  
+
   return (
     <motion.div
       whileHover={{ scale: 1.1, y: -5 }}
@@ -97,16 +112,16 @@ const TechIcon = ({ src, name }) => {
         position: 'relative'
       }}
     >
-      <img 
-        src={src} 
-        alt={name} 
-        title={name} 
-        style={{ 
-          width: '100%', 
-          height: '100%', 
+      <img
+        src={src}
+        alt={name}
+        title={name}
+        style={{
+          width: '100%',
+          height: '100%',
           objectFit: 'contain',
           filter: isDarkDevicon ? 'brightness(0) invert(1)' : 'none'
-        }} 
+        }}
       />
       <div className="tech-tooltip">{name}</div>
     </motion.div>
@@ -164,7 +179,7 @@ export default function TechStack() {
   return (
     <section id="techstack" style={{ padding: '100px 0', background: 'transparent' }}>
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 32px' }}>
-        
+
         {/* ── Standard Portfolio Header ── */}
         <div style={{ marginBottom: 48 }}>
           <span className="section-label" style={{ textAlign: 'left' }}>✦ WHAT I WORK WITH ✦</span>
@@ -188,21 +203,21 @@ export default function TechStack() {
             <div key={category.category}>
               {/* Category Header — Portfolio Style */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
-                <div style={{ 
-                  width: 3, height: 24, 
-                  background: category.color, 
+                <div style={{
+                  width: 3, height: 24,
+                  background: category.color,
                   borderRadius: 4,
                   boxShadow: `0 0 10px ${category.color}88`
                 }} />
                 <span style={{ fontSize: '1.6rem' }}>{category.icon}</span>
-                <h3 style={{ 
+                <h3 style={{
                   fontFamily: 'Syne, sans-serif',
-                  fontSize: '1.25rem', 
-                  fontWeight: 800, 
+                  fontSize: '1.25rem',
+                  fontWeight: 800,
                   letterSpacing: '1.5px',
                   textTransform: 'uppercase',
-                  color: '#fff', 
-                  margin: 0 
+                  color: '#fff',
+                  margin: 0
                 }}>
                   {category.category}
                 </h3>
@@ -230,7 +245,8 @@ export default function TechStack() {
 
       </div>
 
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .tech-icon-box:hover {
           background: rgba(255,255,255,0.08) !important;
           border-color: rgba(138,92,246,0.4) !important;
