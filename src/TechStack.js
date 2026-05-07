@@ -80,7 +80,7 @@ const STACKS = [
       { name: 'Codex', icon: '/icons/ai/codex.png' },
       { name: 'Emergent', icon: '/icons/ai/emergent.png' },
       { name: 'Antigravity', icon: '/icons/ai/antigravity.png' },
-      { name: 'Claude', icon: '/icons/ai/claude.WEBP' },
+      { name: 'Claude', icon: '/icons/ai/claude.jpg' },
       { name: 'Manus', icon: '/icons/ai/manus.png' },
       { name: 'GitHub Copilot', icon: '/icons/ai/copilot.png' },
       { name: 'Cursor', icon: '/icons/ai/cursor.jpg' },
