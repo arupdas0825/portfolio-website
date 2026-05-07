@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { LucideChevronLeft, LucideChevronRight, LucideX, LucideArrowRight } from 'lucide-react';
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -91,6 +91,10 @@ export default function Gallery() {
     return () => window.removeEventListener('keydown', handler);
   }, [handleNext, handlePrev]);
 
+  // Homepage section always shows only 4 photos. 
+  // Clicking "See More" navigates to the full page.
+  const visiblePhotos = photos.slice(0, 4);
+
   return (
     <section id="photography" className="page-section gallery-section">
       <div className="section-inner">
@@ -102,55 +106,53 @@ export default function Gallery() {
           Capturing stories through light and shadow — a visual journey of perspectives.
         </p>
 
-        <motion.div
-          className="gallery-grid"
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: '-60px' }}
-          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
-        >
-          {(isMobile ? photos.slice(0, 4) : photos).map((photo, index) => (
-            <motion.div
-              className="gallery-item fade-in"
-              key={photo.id}
-              ref={addRef}
-              onClick={() => setSelected(photo)}
-              variants={{
-                hidden: { opacity: 0, scale: 0.95 },
-                show:   { opacity: 1, scale: 1, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
-              }}
-            >
-              <img
-                src={photo.src}
-                alt={photo.title}
-                onError={e => {
-                  e.target.style.display = 'none';
-                  e.target.parentNode.classList.add('photo-missing');
+        <div className="gallery-grid-wrapper">
+          <motion.div
+            className="gallery-grid"
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: '-60px' }}
+            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
+          >
+            {visiblePhotos.map((photo) => (
+              <motion.div
+                className="gallery-item"
+                key={photo.id}
+                onClick={() => setSelected(photo)}
+                variants={{
+                  hidden: { opacity: 0, scale: 0.95 },
+                  show:   { opacity: 1, scale: 1, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
                 }}
-              />
-              <div className="gallery-item-overlay">
-                <span>{photo.title}</span>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+                whileHover={{ scale: 1.03 }}
+              >
+                <img
+                  src={photo.src}
+                  alt={photo.title}
+                  onError={e => {
+                    e.target.style.display = 'none';
+                    e.target.parentNode.classList.add('photo-missing');
+                  }}
+                />
+                <div className="gallery-item-overlay">
+                  <span>{photo.title}</span>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
 
-        {isMobile && (
-          <div style={{ textAlign: 'center', marginTop: '32px' }}>
-            <motion.button
-              className="pg-see-more-btn"
-              onClick={() => navigate('/photography-gallery')}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-
-            >
-              See More Photos
-              <LucideArrowRight size={16} />
-
-            </motion.button>
-          </div>
-        )}
+        {/* Universal Navigation Button */}
+        <div style={{ textAlign: 'center', marginTop: '48px' }}>
+          <motion.button
+            className="work-see-more-btn"
+            onClick={() => navigate('/photography-gallery')}
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          >
+            ✨ See More Photos
+          </motion.button>
+        </div>
       </div>
 
       {/* Lightbox */}

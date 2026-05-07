@@ -77,10 +77,10 @@ export default function PhotographyGallery() {
             transition={{ duration: 0.6 }}
           >
             <span className="section-label">✦ VISUAL STORIES ✦</span>
-            <h1 className="pg-gallery-title">Cinematic <span>Gallery</span></h1>
+            <h1 className="pg-gallery-title">Cinematic <span>Photography</span></h1>
             <div className="section-line" style={{ margin: '16px auto 0' }} />
             <p className="pg-gallery-sub">
-              A curated collection of moments captured through my lens. Each frame tells a unique story of light, shadow, and human connection.
+              Capturing stories through light and shadow — a visual journey of perspectives.
             </p>
           </motion.div>
         </div>
