@@ -19,7 +19,7 @@ const langColors = {
 };
 
 const REPO_IMAGES = {
-  'scientific-calculator': '/scientific-calculator.jpeg',
+  'scientific-calculator': '/scientific-calculator.png',
   'ai-code-translator': '/ai-code-translator.png',
   'arupdas0825': '/arupdas0825.jpeg',
   'client-portfolio': '/client-portfolio.png',
@@ -513,14 +513,14 @@ const Work = () => {
   }, []);
 
   const filtered = filter === 'All' ? repos : repos.filter(r => r.language === filter);
-  
+
   const DESKTOP_LIMIT = 6;
   // On mobile: cap at MOBILE_LIMIT cards in the homepage section
   // On desktop: cap at DESKTOP_LIMIT cards initially
-  const visibleRepos = isMobile 
-    ? filtered.slice(0, MOBILE_LIMIT) 
+  const visibleRepos = isMobile
+    ? filtered.slice(0, MOBILE_LIMIT)
     : (isExpanded ? filtered : filtered.slice(0, DESKTOP_LIMIT));
-    
+
   const hasMoreMobile = isMobile && filtered.length > MOBILE_LIMIT;
   const hasMoreDesktop = !isMobile && filtered.length > DESKTOP_LIMIT;
 
@@ -671,7 +671,7 @@ const Work = () => {
                     {isExpanded ? 'Show Less' : '✨ See More Work'}
                   </motion.button>
                 )}
-                
+
                 <div className="work-view-all" style={{ marginTop: isExpanded ? '0' : (hasMoreDesktop ? '20px' : '0') }}>
                   <a href={`https://github.com/${GITHUB_USERNAME}?tab=repositories`} target="_blank" rel="noreferrer" className="btn-secondary">
                     <LucideGithub size={16} /> View All on GitHub
