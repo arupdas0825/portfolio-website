@@ -7,6 +7,7 @@ import TechStack      from './TechStack';
 import Work           from './Work';
 import Publications   from './Publications';
 import Certificates   from './Certificates';
+import CertificatesPage from './CertificatesPage';
 import GithubStats    from './GithubStats';
 import Gallery        from './Gallery';
 import Services       from './Services';
@@ -140,6 +141,7 @@ export default function App() {
               <Route path="/work" element={<WorkPage />} />
               <Route path="/photography-gallery" element={<PhotographyGallery />} />
               <Route path="/publications" element={<PublicationsPage />} />
+              <Route path="/certificates" element={<CertificatesPage />} />
             </Routes>
             {adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
 
