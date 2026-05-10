@@ -1,15 +1,11 @@
-/**
- * WorkPage.js — /work route
- * Full project showcase: all repos, filter tabs, back navigation.
- * Reuses ALL existing card/modal logic from Work.js via shared import.
- */
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LucideArrowLeft, LucideGithub, LucideExternalLink,
-  LucideStar, LucideGitFork, LucideX, LucideFileText, LucideLoader,
+  LucideStar, LucideGitFork, LucideX, LucideZap, LucideLoader,
 } from 'lucide-react';
+import ProjectDetails from './components/ProjectDetails';
 import Navbar from './Navbar';
 
 const GITHUB_USERNAME = 'arupdas0825';
@@ -46,78 +42,7 @@ function getEmoji(lang) {
   return { JavaScript:'⚡', Python:'🐍', Java:'☕', Kotlin:'📱', TypeScript:'🔷', CSS:'🎨', HTML:'🌐', Dart:'🎯', 'C++':'⚙️' }[lang] || '💻';
 }
 
-/* ── Slim README modal (identical to Work.js version) ── */
-function ReadmeModal({ repo, onClose }) {
-  const [content, setContent] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
 
-  useEffect(() => { document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = ''; }; }, []);
-
-  useEffect(() => {
-    setLoading(true); setNotFound(false); setContent('');
-    fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${repo.name}/readme`, { headers: { Accept: 'application/vnd.github.v3.raw' } })
-      .then(r => { if (!r.ok) throw new Error(); return r.text(); })
-      .then(t => setContent(t))
-      .catch(() => setNotFound(true))
-      .finally(() => setLoading(false));
-  }, [repo.name]);
-
-  const handleEsc = useCallback((e) => { if (e.key === 'Escape') onClose(); }, [onClose]);
-  useEffect(() => { window.addEventListener('keydown', handleEsc); return () => window.removeEventListener('keydown', handleEsc); }, [handleEsc]);
-
-  return (
-    <AnimatePresence>
-      <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
-        onClick={onClose}
-        style={{ position:'fixed', inset:0, zIndex:1200, background:'rgba(0,0,0,0.85)',
-          display:'flex', alignItems:'center', justifyContent:'center', padding:'80px 20px 20px' }}>
-        <motion.div initial={{ opacity:0, scale:0.92, y:24 }} animate={{ opacity:1, scale:1, y:0 }}
-          exit={{ opacity:0, scale:0.95, y:16 }} transition={{ type:'spring', stiffness:280, damping:24 }}
-          onClick={e => e.stopPropagation()}
-          style={{ width:'100%', maxWidth:820, maxHeight:'88vh', background:'rgba(18,12,36,0.97)',
-            border:'1px solid rgba(138,92,246,0.3)', borderRadius:24, overflow:'hidden',
-            display:'flex', flexDirection:'column',
-            boxShadow:'0 0 0 1px rgba(255,255,255,0.05) inset, 0 32px 80px rgba(0,0,0,0.6)' }}>
-          {/* Top sheen */}
-          <div style={{ position:'absolute', top:0, left:0, right:0, height:1,
-            background:'linear-gradient(90deg,transparent,rgba(138,92,246,0.6),transparent)' }}/>
-          {/* Header */}
-          <div style={{ padding:'20px 28px', borderBottom:'1px solid rgba(255,255,255,0.07)',
-            display:'flex', alignItems:'center', gap:14, background:'rgba(138,92,246,0.06)', flexShrink:0 }}>
-            <div style={{ fontSize:20 }}>{getEmoji(repo.language)}</div>
-            <div style={{ flex:1 }}>
-              <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:17, color:'#fff' }}>{repo.name}</div>
-              <div style={{ fontSize:12, color:'rgba(255,255,255,0.4)' }}>{repo.description || 'No description'}</div>
-            </div>
-            <a href={repo.html_url} target="_blank" rel="noreferrer"
-              style={{ display:'flex', alignItems:'center', gap:6, background:'var(--purple)', color:'#fff',
-                padding:'7px 14px', borderRadius:20, fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:12, textDecoration:'none' }}>
-              <LucideGithub size={13}/> GitHub
-            </a>
-            <button onClick={onClose}
-              style={{ width:34, height:34, borderRadius:'50%', background:'rgba(255,255,255,0.06)',
-                border:'1px solid rgba(255,255,255,0.1)', color:'rgba(255,255,255,0.7)',
-                cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <LucideX size={15}/>
-            </button>
-          </div>
-          {/* Body */}
-          <div style={{ flex:1, overflowY:'auto', padding:'28px 36px', color:'rgba(255,255,255,0.65)', fontSize:13.5, lineHeight:1.8 }}>
-            {loading && <div style={{ display:'flex', justifyContent:'center', padding:60 }}><LucideLoader size={28} style={{ animation:'spin 1s linear infinite', color:'var(--purple)' }}/></div>}
-            {!loading && notFound && <p style={{ textAlign:'center', color:'rgba(255,255,255,0.35)' }}>No README found for this repo.</p>}
-            {!loading && !notFound && content && (
-              <>
-                <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
-                <pre style={{ whiteSpace:'pre-wrap', fontFamily:'DM Sans,sans-serif', fontSize:13.5 }}>{content}</pre>
-              </>
-            )}
-          </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
-  );
-}
 
 /* ── FALLBACK REPOS (same list as Work.js) ── */
 const FALLBACK_REPOS = [
@@ -188,7 +113,7 @@ const IS_TOUCH = typeof window !== 'undefined' &&
         <h1 className="workpage-title">My <span>Work</span></h1>
         <div className="section-line" style={{ margin: '12px auto 0' }} />
         <p className="workpage-sub">
-          A collection of projects showcasing my expertise in AI, full-stack development, and system design.
+          A premium collection of projects showcasing my expertise in AI, full-stack development, and system design. Click for a deep dive.
         </p>
       </div>
 
@@ -240,8 +165,8 @@ const IS_TOUCH = typeof window !== 'undefined' &&
                     <span><LucideStar size={11} /> {repo.stargazers_count}</span>
                     <span><LucideGitFork size={11} /> {repo.forks_count}</span>
                   </div>
-                  <div style={{ position:'absolute', bottom:10, left:12, display:'flex', alignItems:'center', gap:5, fontSize:10, color:'rgba(255,255,255,0.4)', fontFamily:'Syne,sans-serif' }}>
-                    <LucideFileText size={10} /> Click to read README
+                  <div style={{ position:'absolute', bottom:10, left:12, display:'flex', alignItems:'center', gap:5, fontSize:10, color:'rgba(255,255,255,0.6)', fontFamily:'Syne,sans-serif', fontWeight: 700 }}>
+                    <LucideZap size={10} style={{ color: 'var(--purple-light)' }} /> View Case Study
                   </div>
                 </div>
                 <div className="project-body">
@@ -274,7 +199,7 @@ const IS_TOUCH = typeof window !== 'undefined' &&
         </>
       )}
 
-      {selected && <ReadmeModal repo={selected} onClose={() => setSelected(null)} />}
+      {selected && <ProjectDetails repo={selected} onClose={() => setSelected(null)} />}
     </div>
   );
 }
