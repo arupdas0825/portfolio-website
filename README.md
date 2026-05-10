@@ -44,11 +44,9 @@
 ## 🗺️ Table of Contents
 - [Overview](#-overview)
 - [What's New in v5.0 — AI Playback, Welcome Screen & More](#-whats-new-in-v50--ai-playback-welcome-screen--more)
-- [What's New in v4.0 — Cosmic Infinity Vortex](#-whats-new-in-v40--cosmic-infinity-vortex)
 - [Architecture](#-architecture)
 - [Tech Stack](#-tech-stack)
 - [Features](#-features)
-- [Infinity Vortex — Technical Deep Dive](#-infinity-vortex--technical-deep-dive)
 - [Admin CMS](#-admin-cms)
 - [Project Structure](#-project-structure)
 - [Getting Started](#-getting-started)
@@ -60,100 +58,35 @@
 
 ## 🧠 Overview
 
-A **production-grade personal portfolio** engineered with React 19, powered by Firebase Firestore + Cloudinary, driven by the GitHub REST API, and featuring a hidden admin CMS. The hero section showcases a **futuristic Awwwards-level Infinity Vortex** — a mathematically precise glowing lemniscate loop with 220 animated energy particles and 12 orbiting technology logos. v5.0 introduces a **cyberpunk Welcome Screen**, an **AI Playback Assistant** for guided portfolio tours, **Publications & Certificates** sections, a **Three.js rotating starfield**, a dedicated **/work route**, and a full **/photography-gallery route**. Everything is live and self-updating — no rebuild needed to change content.
+A **production-grade personal portfolio** engineered with React 19, powered by Firebase + Cloudinary, and featuring a custom admin CMS. The hero section showcases a **Futuristic Coding Monitor** and **Neural Core Visual** — interactive terminal-style animations that react to device type and session state. Key features include a **Cyberpunk Welcome Screen**, an **AI Playback Assistant** for guided tours, **Internship**, **Publications**, and **Certificates** sections, a **Three.js starfield**, and dedicated sub-routes for projects and galleries. Everything is self-updating via the admin panel — no rebuild required for content changes.
 
 ---
+
 
 ## 🆕 What's New in v5.0 — AI Playback, Welcome Screen & More
 
-> **The biggest feature expansion to date.** v5.0 adds intelligent portfolio narration, a cinematic intro screen, new content sections, Three.js background, and dedicated sub-routes — all while keeping the existing Infinity Vortex hero intact.
+> **v5.0 introduces significant enhancements to interactivity, narration, and dedicated content navigation.**
 
 | Feature | Description |
 |---------|-------------|
-| 🤖 **AI Playback Assistant** | Floating AI guide that narrates the entire portfolio section-by-section using the Web Speech API. Includes an animated AI Orb, waveform visualizer, section mini-map, floating subtitles, playback controls (play/pause/skip/speed), and a compact mobile bar |
-| 🖥️ **Cyberpunk Welcome Screen** | Full-screen `ENTROPY-CORE` boot sequence intro with animated terminal lines, particle canvas, 3D tilt card (Framer Motion), and auto-skip after 4s — shown once per session via `sessionStorage` |
-| 🌌 **Three.js Rotating Starfield** | `@react-three/fiber` + `@react-three/drei` powered 3D star field fixed behind all content on desktop. 3 000 stars in a 20-unit cube, low-power GPU mode, DPR capped at 1.5, disabled on touch devices |
-| 📄 **Publications Section** | New `Publications.js` section listing research papers with title, journal, year, abstract, tags, status, DOI link, PDF download, and card image. GSAP ScrollTrigger entrance animation |
-| 🏆 **Certificates Section** | New `Certificates.js` section for credentials & achievements with lightbox modal, GSAP scroll animation, and tag system |
-| 🗂️ **Dedicated /work Route** | `WorkPage.js` — standalone `/work` page with all GitHub repos, filter tabs, back-navigation, and full card/modal logic independent of the home scroll |
-| 📷 **Dedicated /photography-gallery Route** | `PhotographyGallery.js` — standalone `/photography-gallery` page with full-screen lightbox, keyboard `←` `→` `Esc` nav, and touch-swipe support |
-| 📱 **Mobile Header** | Fixed glassmorphic mobile header (`MobileHeader`) with logo, separator, and AI Playback trigger button — renders only on touch devices |
-| 🔐 **Firebase Auth Admin Login** | `AdminLogin.js` — `signInWithEmailAndPassword` Firebase Auth flow as an alternative entry point to the CMS |
-
----
-
-## 🆕 What's New in v4.0 — Cosmic Infinity Vortex
-
-> **The biggest visual upgrade to date.** The hero animation has been completely redesigned from a blackhole canvas to a premium, Awwwards-quality interactive Infinity Vortex system.
-
-| Feature | Description |
-|---------|-------------|
-| ♾️ **Lemniscate Infinity Loop** | Mathematically precise Lemniscate of Bernoulli curve — zero approximation, GPU-accelerated on a single Canvas 2D context |
-| 🌟 **5-Layer Neon Glow** | Bloom → mid-glow → inner-glow → core line → supercore — blue, cyan, violet, white cascade effect |
-| ⚡ **220 Energy Particles** | Arc-length parameterized flow — particles move at perfectly uniform speed with individual hue drift, trailing glow, and pulsating size |
-| 💎 **Center Jewel** | Radial gradient convergence burst at the infinity crossover, with breathing pulse animation (sinusoidal amplitude) |
-| 🪐 **12-Logo Circular Orbit** | Equal-angle distributed orbit using parametric circular positioning — React, Python, JS, HTML5, CSS3, Node.js, TypeScript, Firebase, AWS, Git, MongoDB, Java |
-| 🔮 **Glassmorphic Logo Badges** | Each logo in a circular glassmorphism container — brand-coloured border, inner sheen, depth-based sizing and blur |
-| 🌊 **Per-Logo Float Animation** | Independent sine-wave vertical float per logo (random amplitude + frequency phase) |
-| 🎯 **3D Tilt on Hover** | `perspective(800px) rotateX/Y` driven by cursor position delta — real specular response |
-| 🧲 **Magnetic Cursor Pull** | Logos within 110px of cursor are attracted with smooth force falloff |
-| 🐌 **Orbit Slowdown on Hover** | Speed lerps from 0.30 → 0.03 rad/s on hover, smoothly resumes on leave |
-| 🌌 **Galaxy Starfield Background** | 3-layer parallax canvas — far/mid/near stars with twinkle, mouse parallax, nebula halos |
-| 📐 **Depth Sorting** | Logos sorted and rendered by sine-depth so back-orbit logos naturally appear behind front-orbit logos |
-| 🏷️ **Smart Tooltip** | On hover: minimal floating label with fadeUpIn animation, brand-colored border |
-| 📱 **Fully Responsive** | ResizeObserver-driven — orbit radius, icon sizes, canvas all recalculate on container resize |
-| ⚡ **60 FPS Guaranteed** | All animation on RAF, `will-change: transform`, single canvas context, zero layout thrashing |
+| 🤖 **AI Playback Assistant** | Floating AI guide narrating the portfolio section-by-section using the Web Speech API. Features an animated AI Orb, waveform visualizer, section mini-map, and playback controls. |
+| 🖥️ **Cyberpunk Welcome Screen** | `ENTROPY-CORE` boot sequence intro with terminal lines, particle canvas, and 3D tilt card. Shown once per session via `sessionStorage`. |
+| 🌌 **Three.js Starfield** | `@react-three/fiber` powered 3D star field behind all content. Optimized with low-power GPU mode and disabled on touch devices. |
+| 🚀 **Internship Section** | Showcase for industry experience and professional growth, featuring GSAP entrance animations and a premium glassmorphic layout. |
+| 📚 **Publications & 📜 Certificates** | Dedicated sections for research papers and credentials, featuring DOI links, PDF downloads, and lightbox previews. |
+| 🗂️ **Dedicated Sub-Routes** | Standalone routes for `/work`, `/photography-gallery`, `/publications`, and `/certificates` for direct access and cleaner navigation. |
+| 📱 **Mobile Header** | Glassmorphic mobile header with quick access to the AI Playback trigger, active only on touch devices. |
 
 ---
 
 ## 🏗️ Architecture
 
-```
-React 19 SPA — React Router v6, Smooth Scroll
-│
-├─ 🖥️  WelcomeScreen      Cyberpunk boot sequence · 3D tilt · particle canvas · auto-skip
-│
-├─ ♾️  Home               Infinity Vortex hero · Typewriter roles
-│       ├─ InfinityVortex.js        Master orchestrator
-│       ├─ components/
-│       │   ├─ InfinityLoop.jsx     Canvas lemniscate + 220 particles
-│       │   ├─ OrbitingLogos.jsx    12-logo circular orbit (RAF)
-│       │   ├─ LogoItem.jsx         Glassmorphic badge + 3D tilt
-│       │   └─ ParticleBackground.jsx  3-layer galaxy canvas
-│       ├─ hooks/
-│       │   ├─ useAnimationFrame.js Clean RAF loop with delta-time
-│       │   └─ useMousePosition.js  Normalized cursor tracking
-│       └─ utils/
-│           └─ mathHelpers.js       Lemniscate, orbit math, lerp, clamp
-│
-├─ 👤 About               Animated gradient border photo · Skills · CMS-driven bio
-├─ 🧩 TechStack           Liquid glass panels · Animated chip hover
-├─ 💼 Work                GitHub API auto-fetch · README modal · Primary/Secondary
-├─ 📄 Publications        Research papers · DOI links · PDF download · GSAP scroll
-├─ 🏆 Certificates        Credentials · Lightbox modal · GSAP scroll
-├─ 📊 GithubStats         Live stats · Language bytes · Streak · CountUp
-├─ 📷 Gallery             Cinematic grid · Lightbox preview
-├─ ⚙️  Services            3D tilt cards · Liquid glass · Cursor glow
-├─ 📄 CV                  Preview card · Upload via Cloudinary
-├─ 📬 Contact             Form · Social links · Firebase-stored
-│
-├─ /work                  WorkPage.js — full project showcase with filter tabs
-├─ /photography-gallery   PhotographyGallery.js — full-screen cinematic lightbox
-│
-├─ 🌌 ThreeBackground     Three.js @r3f rotating 3000-star field (desktop only)
-│
-└─ 🤖 AIPlaybackAssistant Floating AI tour guide
-        ├─ playbackEngine.js        Section narration templates + Web Speech API
-        ├─ usePlaybackStore.js      Zustand-like global playback state
-        ├─ AIPlaybackAssistant.jsx  UI: orb, waveform, minimap, subtitles, controls
-        └─ AIPlayback.css           Glassmorphic animation styles
-         │
-         ├─ GitHub REST API v3 → repos, README, languages, stats
-         ├─ Firebase Firestore → CMS content storage
-         ├─ Firebase Auth → Admin email/password login
-         ├─ Cloudinary → Image uploads (free 25GB)
-         └─ Admin Panel → Double-click photo → password → edit anything
-```
+The portfolio is built as a highly modular React 19 Single Page Application (SPA). It uses a **Hybrid Data Strategy**:
+- **Live Data**: GitHub repositories and statistics are fetched in real-time via the GitHub REST API.
+- **Managed Data**: Bio, skills, work metadata, and gallery photos are managed via a custom **Admin CMS** powered by Firebase Firestore and Cloudinary.
+- **Static Content**: Core section headers and UI labels are defined as local constants for performance.
+
+The UI is driven by a custom **AI Playback Assistant** that narrates the portfolio using the Web Speech API, with animations handled by **Framer Motion**, **GSAP**, and **Three.js**.
 
 ---
 
@@ -204,19 +137,17 @@ React 19 SPA — React Router v6, Smooth Scroll
 - `powerPreference: 'low-power'`, DPR capped at `[1, 1.5]`
 - **Disabled on touch devices** — zero GPU cost on mobile
 
-### 📄 Publications *(v5.0 — new)*
-- Research paper cards with title, journal, year, abstract, status badge, DOI link, and PDF download
-- Tag chips per paper
-- GSAP `ScrollTrigger` fade-up entrance animation
+### 🚀 Internship Section *(New)*
+- **Professional Presence** — Premium glassmorphic card for industry experience.
+- **Dynamic Badge** — "OPEN FOR OPPORTUNITIES" status indicator.
+- **GSAP Animations** — Smooth entrance triggers using `ScrollTrigger`.
+- **Skill Focus** — Highlights core competencies in AI, Full Stack, and System Design.
 
-### 🏆 Certificates *(v5.0 — new)*
-- Credential cards with issuer, date, description, and tag chips
-- Lightbox modal with full certificate image
-- GSAP `ScrollTrigger` entrance animation
-
-### 🗂️ Dedicated Routes *(v5.0 — new)*
-- **`/work`** — `WorkPage.js`: full GitHub repo showcase with filter tabs, back-navigation, README modal, and language-colored cards; runs independently of the home section
-- **`/photography-gallery`** — `PhotographyGallery.js`: full-screen cinematic lightbox, keyboard navigation (`←` `→` `Esc`), touch-swipe, editorial titles + descriptions for all 10 photos
+### 🗂️ Dedicated Routes
+- **`/work`** — Full GitHub repo showcase with filter tabs and README modals.
+- **`/photography-gallery`** — Cinematic lightbox with keyboard and touch support.
+- **`/publications`** — Standalone research paper showcase with direct access.
+- **`/certificates`** — Standalone credential gallery with high-fidelity previews.
 
 ### 📱 Mobile Header *(v5.0 — new)*
 - Fixed glassmorphic header rendered **only on touch devices**
@@ -225,39 +156,16 @@ React 19 SPA — React Router v6, Smooth Scroll
 
 ---
 
-### ♾️ Home — Cosmic Infinity Vortex *(v4.0)*
-
-#### Infinity Loop Canvas (`InfinityLoop.jsx`)
-- **Lemniscate of Bernoulli** curve `x(t) = a·cos(t)/(1+sin²t)` — exact parametric formula
-- **5-layer render stack**: outer bloom (36px) → mid bloom (20px) → inner glow (9px) → core (3.5px) → supercore (1px)
-- **Animated gradient colour**: blue `hsl(220)` → purple `hsl(270)` → white → cyan cycling along the path
-- **Breathing pulse**: sinusoidal `Math.sin(frame × 0.018)` modulates lineWidth and alpha each frame
-- **Center jewel**: dual radial gradient — soft outer diffuse halo + hard inner gem with continuous bloom
-- **220 energy particles**: arc-length lookup table (800 samples, binary search O(log n)) ensures perfectly uniform speed regardless of curve geometry
-- Each particle: independent hue drift, pulsating size, trailing glow, coloured radial head
-
-#### Orbiting Logos (`OrbitingLogos.jsx` + `LogoItem.jsx`)
-- **12 tech logos** equally spaced: `angle = (i/n) × 2π`
-- **Elliptical orbit** (`rx = 44%`, `ry = 38%` of container) creates natural 3D depth perspective
-- **Depth sorting** by `sin(angle)` — logos in back render under front-orbit logos
-- **Orbit speed**: 0.30 rad/s normal → lerps to 0.03 rad/s on any hover
-- **Per-logo float**: independent `sin(t × speed) × amplitude` vertical offset (random phase seeded at mount)
-- **3D tilt**: `perspective(800px) rotateX(−relY×28°) rotateY(relX×28°)` on `mousemove`
-- **Magnetic pull**: logos within 110px attracted toward cursor with `(1 − d/r) × 14px` force
-- **Glassmorphism**: `backdrop-filter: blur(14px)`, inner sheen overlay, brand-colored border + glow
-- **Depth perception**: back logos smaller (0.65×), blurred, faded; front logos full-size, crisp, bright
-
-#### Galaxy Background (`ParticleBackground.jsx`)
-- **3 depth layers**: far (55% of stars, 2px parallax) → mid (30%, 8px) → near (15%, 18px)
-- **Mouse parallax**: star positions offset by `mouseNX × layer.px` for immersive depth
-- **Nebula halos**: 3 radial-gradient blobs at fixed viewport positions — deep violet, ocean blue, purple
-- **Twinkling**: per-star `alpha ± twinkleSpeed × direction` each frame, clipped to `[0.05, 0.95]`
-- **Near stars** get `shadowBlur` soft glow; far stars render bare for performance
+### 🖥️ Home — Futuristic Terminal Hero
+- **Futuristic Monitor (Desktop)** — A real-time typing terminal that executes "neural system" commands.
+- **Neural Core (Mobile)** — A high-fidelity pulsating AI orb with orbiting rings and data clouds.
+- **Typewriter Roles** — Dynamic role cycling with customizable speed and delay.
+- **Responsive Adaptive Design** — Seamlessly switches between 3D monitor and 2D neural core based on device capabilities.
 
 #### Reusable Infrastructure
-- **`useAnimationFrame(callback, active)`** — clean RAF loop with delta-time capping at 100ms, ref-stable callback
-- **`useMousePosition(targetRef)`** — returns `{x, y, nx, ny}` (raw + normalized `[−1, 1]`)
-- **`mathHelpers.js`** — `lemniscate()`, `buildLemniscateTable()`, `posAtArcLength()`, `orbitPosition()`, `lerp()`, `clamp()`, `mapRange()`, `dist2D()`, `easeInOutQuart()`
+- **`useTypewriter(words)`** — Custom hook for typewriter effects with delete and pause support.
+- **`IntersectionObserver`** — Scroll-based entrance animations for all home elements.
+- **`IS_TOUCH` Detection** — Accurate pointer-based device sensing for optimal visual performance.
 
 ---
 
@@ -291,57 +199,7 @@ React 19 SPA — React Router v6, Smooth Scroll
 
 ---
 
-## ♾️ Infinity Vortex — Technical Deep Dive
-
-### Lemniscate of Bernoulli
-
-The infinity loop uses the exact **Lemniscate of Bernoulli** parametric equations:
-
-```
-x(t) = a · cos(t) / (1 + sin²(t))
-y(t) = a · sin(t) · cos(t) / (1 + sin²(t))
-```
-
-Where `a = size × 0.36` (half-width of the loop), `t ∈ [0, 2π]`.
-
-### Arc-Length Parameterization
-
-Naive parametric traversal creates non-uniform speed (particles bunch at high-curvature regions). The fix:
-
-```js
-// 1. Pre-sample 800 points, accumulate arc length
-buildLemniscateTable(a, 800) → { pts[], totalLen }
-
-// 2. Binary search for position at normalized arc-length u ∈ [0,1]
-posAtArcLength(table, u) → { x, y }  // O(log 800) per particle per frame
-
-// 3. Particles advance: p.u += p.speed  (uniform real distance)
-```
-
-This ensures all 220 particles travel at perceptually equal speed regardless of curve geometry.
-
-### Depth Perception System
-
-```
-Orbit angle α → depth = (sin(α) + 1) / 2  →  [0 = farthest, 1 = closest]
-scale   = 0.65 + depth × 0.50     // 0.65× back → 1.15× front
-blur    = (1 − depth) × 1.5       // sharp front, blurry back
-opacity = 0.55 + depth × 0.45     // dim back, bright front
-zIndex  = depth * 40              // correct overlap order
-```
-
-Logos are additionally sorted by depth before rendering so back-orbit items are always under front-orbit items in the DOM.
-
-### Magnetic Pull Formula
-
-```js
-const d = dist2D(logoX, logoY, mouseX, mouseY);
-if (d < 110) {
-  const strength = clamp(1 − d/110, 0, 1) × 14;  // linear falloff
-  magnetX = (dx/len) × strength;
-  magnetY = (dy/len) × strength;
-}
-```
+---
 
 ---
 
@@ -381,21 +239,14 @@ portfolio-website/
 │   │
 │   ├── WelcomeScreen.jsx       🖥️  Cyberpunk boot intro screen
 │   │
-│   ├── InfinityVortex.js       ♾️  Master orchestrator (hero animation)
-│   │
-│   ├── components/             ♾️  Infinity Vortex sub-components
-│   │   ├── InfinityLoop.jsx        Canvas: lemniscate + 220 particles
-│   │   ├── OrbitingLogos.jsx       12-logo circular orbit management
-│   │   ├── LogoItem.jsx            Glassmorphic logo + 3D tilt + float
-│   │   ├── ParticleBackground.jsx  3-layer galaxy starfield canvas
+│   ├── components/             
 │   │   └── ThreeBackground.jsx     🌌 Three.js @r3f rotating starfield (desktop)
 │   │
-│   ├── hooks/                  ♾️  Animation hooks
-│   │   ├── useAnimationFrame.js    RAF loop with delta-time
-│   │   └── useMousePosition.js     Normalized cursor position
+│   ├── hooks/                  
+│   │   └── useTypewriter.js        Typing animation hook
 │   │
-│   ├── utils/                  ♾️  Math & animation utilities
-│   │   └── mathHelpers.js          Lemniscate, orbit, lerp, clamp...
+│   ├── utils/                  
+│   │   └── helpers.js              General utilities
 │   │
 │   ├── ai-playback/            🤖  AI Playback Assistant
 │   │   ├── AIPlaybackAssistant.jsx     Floating UI: orb, waveform, minimap, subtitles
@@ -403,12 +254,13 @@ portfolio-website/
 │   │   ├── usePlaybackStore.js         Global playback state
 │   │   └── AIPlayback.css              Glassmorphic animation styles
 │   │
-│   ├── Home.js                 Hero section (uses InfinityVortex)
+│   ├── Home.js                 Hero section: Terminal / Neural Core
 │   ├── About.js                Bio + animated gradient border
 │   ├── TechStack.js            Glass panels
 │   ├── Work.js                 GitHub fetch + README modal
-│   ├── Publications.js         📄 Research papers section (new)
-│   ├── Certificates.js         🏆 Credentials section (new)
+│   ├── Internship.js           🚀 Industry experience section
+│   ├── Publications.js         📚 Research papers section
+│   ├── Certificates.js         📜 Credentials section
 │   ├── GithubStats.js          Live stats dashboard
 │   ├── Gallery.js              Photo grid + lightbox
 │   ├── Services.js             3D tilt cards
@@ -428,7 +280,7 @@ portfolio-website/
 │       ├── AdminDashboard.js       Sidebar + tab routing
 │       ├── AdminStyles.js          Shared UI helpers
 │       ├── cloudinary.js           Cloudinary upload utility
-│       ├── Firestorehelper.js      Firestore read/write helpers (new)
+│       ├── Firestorehelper.js      Firestore read/write helpers
 │       ├── HomeEditor.js
 │       ├── AboutEditor.js          + photo upload
 │       ├── WorkManager.js          GitHub repos + customize
@@ -493,18 +345,6 @@ const ADMIN_PASSWORD = 'YourPassword';
 // Change GitHub username (Work.js, WorkPage.js, GithubStats.js)
 const GITHUB_USERNAME = 'your-username';
 
-// Add/remove orbiting tech logos (src/components/OrbitingLogos.jsx)
-const TECHS = [
-  { Icon: FaReact, label: 'React', color: '#61DAFB' },
-  // add more react-icons entries here...
-];
-
-// Change orbit speed (OrbitingLogos.jsx)
-const ORBIT_SPEED_NORMAL = 0.30;   // rad/s — increase to spin faster
-
-// Change infinity loop size (InfinityVortex.js → InfinityLoop.jsx)
-const A = size * 0.36;             // increase for larger loop
-
 // Add typewriter roles (Home.js)
 const ROLES = ['Your Role Here', ...];
 
@@ -532,12 +372,6 @@ const BOOT_LINES = [
 --accent:       #c084fc
 --bg:           #0a0812
 --bg2:          #0f0c1a
-
-/* Infinity Vortex glow colors */
-/* blue   → hsl(220) */
-/* cyan   → hsl(190) */
-/* violet → hsl(270) */
-/* white  → rgb(255,255,255) core */
 
 /* Welcome Screen accent */
 /* cyan   → #22d3ee  (bracket color, gradient end) */
