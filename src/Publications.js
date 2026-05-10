@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -40,6 +41,11 @@ const ALL_PUBLICATIONS = [
 
 const FILTERS = ["All", "AI", "ML", "Web", "NLP", "FinTech"];
 
+const IS_TOUCH = typeof window !== 'undefined' &&
+  (window.matchMedia('(pointer: coarse)').matches ||
+   'ontouchstart' in window ||
+   navigator.maxTouchPoints > 0);
+
 export default function Publications({ featuredOnly = false }) {
   const [activeFilter, setActiveFilter] = useState("All");
   const [searchQuery, setSearchQuery]   = useState("");
@@ -47,6 +53,7 @@ export default function Publications({ featuredOnly = false }) {
   const [pdfLoading, setPdfLoading]     = useState(false);
   const [expanded, setExpanded]         = useState(null);
   const titleRef = useRef(null);
+  const navigate = useNavigate();
 
   /* GSAP heading */
   useEffect(() => {
@@ -66,7 +73,14 @@ export default function Publications({ featuredOnly = false }) {
     return matchesFilter && matchesSearch;
   });
 
-  const displayPubs = featuredOnly ? filteredPubs.slice(0, 2) : filteredPubs;
+  /* Responsive preview limits:
+     Mobile (touch): show 1 card
+     Desktop: show up to 4 cards */
+  const MOBILE_LIMIT = 1;
+  const DESKTOP_LIMIT = 4;
+  const previewLimit = IS_TOUCH ? MOBILE_LIMIT : DESKTOP_LIMIT;
+  const displayPubs = featuredOnly ? filteredPubs.slice(0, previewLimit) : filteredPubs;
+  const hasMore = filteredPubs.length > previewLimit;
 
   return (
     <section id="publications" className="page-section pub-section">
@@ -117,22 +131,23 @@ export default function Publications({ featuredOnly = false }) {
           </motion.div>
         )}
 
-        {/* ── Cards ───────────────────────────────────────────────── */}
-        <div className="pub-grid-v2">
+        {/* ── Compact Cards Grid ─────────────────────────────────── */}
+        <div className="pub-grid-compact">
           {displayPubs.map((pub, idx) => (
             <motion.div
               key={pub.id}
-              className="pub-card-v2"
+              className="pub-card-compact"
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.55, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
+              whileHover={{ y: -4, boxShadow: '0 16px 48px rgba(138,92,246,0.2)' }}
             >
               {/* Accent glow */}
-              <div className="pub-card-glow" style={{ background: `radial-gradient(ellipse 200px 120px at 30% 0%, ${pub.color}22, transparent)` }} />
+              <div className="pub-card-glow" style={{ background: `radial-gradient(ellipse 180px 100px at 30% 0%, ${pub.color}22, transparent)` }} />
 
               {/* Top bar */}
-              <div className="pub-card-topbar">
+              <div className="pub-compact-topbar">
                 <span className={`pub-badge-status ${pub.status === 'Published' ? 'pub-status-live' : 'pub-status-review'}`}>
                   <span className="pub-badge-dot" />
                   {pub.status}
@@ -142,10 +157,10 @@ export default function Publications({ featuredOnly = false }) {
 
               {/* Preview Image */}
               {pub.image && (
-                <div className="pub-preview-img-container" onClick={() => { setModalPdf(pub.pdf); setPdfLoading(true); }}>
-                  <img src={pub.image} alt={pub.title} className="pub-preview-img" />
+                <div className="pub-compact-img-wrap" onClick={() => { setModalPdf(pub.pdf); setPdfLoading(true); }}>
+                  <img src={pub.image} alt={pub.title} className="pub-compact-img" />
                   <div className="pub-preview-overlay">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
                     </svg>
                   </div>
@@ -153,11 +168,11 @@ export default function Publications({ featuredOnly = false }) {
               )}
 
               {/* Title */}
-              <h3 className="pub-title-v2">{pub.title}</h3>
-              <p className="pub-journal">{pub.journal}</p>
+              <h3 className="pub-compact-title">{pub.title}</h3>
+              <p className="pub-compact-journal">{pub.journal}</p>
 
               {/* Tags */}
-              <div className="pub-tags-v2">
+              <div className="pub-compact-tags">
                 {pub.tags.map(t => (
                   <span key={t} className="pub-tag-v2" style={{ borderColor: `${pub.color}44`, color: pub.color }}>
                     {t}
@@ -168,9 +183,9 @@ export default function Publications({ featuredOnly = false }) {
               {/* Abstract (expandable) */}
               <AnimatePresence initial={false}>
                 <motion.p
-                  className="pub-abstract-v2"
+                  className="pub-compact-abstract"
                   initial={false}
-                  animate={{ maxHeight: expanded === pub.id ? 500 : 80, opacity: 1 }}
+                  animate={{ maxHeight: expanded === pub.id ? 400 : 54, opacity: 1 }}
                   transition={{ duration: 0.35 }}
                 >
                   {pub.abstract}
@@ -184,12 +199,12 @@ export default function Publications({ featuredOnly = false }) {
               </button>
 
               {/* Divider */}
-              <div className="pub-divider" />
+              <div className="pub-divider" style={{ marginBottom: 12 }} />
 
               {/* Metrics row */}
-              <div className="pub-metrics-row">
+              <div className="pub-compact-metrics">
                 <span className="pub-metric">
-                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
                   </svg>
                   DOI
@@ -198,7 +213,7 @@ export default function Publications({ featuredOnly = false }) {
                   {pub.doi.split('doi.org/')[1] || 'Link'} ↗
                 </a>
                 <span className="pub-metric pub-citations">
-                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                  <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
                   </svg>
                   {pub.citations} citations
@@ -206,27 +221,27 @@ export default function Publications({ featuredOnly = false }) {
               </div>
 
               {/* Actions */}
-              <div className="pub-actions-v2">
+              <div className="pub-compact-actions">
                 <button
                   className="pub-btn-ghost"
                   onClick={() => { setModalPdf(pub.pdf); setPdfLoading(true); }}
                 >
-                  <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                   </svg>
                   Preview
                 </button>
                 <a href={pub.pdf} target="_blank" rel="noreferrer" className="pub-btn-solid">
-                  <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
                   </svg>
-                  Download PDF
+                  PDF
                 </a>
                 <a href={pub.publishedAt} target="_blank" rel="noreferrer" className="pub-btn-ghost">
-                  <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
                   </svg>
-                  View Online
+                  View
                 </a>
               </div>
             </motion.div>
@@ -244,6 +259,27 @@ export default function Publications({ featuredOnly = false }) {
             </motion.div>
           )}
         </div>
+
+        {/* ── See More Publications Button ─────────────────────── */}
+        {hasMore && (
+          <motion.div
+            className="pub-see-more-wrap"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <button className="pub-see-more-btn" onClick={() => navigate('/publications')}>
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              See More Publications
+              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </motion.div>
+        )}
       </div>
 
       {/* ── PDF Modal ────────────────────────────────────────────── */}

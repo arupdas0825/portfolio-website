@@ -2256,6 +2256,298 @@ body {
   .pub-actions-v2 { flex-wrap: wrap; }
 }
 
+
+/* ============================================================
+   PUBLICATIONS — Compact Cards & Responsive Grid
+   ============================================================ */
+
+/* Compact Grid (homepage preview) */
+.pub-grid-compact {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+@media (min-width: 1200px) {
+  .pub-grid-compact {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media (max-width: 900px) {
+  .pub-grid-compact {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .pub-grid-compact {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Compact Card */
+.pub-card-compact {
+  position: relative;
+  background: rgba(18, 12, 38, 0.82);
+  border: 1px solid rgba(138,92,246,0.18);
+  border-radius: 16px;
+  padding: 18px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: default;
+}
+.pub-card-compact:hover {
+  border-color: rgba(138,92,246,0.45);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.35), 0 0 0 1px rgba(138,92,246,0.12);
+}
+
+/* Compact top bar */
+.pub-compact-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Compact Preview Image */
+.pub-compact-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  border: 1px solid rgba(138, 92, 246, 0.15);
+  cursor: pointer;
+  background: #0a0812;
+  z-index: 1;
+}
+.pub-compact-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.pub-compact-img-wrap:hover .pub-compact-img {
+  transform: scale(1.05);
+}
+.pub-compact-img-wrap:hover .pub-preview-overlay {
+  opacity: 1;
+}
+
+/* Compact Title & Journal */
+.pub-compact-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 0.92rem;
+  color: var(--white);
+  line-height: 1.35;
+  margin-bottom: 4px;
+  position: relative;
+  z-index: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.pub-compact-journal {
+  font-size: 0.7rem;
+  color: var(--purple-light);
+  margin-bottom: 10px;
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
+}
+
+/* Compact Tags */
+.pub-compact-tags {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Compact Abstract */
+.pub-compact-abstract {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 4px;
+}
+
+/* Compact Metrics */
+.pub-compact-metrics {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 1;
+  flex-wrap: wrap;
+}
+
+/* Compact Actions */
+.pub-compact-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+.pub-compact-actions .pub-btn-ghost {
+  padding: 6px 10px;
+  font-size: 0.7rem;
+  border-radius: 8px;
+  gap: 4px;
+}
+.pub-compact-actions .pub-btn-solid {
+  padding: 6px 12px;
+  font-size: 0.7rem;
+  border-radius: 8px;
+  gap: 4px;
+}
+
+/* ── "See More Publications" Button ── */
+.pub-see-more-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 36px;
+}
+.pub-see-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 28px;
+  border-radius: 40px;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  background: rgba(138, 92, 246, 0.12);
+  border: 1.5px solid rgba(138, 92, 246, 0.35);
+  color: var(--purple-light);
+  cursor: pointer;
+  transition: all 0.28s ease;
+  letter-spacing: 0.3px;
+}
+.pub-see-more-btn:hover {
+  background: var(--purple);
+  border-color: var(--purple);
+  color: #fff;
+  box-shadow: 0 0 28px var(--glow), 0 8px 32px rgba(138,92,246,0.25);
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   PUBLICATIONS PAGE — Dedicated /publications route
+   ============================================================ */
+.pubpage-root {
+  min-height: 100dvh;
+  background: var(--bg);
+  padding: 100px 8% 80px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Back button */
+.pubpage-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--purple-dim);
+  border: 1px solid var(--card-border);
+  color: var(--purple-light);
+  padding: 9px 18px;
+  border-radius: 30px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.22s;
+  margin-bottom: 48px;
+}
+.pubpage-back:hover {
+  background: var(--purple);
+  color: #fff;
+  border-color: var(--purple);
+  box-shadow: 0 0 20px var(--glow);
+}
+
+/* Page header */
+.pubpage-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.pubpage-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 800;
+  color: var(--white);
+  margin: 8px 0 0;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+.pubpage-title span {
+  background: linear-gradient(90deg, #a78bfa 0%, #22d3ee 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.pubpage-sub {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.97rem;
+  color: var(--text-muted);
+  max-width: 560px;
+  margin: 16px auto 0;
+  line-height: 1.75;
+}
+
+/* Filter row for pubpage */
+.pubpage-filters {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+
+/* Grid — responsive columns */
+.pubpage-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+@media (max-width: 1200px) {
+  .pubpage-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 900px) {
+  .pubpage-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .pubpage-grid { grid-template-columns: repeat(2, 1fr); }
+  .pubpage-root { padding: 80px 5% 60px; }
+}
+@media (max-width: 420px) {
+  .pubpage-grid { grid-template-columns: 1fr; }
+}
+
+/* Footer */
+.pubpage-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 56px;
+}
+
 /* ============================================================
    CONTACT v2 — Professional Two-Column Layout
    ============================================================ */

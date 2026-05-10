@@ -18,6 +18,7 @@ import ThreeBackground from './components/ThreeBackground';
 import WorkPage        from './WorkPage';
 import WelcomeScreen   from './WelcomeScreen';
 import PhotographyGallery from './PhotographyGallery';
+import PublicationsPage from './PublicationsPage';
 import AIPlaybackAssistant from './ai-playback/AIPlaybackAssistant';
 import usePlaybackStore from './ai-playback/usePlaybackStore';
 import './App.css';
@@ -138,6 +139,7 @@ export default function App() {
               />
               <Route path="/work" element={<WorkPage />} />
               <Route path="/photography-gallery" element={<PhotographyGallery />} />
+              <Route path="/publications" element={<PublicationsPage />} />
             </Routes>
             {adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
 
