@@ -34,7 +34,7 @@ const REPO_IMAGES = {
   'Hiresight-ai': '/Hiresight-ai.png',
   'LocalCare-Finder-Android': '/LocalCare-Finder-Android.jpeg',
   'NEURAL-RIFT': '/NEURAL-RIFT.png',
-  'HyperLane': '/HyperLane.jpg',
+  'HyperLane': '/HyperLane.jpeg',
 };
 
 const REPO_HOMEPAGES = {
