@@ -2291,6 +2291,7 @@ body {
   background: linear-gradient(90deg, rgba(138,92,246,0.3), rgba(34,211,238,0.3), rgba(138,92,246,0.3));
   background-size: 200% auto;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   animation: borderGlow 4s linear infinite;
