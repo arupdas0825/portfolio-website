@@ -5,6 +5,7 @@ import Home           from './Home';
 import About          from './About';
 import TechStack      from './TechStack';
 import Work           from './Work';
+import Internship     from './Internship';
 import Publications   from './Publications';
 import Certificates   from './Certificates';
 import CertificatesPage from './CertificatesPage';
@@ -77,6 +78,7 @@ function PortfolioHome({ onAdminOpen }) {
       <div id="about"><About onPhotoDoubleClick={onAdminOpen} /></div>
       <div id="techstack"><TechStack /></div>
       <div id="work"><Work /></div>
+      <div id="internship"><Internship /></div>
       <div id="publications"><Publications /></div>
       <div id="certificates"><Certificates /></div>
       <div id="githubstats"><GithubStats /></div>

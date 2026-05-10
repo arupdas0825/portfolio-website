@@ -4,6 +4,7 @@ const navLinks = [
   { id:'home',      label:'Home',        icon:'🏠' },
   { id:'about',     label:'About',       icon:'👤' },
   { id:'work',      label:'Work',        icon:'💼' },
+  { id:'internship', label:'Internship', icon:'🚀' },
   { id:'publications', label:'Publications', icon:'📚' },
   { id:'certificates', label:'Certificates', icon:'📜' },
   { id:'gallery',   label:'Photography', icon:'📷' },
