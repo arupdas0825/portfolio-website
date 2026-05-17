@@ -32,7 +32,7 @@ const REPO_IMAGES = {
   'quiz-web': '/quiz-web.png',
   'studytra': '/studytra.png',
   'sahasrajit-foundation': '/sahasrajit-foundation.png',
-  'Hiresight-ai': '/Hiresight-ai.png',
+  'Hiresight-ai': '/HireSight-AI.png',
   'LocalCare-Finder-Android': '/LocalCare-Finder-Android.jpeg',
   'NEURAL-RIFT': '/NEURAL-RIFT.png',
   'HyperLane': '/HyperLane.jpeg',
