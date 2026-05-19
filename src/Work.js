@@ -454,6 +454,13 @@ const Work = () => {
           behavior: 'smooth'
         });
       }, 150);
+    } else {
+      setTimeout(() => {
+        const el = document.getElementById('work');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 50);
     }
   };
 
@@ -659,22 +666,24 @@ const Work = () => {
                     </AnimatePresence>
                   </motion.div>
                   
-                  {/* Centralized Premium Show More Button */}
-                  <div className="major-expand-btn-container">
-                    <motion.button
-                      className={`major-expand-btn ${isExpanded ? 'expanded' : ''}`}
-                      onClick={handleToggleExpand}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      layout
-                    >
-                      <span className="major-expand-btn-shimmer" />
-                      <span>{isExpanded ? 'Show Less' : 'Explore More Work'}</span>
-                      <span className="major-expand-btn-icon">
-                        <LucideChevronDown size={16} />
-                      </span>
-                    </motion.button>
-                  </div>
+                  {/* Centralized Premium Show More Button (Shown only when collapsed) */}
+                  {!isExpanded && (
+                    <div className="major-expand-btn-container">
+                      <motion.button
+                        className="major-expand-btn"
+                        onClick={handleToggleExpand}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        layoutId="expand-toggle-btn"
+                      >
+                        <span className="major-expand-btn-shimmer" />
+                        <span>Explore More Work</span>
+                        <span className="major-expand-btn-icon">
+                          <LucideChevronDown size={16} />
+                        </span>
+                      </motion.button>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -690,7 +699,7 @@ const Work = () => {
                   {/* Category 2: Secondary Projects */}
                   {categorized.secondary.length > 0 && (
                     <motion.div variants={sectionVariants} className="work-category-section fade-in" ref={addRef}>
-                      <div className="work-category-header">
+                       <div className="work-category-header">
                         <h3 className="work-category-title">
                           ✦ Secondary <span>Architectures</span>
                           <span className="work-category-count">{categorized.secondary.length}</span>
@@ -732,6 +741,27 @@ const Work = () => {
                       </div>
                     </motion.div>
                   )}
+
+                  {/* Centralized Premium Show Less Button (Shown at the very bottom when expanded) */}
+                  <motion.div 
+                    variants={sectionVariants} 
+                    className="major-expand-btn-container" 
+                    style={{ marginTop: '48px', marginBottom: '16px' }}
+                  >
+                    <motion.button
+                      className="major-expand-btn expanded"
+                      onClick={handleToggleExpand}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      layoutId="expand-toggle-btn"
+                    >
+                      <span className="major-expand-btn-shimmer" />
+                      <span>Show Less</span>
+                      <span className="major-expand-btn-icon" style={{ transform: 'rotate(180deg)', display: 'inline-flex' }}>
+                        <LucideChevronDown size={16} />
+                      </span>
+                    </motion.button>
+                  </motion.div>
                 </motion.div>
               )}
             </AnimatePresence>
