@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
 const navLinks = [
   { id:'home',      label:'Home',        icon:'🏠' },
@@ -56,78 +57,69 @@ export default function Navbar() {
     setMenuOpen(false);
   };
 
-  // ── MOBILE NAV (Bottom Floating Dock) ──
+  // ── MOBILE NAV (Apple Floating Dock Redesign) ──
   if (isMobile) return (
     <>
-      <nav style={{
-        position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-        zIndex: 200,
-        display: 'flex', alignItems: 'center', gap: 12,
-        padding: '10px 14px',
-        background: 'rgba(20, 15, 40, 0.65)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)',
-        borderRadius: 24,
-        border: '1px solid rgba(138, 92, 246, 0.3)',
-        boxShadow: '0 12px 40px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05)',
-        transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
-        width: 'auto', maxWidth: '90vw',
-      }}>
-        {/* Quick Links for Dock */}
-        {[
-          { id:'home',      icon:'🏠' },
-          { id:'work',      icon:'💼' },
-          { id:'gallery',   icon:'📷' },
-          { id:'contact',   icon:'📬' },
-        ].map(link => (
-          <button
-            key={link.id}
-            onClick={() => scrollTo(link.id)}
-            style={{
-              width: 44, height: 44, borderRadius: 16,
-              background: active === link.id ? 'rgba(138, 92, 246, 0.25)' : 'transparent',
-              border: active === link.id ? '1px solid rgba(138, 92, 246, 0.4)' : '1px solid transparent',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 20, cursor: 'pointer', transition: 'all 0.2s',
-              filter: active === link.id ? 'drop-shadow(0 0 8px rgba(138, 92, 246, 0.5))' : 'none',
-            }}
+      <div className="apple-dock-border-wrap">
+        <nav className="apple-dock-container">
+          {/* Quick Links for Dock */}
+          {[
+            { id:'home',      icon:'🏠' },
+            { id:'work',      icon:'💼' },
+            { id:'gallery',   icon:'📷' },
+            { id:'contact',   icon:'📬' },
+          ].map(link => {
+            const isActive = active === link.id;
+            return (
+              <motion.button
+                key={link.id}
+                onClick={() => scrollTo(link.id)}
+                className={`apple-dock-btn ${isActive ? 'active' : ''}`}
+                whileTap={{ scale: 0.92, y: -2 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                aria-label={`Navigate to ${link.id}`}
+              >
+                <span>{link.icon}</span>
+                {isActive && (
+                  <motion.div 
+                    className="apple-dock-dot"
+                    layoutId="activeDockIndicatorDot"
+                    transition={{ type: 'spring', stiffness: 380, damping: 25 }}
+                  />
+                )}
+              </motion.button>
+            );
+          })}
+
+          {/* Divider */}
+          <div className="apple-dock-divider" />
+
+          {/* More/Menu Toggle */}
+          <motion.button
+            onClick={() => setMenuOpen(o => !o)}
+            className={`apple-dock-more-btn ${menuOpen ? 'open' : ''}`}
+            whileTap={{ scale: 0.92, y: -2 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+            aria-label="Toggle full menu navigation"
           >
-            {link.icon}
-          </button>
-        ))}
-
-        {/* Divider */}
-        <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.1)' }} />
-
-        {/* More/Menu Toggle */}
-        <button
-          onClick={() => setMenuOpen(o => !o)}
-          style={{
-            width: 44, height: 44, borderRadius: 16,
-            background: menuOpen ? 'rgba(138, 92, 246, 0.25)' : 'rgba(255,255,255,0.05)',
-            border: `1px solid ${menuOpen ? 'rgba(138, 92, 246, 0.4)' : 'rgba(255,255,255,0.1)'}`,
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center', gap: 4,
-            cursor: 'pointer', padding: 0, transition: 'all 0.2s',
-          }}
-        >
-          {[0,1,2].map(i => (
-            <span key={i} style={{
-              display: 'block',
-              width: menuOpen ? (i === 1 ? 0 : 20) : 20,
-              height: 2,
-              background: menuOpen ? '#a78bfa' : 'rgba(255,255,255,0.7)',
-              borderRadius: 2,
-              transition: 'all 0.25s ease',
-              transform: menuOpen
-                ? i === 0 ? 'rotate(45deg) translate(4px,4px)'
-                : i === 2 ? 'rotate(-45deg) translate(4px,-4px)'
-                : 'scaleX(0)'
-                : 'none',
-            }}/>
-          ))}
-        </button>
-      </nav>
+            {[0, 1, 2].map(i => (
+              <span key={i} style={{
+                display: 'block',
+                width: menuOpen ? (i === 1 ? 0 : 20) : 20,
+                height: 2,
+                background: menuOpen ? '#a78bfa' : 'rgba(255,255,255,0.75)',
+                borderRadius: 2,
+                transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+                transform: menuOpen
+                  ? i === 0 ? 'rotate(45deg) translate(4px,4px)'
+                  : i === 2 ? 'rotate(-45deg) translate(4px,-4px)'
+                  : 'scaleX(0)'
+                  : 'none',
+              }}/>
+            ))}
+          </motion.button>
+        </nav>
+      </div>
 
       {/* Drawer (Bottom Sheet Style) */}
       <div style={{

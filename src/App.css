@@ -4284,4 +4284,158 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   50% { opacity: 0.4; }
 }
 
+/* ═══════════════════════════════════════════════════════════
+   APPLE DOCK STYLE — Floating Glassmorphism Dock
+   Version: 2026.05.APPLE-DOCK
+   ═══════════════════════════════════════════════════════════ */
+
+/* Rotating Border Wrapper */
+.apple-dock-border-wrap {
+  position: fixed;
+  bottom: clamp(20px, 5vw, 32px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px; /* The exact thickness of the border */
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.7),
+    0 0 30px rgba(138, 92, 246, 0.1);
+  width: auto;
+  max-width: 92vw;
+  pointer-events: auto;
+}
+
+/* Conic gradient background rotating around border */
+.apple-dock-border-wrap::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    #8a5cf6 0%,     /* Violet */
+    #22d3ee 25%,    /* Cyan */
+    #c084fc 50%,    /* Soft Purple */
+    #22d3ee 75%,    /* Cyan */
+    #8a5cf6 100%    /* Violet */
+  );
+  animation: apple-dock-rotate 4s linear infinite;
+  z-index: 1;
+}
+
+@keyframes apple-dock-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Glassmorphism Inner Container */
+.apple-dock-container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: rgba(10, 6, 20, 0.65);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-radius: 27px; /* 1px smaller than wrap to match perfectly */
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.15),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.4);
+}
+
+/* Tactile Icon Button */
+.apple-dock-btn {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 18px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Active Highlight Glass Bubble */
+.apple-dock-btn.active {
+  background: rgba(138, 92, 246, 0.18);
+  border: 1px solid rgba(138, 92, 246, 0.35);
+  box-shadow: 
+    0 8px 20px rgba(138, 92, 246, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  transform: scale(1.1) translateY(-2px);
+  filter: drop-shadow(0 0 8px rgba(138, 92, 246, 0.6));
+}
+
+/* Tactile hover/active spring on icons */
+.apple-dock-btn:active {
+  transform: scale(0.9) translateY(0);
+}
+
+/* Active dot indicator underneath button */
+.apple-dock-dot {
+  position: absolute;
+  bottom: 2px;
+  width: 4px;
+  height: 4px;
+  background: #22d3ee;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #22d3ee;
+  pointer-events: none;
+}
+
+/* Divider inside dock */
+.apple-dock-divider {
+  width: 1px;
+  height: 24px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+/* More Toggle Button Styles */
+.apple-dock-more-btn {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.apple-dock-more-btn.open {
+  background: rgba(138, 92, 246, 0.18);
+  border-color: rgba(138, 92, 246, 0.4);
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 
+    0 8px 20px rgba(138, 92, 246, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+}
+
+
 
