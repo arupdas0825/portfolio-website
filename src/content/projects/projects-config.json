@@ -1,0 +1,25 @@
+{
+  "major": [
+    "portfolio-website",
+    "HireSight-AI",
+    "HyperLane",
+    "LocalCare-Finder-Android",
+    "EverBond-Wealth",
+    "studytra"
+  ],
+
+  "secondary": [
+    "sentiment-analysis-project",
+    "ai-code-translator",
+    "ai-image-caption-generator",
+    "sahasrajit-foundation",
+    "client-portfolio",
+    "streamnest"
+  ],
+
+  "college": [
+    "scientific-calculator",
+    "quiz-web",
+    "algorithm-visualizer"
+  ]
+}

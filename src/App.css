@@ -4437,5 +4437,254 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
     inset 0 1px 1px rgba(255, 255, 255, 0.15);
 }
 
+/* ═══════════════════════════════════════════════════════════
+   CURATED CATEGORY SHOWCASE STYLES
+   ═══════════════════════════════════════════════════════════ */
+
+/* Category Containers & Headers */
+.work-category-section {
+  margin-top: 64px;
+  position: relative;
+  will-change: transform, opacity;
+}
+
+.work-category-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.work-category-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.4rem, 4vw, 2.0rem);
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.work-category-title span {
+  background: linear-gradient(90deg, #a78bfa 0%, #22d3ee 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.work-category-count {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  background: rgba(167, 139, 250, 0.12);
+  border: 1px solid rgba(167, 139, 250, 0.25);
+  border-radius: 20px;
+  color: #a78bfa;
+  box-shadow: 0 0 15px rgba(167, 139, 250, 0.05);
+}
+
+.work-category-line {
+  flex-grow: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(167, 139, 250, 0.2) 0%, rgba(255, 255, 255, 0.02) 100%);
+}
+
+/* Secondary Projects Grid & Card Layout */
+.secondary-projects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 991px) {
+  .secondary-projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .secondary-projects-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.secondary-project-card {
+  position: relative;
+  background: rgba(12, 9, 22, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform, border-color, box-shadow;
+}
+
+.secondary-project-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(167, 139, 250, 0.25);
+  box-shadow: 
+    0 15px 30px rgba(0, 0, 0, 0.4),
+    0 0 25px rgba(167, 139, 250, 0.08);
+}
+
+.secondary-media-section {
+  position: relative;
+  height: 140px;
+  background: #07050d;
+  overflow: hidden;
+}
+
+.secondary-project-card:hover .premium-video,
+.secondary-project-card:hover .premium-image,
+.secondary-project-card:hover .premium-fallback {
+  transform: scale(1.05);
+}
+
+.secondary-info-section {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 8px;
+}
+
+.secondary-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.secondary-desc {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 40px;
+}
+
+/* College Projects: Compact Minimal Grid & Card Layout */
+.college-projects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 991px) {
+  .college-projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .college-projects-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.college-project-card {
+  position: relative;
+  background: rgba(10, 8, 18, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform, border-color, box-shadow;
+}
+
+.college-project-card:hover {
+  transform: translateY(-2px);
+  background: rgba(12, 10, 22, 0.7);
+  border-color: rgba(34, 211, 238, 0.25);
+  box-shadow: 
+    0 10px 20px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(34, 211, 238, 0.06);
+}
+
+.college-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.college-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.college-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.college-icon {
+  font-size: 1.5rem;
+}
+
+.college-desc {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 35px;
+}
+
+.college-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.college-lang {
+  display: flex;
+  align-items: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.college-links {
+  display: flex;
+  gap: 10px;
+}
+
+.college-link {
+  color: var(--text-muted);
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.college-link:hover {
+  color: #fff;
+}
+
+
 
 

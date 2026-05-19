@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { LucideExternalLink, LucideGithub, LucideStar, LucideGitFork, LucideX, LucideZap, LucideArrowRight } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { LucideExternalLink, LucideGithub, LucideStar, LucideGitFork, LucideZap, LucideArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import ProjectDetails from './components/ProjectDetails';
+import projectsConfig from './content/projects/projects-config.json';
 
-const MOBILE_LIMIT = 4;
 const isMobileDevice = () => typeof window !== 'undefined' && window.innerWidth < 768;
 
 gsap.registerPlugin(ScrollTrigger);
@@ -58,9 +58,6 @@ function getRepoEmoji(lang) {
   };
   return map[lang] || '💻';
 }
-
-
-
 
 /* ── Fallback repos (shown when API rate-limited) ── */
 const FALLBACK_REPOS = [
@@ -129,8 +126,8 @@ const FALLBACK_REPOS = [
   },
 ];
 
-// ── Premium Cinematic Project Card Component ────────────────────────────────
-const ProjectCard = React.memo(({ repo, idx, isMobile, onClick }) => {
+/* ── 1. MAJOR PROJECT CARD (Largest Premium Grid Layout) ── */
+const MajorProjectCard = React.memo(({ repo, idx, isMobile, onClick }) => {
   const videoRef = useRef(null);
   const cardRef = useRef(null);
   const [isIntersecting, setIsIntersecting] = useState(false);
@@ -140,31 +137,16 @@ const ProjectCard = React.memo(({ repo, idx, isMobile, onClick }) => {
   useEffect(() => {
     const el = cardRef.current;
     if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsIntersecting(entry.isIntersecting);
-      },
-      { threshold: 0.1 }
-    );
+    const observer = new IntersectionObserver(([e]) => setIsIntersecting(e.isIntersecting), { threshold: 0.1 });
     observer.observe(el);
-
-    return () => {
-      observer.unobserve(el);
-    };
+    return () => observer.unobserve(el);
   }, []);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-
     if (isIntersecting) {
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Silent catch for autoplay restrictions
-        });
-      }
+      video.play().catch(() => {});
     } else {
       video.pause();
     }
@@ -188,7 +170,6 @@ const ProjectCard = React.memo(({ repo, idx, isMobile, onClick }) => {
       style={{ animationDelay: `${(idx % 6) * 0.08}s` }}
       onClick={onClick}
     >
-      {/* 1. TOP SECTION: Media Preview Area (takes 65-75% height) */}
       <div className="premium-media-section">
         <div className="premium-media-container">
           {hasVideo ? (
@@ -213,109 +194,174 @@ const ProjectCard = React.memo(({ repo, idx, isMobile, onClick }) => {
               )}
             </>
           ) : imageUrl ? (
-            <div
-              className="premium-image"
-              style={{ background: `url(${imageUrl}) center/cover no-repeat` }}
-            />
+            <div className="premium-image" style={{ background: `url(${imageUrl}) center/cover no-repeat` }} />
           ) : (
-            <div
-              className="premium-fallback"
-              style={{
-                background: `linear-gradient(135deg, ${(langColors[repo.language] || langColors.default)}15, rgba(10,8,18,0.95))`
-              }}
-            >
+            <div className="premium-fallback" style={{ background: `linear-gradient(135deg, ${(langColors[repo.language] || langColors.default)}15, rgba(10,8,18,0.95))` }}>
               <div className="fallback-emoji">{getRepoEmoji(repo.language)}</div>
             </div>
           )}
         </div>
-
-        {/* Ambient Dark Gradient Separation Overlay */}
         <div className="premium-media-gradient-overlay" />
-
-        {/* Floating Stars and Forks on Media Overlays */}
         <div className="premium-meta-badges">
-          <div className="premium-meta-badge">
-            <LucideStar size={11} /> {repo.stargazers_count}
-          </div>
-          <div className="premium-meta-badge">
-            <LucideGitFork size={11} /> {repo.forks_count}
-          </div>
+          <div className="premium-meta-badge"><LucideStar size={11} /> {repo.stargazers_count}</div>
+          <div className="premium-meta-badge"><LucideGitFork size={11} /> {repo.forks_count}</div>
         </div>
-
-        {/* Floating Language Badge */}
         {repo.language && (
           <div className="premium-lang-badge">
-            <span
-              style={{
-                display: 'inline-block',
-                width: 6,
-                height: 6,
-                borderRadius: '50%',
-                background: langColors[repo.language] || langColors.default,
-                marginRight: 6
-              }}
-            />
+            <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: langColors[repo.language] || langColors.default, marginRight: 6 }} />
             {repo.language}
           </div>
         )}
       </div>
-
-      {/* 2. VISUAL SEPARATION: Premium Divider Line & Glow */}
-      <div className="premium-section-divider">
-        <div className="divider-glow-line" />
-      </div>
-
-      {/* 3. BOTTOM SECTION: Compact Project Info Area */}
+      <div className="premium-section-divider"><div className="divider-glow-line" /></div>
       <div className="premium-info-section">
-        {/* Title */}
         <div className="premium-info-header">
           <h3 className="premium-title">{repo.name}</h3>
-          <span className="premium-hint-zap">
-            <LucideZap size={11} />
-          </span>
+          <span className="premium-hint-zap"><LucideZap size={11} /></span>
         </div>
-
-        {/* Description & Expandable Toggle */}
         <div className="premium-desc-wrapper">
-          <motion.div
-            layout="position"
-            animate={{ height: isExpanded ? 'auto' : '38px' }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="premium-desc-anim-container"
-          >
-            <p className={`premium-desc-text ${isExpanded ? 'expanded' : 'collapsed'}`}>
-              {description}
-            </p>
+          <motion.div layout="position" animate={{ height: isExpanded ? 'auto' : '38px' }} className="premium-desc-anim-container">
+            <p className={`premium-desc-text ${isExpanded ? 'expanded' : 'collapsed'}`}>{description}</p>
           </motion.div>
-
           {isLongDesc && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsExpanded(!isExpanded);
-              }}
-              className="premium-showmore-btn"
-            >
+            <button onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }} className="premium-showmore-btn">
               {isExpanded ? 'Show Less' : 'Show More'}
             </button>
           )}
         </div>
-
-        {/* Action Buttons */}
         <div className="premium-actions-footer" onClick={e => e.stopPropagation()}>
-          <a href={repo.html_url} target="_blank" rel="noreferrer" className="premium-action-link github">
-            <LucideGithub size={13} /> Code
-          </a>
+          <a href={repo.html_url} target="_blank" rel="noreferrer" className="premium-action-link github"><LucideGithub size={13} /> Code</a>
           {(repo.homepage || REPO_HOMEPAGES[repo.name]) && (
-            <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="premium-action-link demo">
-              <LucideExternalLink size={13} /> Demo
-            </a>
+            <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="premium-action-link demo"><LucideExternalLink size={13} /> Demo</a>
           )}
         </div>
       </div>
-
-      {/* Ambient Outer Hover Glow Layer */}
       <div className="premium-card-ambient-glow" />
+    </motion.div>
+  );
+});
+
+/* ── 2. SECONDARY PROJECT CARD (Medium Visual Grid Layout) ── */
+const SecondaryProjectCard = React.memo(({ repo, idx, onClick }) => {
+  const videoRef = useRef(null);
+  const [isIntersecting, setIsIntersecting] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([e]) => setIsIntersecting(e.isIntersecting), { threshold: 0.1 });
+    observer.observe(el);
+    return () => observer.unobserve(el);
+  }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (isIntersecting) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [isIntersecting]);
+
+  const videoUrl = REPO_VIDEOS[repo.name];
+  const imageUrl = REPO_IMAGES[repo.name];
+  const hasVideo = !!videoUrl;
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.96 }}
+      transition={{ type: 'spring', stiffness: 240, damping: 22 }}
+      className="secondary-project-card"
+      style={{ animationDelay: `${(idx % 6) * 0.05}s` }}
+      onClick={onClick}
+    >
+      <div className="secondary-media-section">
+        {hasVideo ? (
+          <>
+            <video
+              ref={videoRef}
+              className={`premium-video ${videoLoaded ? 'loaded' : ''}`}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              onLoadedData={() => setVideoLoaded(true)}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            >
+              <source src={videoUrl} type="video/mp4" />
+            </video>
+            {imageUrl && (
+              <div
+                className={`premium-image placeholder ${videoLoaded ? 'fade-out' : ''}`}
+                style={{ background: `url(${imageUrl}) center/cover no-repeat`, position: 'absolute', inset: 0 }}
+              />
+            )}
+          </>
+        ) : imageUrl ? (
+          <div className="premium-image" style={{ background: `url(${imageUrl}) center/cover no-repeat`, width: '100%', height: '100%' }} />
+        ) : (
+          <div className="premium-fallback" style={{ background: `linear-gradient(135deg, ${(langColors[repo.language] || langColors.default)}15, rgba(10,8,18,0.95))` }}>
+            <div className="fallback-emoji">{getRepoEmoji(repo.language)}</div>
+          </div>
+        )}
+        <div className="premium-meta-badges">
+          <div className="premium-meta-badge"><LucideStar size={10} /> {repo.stargazers_count}</div>
+        </div>
+      </div>
+      <div className="secondary-info-section">
+        <h4 className="secondary-title">{repo.name}</h4>
+        <p className="secondary-desc">{repo.description || 'No description provided.'}</p>
+        <div className="premium-actions-footer" onClick={e => e.stopPropagation()} style={{ marginTop: 'auto', paddingTop: 8 }}>
+          <a href={repo.html_url} target="_blank" rel="noreferrer" className="premium-action-link github" style={{ padding: '6px 14px', fontSize: '0.75rem' }}><LucideGithub size={12} /> Code</a>
+          {(repo.homepage || REPO_HOMEPAGES[repo.name]) && (
+            <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="premium-action-link demo" style={{ padding: '6px 14px', fontSize: '0.75rem' }}><LucideExternalLink size={12} /> Demo</a>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+});
+
+/* ── 3. COLLEGE PROJECT CARD (Compact Minimal Layout) ── */
+const CollegeProjectCard = React.memo(({ repo, idx, onClick }) => {
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.97 }}
+      transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+      className="college-project-card"
+      style={{ animationDelay: `${(idx % 6) * 0.04}s` }}
+      onClick={onClick}
+    >
+      <div className="college-header">
+        <div className="college-title-group">
+          <h4 className="college-title">{repo.name}</h4>
+        </div>
+        <span className="college-icon">{getRepoEmoji(repo.language)}</span>
+      </div>
+      <p className="college-desc">{repo.description || 'No description provided.'}</p>
+      <div className="college-footer">
+        {repo.language && (
+          <span className="college-lang">
+            <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: langColors[repo.language] || langColors.default, marginRight: 5 }} />
+            {repo.language}
+          </span>
+        )}
+        <div className="college-links" onClick={e => e.stopPropagation()}>
+          <a href={repo.html_url} target="_blank" rel="noreferrer" className="college-link" title="Code"><LucideGithub size={13} /></a>
+          {(repo.homepage || REPO_HOMEPAGES[repo.name]) && (
+            <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="college-link" title="Live Demo"><LucideExternalLink size={13} /></a>
+          )}
+        </div>
+      </div>
     </motion.div>
   );
 });
@@ -330,17 +376,14 @@ const Work = () => {
   const [languages, setLanguages] = useState(['All']);
   const [selected, setSelected] = useState(null);
   const [isMobile, setIsMobile] = useState(isMobileDevice);
-  const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
 
-  // Track viewport changes
   useEffect(() => {
     const onResize = () => setIsMobile(isMobileDevice());
     window.addEventListener('resize', onResize, { passive: true });
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // GSAP ScrollTrigger on heading
   useEffect(() => {
     if (!titleRef.current) return;
     gsap.fromTo(titleRef.current,
@@ -359,10 +402,9 @@ const Work = () => {
 
   useEffect(() => {
     const CACHE_KEY = `gh_repos_${GITHUB_USERNAME}`;
-    const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+    const CACHE_TTL = 60 * 60 * 1000;
 
     const fetchAllRepos = async () => {
-      // ── 1. Try localStorage cache first ──
       try {
         const cached = localStorage.getItem(CACHE_KEY);
         if (cached) {
@@ -376,21 +418,16 @@ const Work = () => {
         }
       } catch (_) { }
 
-      // ── 2. Fetch from API ──
       try {
         const res = await fetch(
           `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`,
           { headers: { 'Accept': 'application/vnd.github.v3+json' } }
         );
-
         if (!res.ok) throw new Error(`API ${res.status}`);
-
         const data = await res.json();
         if (!Array.isArray(data) || data.length === 0) throw new Error('Empty');
-
         const ownRepos = data.filter(r => !r.fork);
 
-        // Cache in localStorage
         try {
           localStorage.setItem(CACHE_KEY, JSON.stringify({ data: ownRepos, ts: Date.now() }));
         } catch (_) { }
@@ -408,17 +445,67 @@ const Work = () => {
     fetchAllRepos();
   }, []);
 
-  const filtered = filter === 'All' ? repos : repos.filter(r => r.language === filter);
+  // Match repos against custom categories in projects-config.json
+  const categorizeRepos = () => {
+    const repoMap = {};
+    repos.forEach(repo => {
+      repoMap[repo.name.toLowerCase()] = repo;
+    });
 
-  const DESKTOP_LIMIT = 6;
-  // On mobile: cap at MOBILE_LIMIT cards in the homepage section
-  // On desktop: cap at DESKTOP_LIMIT cards initially
-  const visibleRepos = isMobile
-    ? filtered.slice(0, MOBILE_LIMIT)
-    : (isExpanded ? filtered : filtered.slice(0, DESKTOP_LIMIT));
+    const major = [];
+    const secondary = [];
+    const college = [];
+    const matchedNames = new Set();
 
-  const hasMoreMobile = isMobile && filtered.length > MOBILE_LIMIT;
-  const hasMoreDesktop = !isMobile && filtered.length > DESKTOP_LIMIT;
+    // 1. Curated Major
+    projectsConfig.major.forEach(name => {
+      const repo = repoMap[name.toLowerCase()];
+      if (repo) {
+        major.push(repo);
+        matchedNames.add(name.toLowerCase());
+      }
+    });
+
+    // 2. Curated Secondary
+    projectsConfig.secondary.forEach(name => {
+      const repo = repoMap[name.toLowerCase()];
+      if (repo) {
+        secondary.push(repo);
+        matchedNames.add(name.toLowerCase());
+      }
+    });
+
+    // 3. Curated College
+    projectsConfig.college.forEach(name => {
+      const repo = repoMap[name.toLowerCase()];
+      if (repo) {
+        college.push(repo);
+        matchedNames.add(name.toLowerCase());
+      }
+    });
+
+    // 4. Unmatched GitHub repos: auto append at the end of Secondary
+    repos.forEach(repo => {
+      const lowerName = repo.name.toLowerCase();
+      if (!matchedNames.has(lowerName) && lowerName !== GITHUB_USERNAME.toLowerCase()) {
+        secondary.push(repo);
+      }
+    });
+
+    // Filter categories by selected language filter
+    const applyFilter = (list) => {
+      return filter === 'All' ? list : list.filter(r => r.language === filter);
+    };
+
+    return {
+      major: applyFilter(major),
+      secondary: applyFilter(secondary),
+      college: applyFilter(college),
+    };
+  };
+
+  const categorized = categorizeRepos();
+  const hasContent = categorized.major.length > 0 || categorized.secondary.length > 0 || categorized.college.length > 0;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -427,18 +514,18 @@ const Work = () => {
     );
     fadeRefs.current.forEach(el => el && observer.observe(el));
     return () => observer.disconnect();
-  }, [visibleRepos]);
+  }, [repos, filter]);
 
   const addRef = el => { if (el && !fadeRefs.current.includes(el)) fadeRefs.current.push(el); };
 
   return (
     <section id="work" className="page-section">
       <div className="section-inner">
-        <span className="section-label fade-in" ref={addRef}>✦ OPEN SOURCE WORK ✦</span>
-        <h2 className="section-title fade-in" ref={r => { addRef(r); titleRef.current = r; }}>My <span>Works</span></h2>
+        <span className="section-label fade-in" ref={addRef}>✦ CURATED PORTFOLIO SHOWCASE ✦</span>
+        <h2 className="section-title fade-in" ref={r => { addRef(r); titleRef.current = r; }}>Featured <span>Work</span></h2>
         <div className="section-line fade-in" ref={addRef} />
         <p className="section-sub fade-in" ref={addRef}>
-          All my GitHub projects — live from the API. Click any card for a deep dive into the case study.
+          A hand-picked selection of major software architectures, secondary AI projects, and college experiments.
         </p>
 
         {/* Filter pills — hidden on mobile to keep it clean */}
@@ -458,73 +545,110 @@ const Work = () => {
         {loading && (
           <div className="work-loading">
             <div className="work-loading-spinner" />
-            <span>Fetching repos from GitHub...</span>
+            <span>Curating projects...</span>
           </div>
         )}
 
-        {/* Grid */}
+        {/* Grid Categories */}
         {!loading && (
           <>
-            <div className="projects-grid">
-              <AnimatePresence mode="popLayout">
-                {visibleRepos.map((repo, idx) => (
-                  <ProjectCard
-                    key={repo.id}
-                    repo={repo}
-                    idx={idx}
-                    isMobile={isMobile}
-                    onClick={() => setSelected(repo)}
-                  />
-                ))}
-              </AnimatePresence>
-            </div>
+            <AnimatePresence mode="wait">
+              {/* Category 1: Major Projects */}
+              {categorized.major.length > 0 && (
+                <div className="work-category-section fade-in" ref={addRef}>
+                  <div className="work-category-header">
+                    <h3 className="work-category-title">
+                      ✦ Major <span>Projects</span>
+                      <span className="work-category-count">{categorized.major.length}</span>
+                    </h3>
+                    <div className="work-category-line" />
+                  </div>
+                  <div className="projects-grid">
+                    {categorized.major.map((repo, idx) => (
+                      <MajorProjectCard
+                        key={repo.id}
+                        repo={repo}
+                        idx={idx}
+                        isMobile={isMobile}
+                        onClick={() => setSelected(repo)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
 
-            {filtered.length === 0 && (
-              <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: 32 }}>No repos found for this language.</p>
+              {/* Category 2: Secondary Projects */}
+              {categorized.secondary.length > 0 && (
+                <div className="work-category-section fade-in" ref={addRef}>
+                  <div className="work-category-header">
+                    <h3 className="work-category-title">
+                      ✦ Secondary <span>Architectures</span>
+                      <span className="work-category-count">{categorized.secondary.length}</span>
+                    </h3>
+                    <div className="work-category-line" />
+                  </div>
+                  <div className="secondary-projects-grid">
+                    {categorized.secondary.map((repo, idx) => (
+                      <SecondaryProjectCard
+                        key={repo.id}
+                        repo={repo}
+                        idx={idx}
+                        onClick={() => setSelected(repo)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Category 3: College Projects */}
+              {categorized.college.length > 0 && (
+                <div className="work-category-section fade-in" ref={addRef}>
+                  <div className="work-category-header">
+                    <h3 className="work-category-title">
+                      ✦ Academic &amp; <span>Experiments</span>
+                      <span className="work-category-count">{categorized.college.length}</span>
+                    </h3>
+                    <div className="work-category-line" />
+                  </div>
+                  <div className="college-projects-grid">
+                    {categorized.college.map((repo, idx) => (
+                      <CollegeProjectCard
+                        key={repo.id}
+                        repo={repo}
+                        idx={idx}
+                        onClick={() => setSelected(repo)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </AnimatePresence>
+
+            {!hasContent && (
+              <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: 48 }}>
+                No projects found for the selected language filter.
+              </p>
             )}
 
-            {/* ── Mobile CTA: See More Work ── */}
-            {hasMoreMobile && (
-              <div className="work-see-more fade-in" ref={addRef}>
+            {/* ── Visual Footer Buttons ── */}
+            <div className="work-see-more fade-in" ref={addRef} style={{ marginTop: '56px' }}>
+              <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <motion.button
                   className="work-see-more-btn"
                   onClick={() => navigate('/work')}
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.97 }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 >
-                  See More Work
+                  Explore Interactive Work Hub
                   <LucideArrowRight size={16} />
                 </motion.button>
-                <p className="work-see-more-hint">
-                  {filtered.length - MOBILE_LIMIT} more projects available
-                </p>
-              </div>
-            )}
 
-            {/* ── Desktop CTA: Toggle Expand / View All ── */}
-            {!isMobile && (
-              <div className="work-see-more fade-in" ref={addRef} style={{ marginTop: '48px' }}>
-                {hasMoreDesktop && (
-                  <motion.button
-                    className="work-see-more-btn"
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    whileHover={{ scale: 1.04 }}
-                    whileTap={{ scale: 0.97 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                    style={{ marginBottom: isExpanded ? '24px' : '0' }}
-                  >
-                    {isExpanded ? 'Show Less' : '✨ See More Work'}
-                  </motion.button>
-                )}
-
-                <div className="work-view-all" style={{ marginTop: isExpanded ? '0' : (hasMoreDesktop ? '20px' : '0') }}>
-                  <a href={`https://github.com/${GITHUB_USERNAME}?tab=repositories`} target="_blank" rel="noreferrer" className="btn-secondary">
-                    <LucideGithub size={16} /> View All on GitHub
-                  </a>
-                </div>
+                <a href={`https://github.com/${GITHUB_USERNAME}?tab=repositories`} target="_blank" rel="noreferrer" className="btn-secondary" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  <LucideGithub size={16} style={{ marginRight: 8 }} /> View All on GitHub
+                </a>
               </div>
-            )}
+            </div>
           </>
         )}
       </div>
