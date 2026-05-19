@@ -601,6 +601,11 @@
 
 /* ── AI Playback Premium Trigger (Floating Action Button beside Navbar) ── */
 .ai-premium-trigger {
+  position: fixed !important;
+  z-index: 999999 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
   background: rgba(8, 12, 28, 0.72) !important;
   backdrop-filter: blur(20px) saturate(1.8) !important;
   -webkit-backdrop-filter: blur(20px) saturate(1.8) !important;
@@ -613,6 +618,27 @@
   overflow: hidden;
   font-family: 'Syne', sans-serif;
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1) !important;
+  
+  /* Mobile Coordinates (Fallback & Default) */
+  bottom: 24px !important;
+  right: 24px !important;
+  top: auto !important;
+  left: auto !important;
+}
+
+@media (min-width: 768px) {
+  .ai-premium-trigger {
+    bottom: auto !important;
+    top: 20px !important;
+    right: 24px !important;
+    left: auto !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ai-premium-trigger {
+    right: 40px !important;
+  }
 }
 
 .ai-premium-trigger:hover {
@@ -678,12 +704,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: linear-gradient(135deg, rgba(34, 211, 238, 0.2) 0%, rgba(34, 211, 238, 0.4) 100%);
   border: 1px solid rgba(34, 211, 238, 0.4);
-  box-shadow: 0 0 12px rgba(34, 211, 238, 0.3);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.35);
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   position: relative;
   overflow: visible;
@@ -692,8 +718,8 @@
 
 @media (min-width: 768px) {
   .ai-play-icon-container {
-    width: 34px;
-    height: 34px;
+    width: 26px;
+    height: 26px;
   }
 }
 

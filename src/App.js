@@ -129,10 +129,10 @@ export default function App() {
             </Routes>
             {adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
 
-            {/* ── AI Playback Assistant (floating overlay) ── */}
-
-            <AIPlaybackAssistant />
           </div>
+
+          {/* ── AI Playback Assistant (floating overlay) ── */}
+          <AIPlaybackAssistant />
         </div>
       </div>
     </BrowserRouter>

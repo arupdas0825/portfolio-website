@@ -484,7 +484,7 @@ export default function AIPlaybackAssistant() {
       {/* Start Trigger — shown when idle (Adaptive Responsive UI) */}
       <AnimatePresence>
         {!playback.isActive && (
-          <AIPlaybackButton onClick={handleStart} />
+          <AIPlaybackButton key="ai-playback-trigger-btn" onClick={handleStart} />
         )}
       </AnimatePresence>
 
