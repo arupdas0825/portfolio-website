@@ -4568,6 +4568,7 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -4637,52 +4638,208 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   margin: 0;
 }
 
-.college-icon {
-  font-size: 1.5rem;
+/* Premium Academic/College Project Cards Upgrades */
+.college-project-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: rgba(10, 8, 20, 0.45);
+  border: 1px solid rgba(0, 191, 255, 0.12); /* Sleek Neon Blue/Cyan Border */
+  border-radius: 16px;
+  padding: 24px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 
+    0 4px 30px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  will-change: transform, box-shadow, border-color;
+  min-height: 220px;
+}
+
+.college-project-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(0, 191, 255, 0.25) 0%, rgba(138, 92, 246, 0.05) 50%, rgba(0, 0, 0, 0) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.college-project-card:hover {
+  transform: translateY(-5px) scale(1.015);
+  border-color: rgba(0, 191, 255, 0.4);
+  box-shadow: 
+    0 15px 35px rgba(0, 191, 255, 0.18),
+    0 0 25px rgba(0, 191, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.college-project-card:hover::before {
+  background: linear-gradient(135deg, rgba(0, 191, 255, 0.5) 0%, rgba(138, 92, 246, 0.2) 50%, rgba(0, 191, 255, 0.1) 100%);
+}
+
+.academic-tag-indicator {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #00bfff;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 0 4px rgba(0, 191, 255, 0.3));
+}
+
+.college-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.college-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  line-height: 1.25;
+  transition: color 0.3s;
+}
+
+.college-project-card:hover .college-title {
+  color: #00bfff;
+  text-shadow: 0 0 10px rgba(0, 191, 255, 0.15);
+}
+
+.college-icon-emoji {
+  font-size: 1.2rem;
+  background: rgba(0, 191, 255, 0.1);
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 191, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .college-desc {
-  font-size: 0.8rem;
-  line-height: 1.45;
+  font-size: 0.82rem;
+  line-height: 1.5;
   color: var(--text-muted);
-  margin: 0;
+  margin: 0 0 20px 0;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-height: 35px;
+  min-height: 54px;
 }
 
 .college-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 4px;
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 14px;
 }
 
 .college-lang {
   display: flex;
   align-items: center;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--text-muted);
 }
 
 .college-links {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
-.college-link {
-  color: var(--text-muted);
-  transition: color 0.2s;
+/* Neon Glow Ambient Indicator */
+.academic-card-ambient-glow {
+  position: absolute;
+  bottom: -20px;
+  right: -20px;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, rgba(0, 191, 255, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+  filter: blur(15px);
+  pointer-events: none;
+  transition: all 0.4s ease;
+}
+
+.college-project-card:hover .academic-card-ambient-glow {
+  transform: scale(1.4);
+  background: radial-gradient(circle, rgba(0, 191, 255, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
+}
+
+/* Academic Project Card Media Showcase Styles */
+.academic-media-section {
+  position: relative;
+  width: 100%;
+  height: 130px; /* Compact, balanced height */
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  border: 1px solid rgba(0, 191, 255, 0.12);
+  background: rgba(10, 8, 20, 0.6);
+  transition: border-color 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: border-color;
+}
+
+.college-project-card:hover .academic-media-section {
+  border-color: rgba(0, 191, 255, 0.35);
+}
+
+.academic-image {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+}
+
+.college-project-card:hover .academic-image {
+  transform: scale(1.06);
+}
+
+.academic-media-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(4, 2, 10, 0) 50%, rgba(4, 2, 10, 0.75) 100%);
+  pointer-events: none;
+}
+
+.academic-fallback {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(0, 191, 255, 0.05) 0%, rgba(138, 92, 246, 0.02) 100%);
+  position: relative;
 }
 
-.college-link:hover {
-  color: #fff;
+.academic-fallback .fallback-emoji {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 0 8px rgba(0, 191, 255, 0.3));
+  transition: transform 0.4s ease;
+}
+
+.college-project-card:hover .academic-fallback .fallback-emoji {
+  transform: scale(1.12) rotate(3deg);
 }
 
 /* Premium Show More / Show Less Button */

@@ -57,6 +57,15 @@ function getRepoEmoji(lang) {
   return map[lang] || '💻';
 }
 
+const getRepoImage = (repo) => {
+  if (repo.image) return repo.image;
+  if (!repo.name) return null;
+  const name = repo.name.toLowerCase();
+  const keys = Object.keys(REPO_IMAGES);
+  const matchKey = keys.find(k => k.toLowerCase() === name);
+  return matchKey ? REPO_IMAGES[matchKey] : null;
+};
+
 const FALLBACK_REPOS = [
   { id: 1, name: 'LocalCare-Finder-Android', language: 'Kotlin', stargazers_count: 1, forks_count: 0, description: 'Find nearby hospitals, pharmacies & blood banks. Built with Kotlin, Google Maps, Flask.', html_url: 'https://github.com/arupdas0825/LocalCare-Finder-Android', homepage: '' },
   { id: 2, name: 'sahasrajit-foundation', language: 'JavaScript', stargazers_count: 2, forks_count: 0, description: 'Official website for Sahasrajit Foundation NGO. Firebase-powered admin panel.', html_url: 'https://github.com/arupdas0825/sahasrajit-foundation', homepage: '' },
@@ -94,8 +103,8 @@ const MajorProjectCard = React.memo(({ repo, idx, onClick }) => {
     }
   }, [isIntersecting]);
 
-  const videoUrl = REPO_VIDEOS[repo.name];
-  const imageUrl = REPO_IMAGES[repo.name];
+  const videoUrl = REPO_VIDEOS[repo.name] || (repo.name ? REPO_VIDEOS[repo.name.toLowerCase()] : null);
+  const imageUrl = getRepoImage(repo);
   const hasVideo = !!videoUrl;
   const description = repo.description || 'No description provided.';
   const isLongDesc = description.length > 80;
@@ -206,8 +215,8 @@ const SecondaryProjectCard = React.memo(({ repo, idx, onClick }) => {
     }
   }, [isIntersecting]);
 
-  const videoUrl = REPO_VIDEOS[repo.name];
-  const imageUrl = REPO_IMAGES[repo.name];
+  const videoUrl = REPO_VIDEOS[repo.name] || (repo.name ? REPO_VIDEOS[repo.name.toLowerCase()] : null);
+  const imageUrl = getRepoImage(repo);
   const hasVideo = !!videoUrl;
 
   return (
@@ -271,6 +280,7 @@ const SecondaryProjectCard = React.memo(({ repo, idx, onClick }) => {
 
 /* ── 3. COLLEGE PROJECT CARD FOR SUBPAGE ── */
 const CollegeProjectCard = React.memo(({ repo, idx, onClick }) => {
+  const imageUrl = getRepoImage(repo);
   return (
     <motion.div
       layout
@@ -282,27 +292,43 @@ const CollegeProjectCard = React.memo(({ repo, idx, onClick }) => {
       style={{ animationDelay: `${(idx % 6) * 0.04}s` }}
       onClick={onClick}
     >
+      <div className="academic-tag-indicator">ACADEMIC PROJECT</div>
+      
+      {imageUrl ? (
+        <div className="academic-media-section">
+          <div className="academic-image" style={{ background: `url(${imageUrl}) center/cover no-repeat` }} />
+          <div className="academic-media-gradient-overlay" />
+        </div>
+      ) : (
+        <div className="academic-media-section">
+          <div className="academic-fallback" style={{ background: `linear-gradient(135deg, ${(langColors[repo.language] || langColors.default)}15, rgba(10,8,18,0.95))` }}>
+            <div className="fallback-emoji">{getRepoEmoji(repo.language)}</div>
+          </div>
+        </div>
+      )}
+
       <div className="college-header">
         <div className="college-title-group">
           <h4 className="college-title">{repo.name}</h4>
         </div>
-        <span className="college-icon">{getRepoEmoji(repo.language)}</span>
+        <span className="college-icon-emoji">{getRepoEmoji(repo.language)}</span>
       </div>
       <p className="college-desc">{repo.description || 'No description provided.'}</p>
       <div className="college-footer">
         {repo.language && (
           <span className="college-lang">
-            <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: langColors[repo.language] || langColors.default, marginRight: 5 }} />
+            <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: langColors[repo.language] || langColors.default, marginRight: 6 }} />
             {repo.language}
           </span>
         )}
         <div className="college-links" onClick={e => e.stopPropagation()}>
-          <a href={repo.html_url} target="_blank" rel="noreferrer" className="college-link" title="Code"><LucideGithub size={13} /></a>
+          <a href={repo.html_url} target="_blank" rel="noreferrer" className="premium-action-link github" style={{ padding: '6px 12px', fontSize: '0.72rem', gap: '5px' }} title="Code"><LucideGithub size={11} /> Code</a>
           {(repo.homepage || REPO_HOMEPAGES[repo.name]) && (
-            <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="college-link" title="Live Demo"><LucideExternalLink size={13} /></a>
+            <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="premium-action-link demo" style={{ padding: '6px 12px', fontSize: '0.72rem', gap: '5px' }} title="Live Demo"><LucideExternalLink size={11} /> Demo</a>
           )}
         </div>
       </div>
+      <div className="academic-card-ambient-glow" />
     </motion.div>
   );
 });
@@ -511,7 +537,7 @@ export default function WorkPage() {
               <div className="work-category-section">
                 <div className="work-category-header">
                   <h3 className="work-category-title">
-                    ✦ Academic &amp; <span>Experiments</span>
+                    ✦ Academic <span>Projects</span>
                     <span className="work-category-count">{categorized.college.length}</span>
                   </h3>
                   <div className="work-category-line" />
