@@ -135,6 +135,7 @@ const ProjectCard = React.memo(({ repo, idx, isMobile, onClick }) => {
   const cardRef = useRef(null);
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     const el = cardRef.current;
@@ -172,6 +173,8 @@ const ProjectCard = React.memo(({ repo, idx, isMobile, onClick }) => {
   const videoUrl = REPO_VIDEOS[repo.name];
   const imageUrl = REPO_IMAGES[repo.name];
   const hasVideo = !!videoUrl;
+  const description = repo.description || 'No description provided.';
+  const isLongDesc = description.length > 80;
 
   return (
     <motion.div
@@ -181,100 +184,138 @@ const ProjectCard = React.memo(({ repo, idx, isMobile, onClick }) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ type: 'spring', stiffness: 220, damping: 20 }}
-      className={`cinematic-card fade-in ${isMobile ? 'mobile-card' : ''}`}
+      className={`premium-project-card ${isExpanded ? 'expanded' : ''} fade-in ${isMobile ? 'mobile-card' : ''}`}
       style={{ animationDelay: `${(idx % 6) * 0.08}s` }}
       onClick={onClick}
     >
-      {/* Background Media Container */}
-      <div className="cinematic-media-container">
-        {hasVideo ? (
-          <>
-            <video
-              ref={videoRef}
-              className={`cinematic-video ${videoLoaded ? 'loaded' : ''}`}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              onLoadedData={() => setVideoLoaded(true)}
+      {/* 1. TOP SECTION: Media Preview Area (takes 65-75% height) */}
+      <div className="premium-media-section">
+        <div className="premium-media-container">
+          {hasVideo ? (
+            <>
+              <video
+                ref={videoRef}
+                className={`premium-video ${videoLoaded ? 'loaded' : ''}`}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                onLoadedData={() => setVideoLoaded(true)}
+              >
+                <source src={videoUrl} type="video/mp4" />
+              </video>
+              {imageUrl && (
+                <div
+                  className={`premium-image placeholder ${videoLoaded ? 'fade-out' : ''}`}
+                  style={{ background: `url(${imageUrl}) center/cover no-repeat` }}
+                />
+              )}
+            </>
+          ) : imageUrl ? (
+            <div
+              className="premium-image"
+              style={{ background: `url(${imageUrl}) center/cover no-repeat` }}
+            />
+          ) : (
+            <div
+              className="premium-fallback"
+              style={{
+                background: `linear-gradient(135deg, ${(langColors[repo.language] || langColors.default)}15, rgba(10,8,18,0.95))`
+              }}
             >
-              <source src={videoUrl} type="video/mp4" />
-            </video>
-            {/* Smooth transition from thumbnail to video */}
-            {imageUrl && (
-              <div
-                className={`cinematic-image placeholder ${videoLoaded ? 'fade-out' : ''}`}
-                style={{ background: `url(${imageUrl}) center/cover no-repeat` }}
-              />
-            )}
-          </>
-        ) : imageUrl ? (
-          <div
-            className="cinematic-image"
-            style={{ background: `url(${imageUrl}) center/cover no-repeat` }}
-          />
-        ) : (
-          <div
-            className="cinematic-fallback"
-            style={{
-              background: `linear-gradient(135deg, ${(langColors[repo.language] || langColors.default)}15, rgba(10,8,18,0.95))`
-            }}
-          >
-            <div className="fallback-emoji">{getRepoEmoji(repo.language)}</div>
+              <div className="fallback-emoji">{getRepoEmoji(repo.language)}</div>
+            </div>
+          )}
+        </div>
+
+        {/* Ambient Dark Gradient Separation Overlay */}
+        <div className="premium-media-gradient-overlay" />
+
+        {/* Floating Stars and Forks on Media Overlays */}
+        <div className="premium-meta-badges">
+          <div className="premium-meta-badge">
+            <LucideStar size={11} /> {repo.stargazers_count}
+          </div>
+          <div className="premium-meta-badge">
+            <LucideGitFork size={11} /> {repo.forks_count}
+          </div>
+        </div>
+
+        {/* Floating Language Badge */}
+        {repo.language && (
+          <div className="premium-lang-badge">
+            <span
+              style={{
+                display: 'inline-block',
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                background: langColors[repo.language] || langColors.default,
+                marginRight: 6
+              }}
+            />
+            {repo.language}
           </div>
         )}
       </div>
 
-      {/* Subtle Ambient Glow behind card */}
-      <div className="cinematic-glow-bg" />
+      {/* 2. VISUAL SEPARATION: Premium Divider Line & Glow */}
+      <div className="premium-section-divider">
+        <div className="divider-glow-line" />
+      </div>
 
-      {/* Glassmorphism gradient overlay */}
-      <div className="cinematic-overlay">
-        {/* Top Meta info (Stars & Forks) */}
-        <div className="cinematic-top-meta">
-          <div className="repo-meta-overlay" style={{ background: 'rgba(10, 8, 18, 0.4)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-            <span style={{ fontSize: '10px' }}><LucideStar size={11} /> {repo.stargazers_count}</span>
-            <span style={{ fontSize: '10px' }}><LucideGitFork size={11} /> {repo.forks_count}</span>
-          </div>
+      {/* 3. BOTTOM SECTION: Compact Project Info Area */}
+      <div className="premium-info-section">
+        {/* Title */}
+        <div className="premium-info-header">
+          <h3 className="premium-title">{repo.name}</h3>
+          <span className="premium-hint-zap">
+            <LucideZap size={11} />
+          </span>
         </div>
 
-        {/* Bottom Details Content */}
-        <div className="cinematic-details">
-          {/* Tag */}
-          <div className="cinematic-tag-container">
-            {repo.language && (
-              <span className="project-tag" style={{ borderColor: `${langColors[repo.language] || langColors.default}55`, background: 'rgba(138, 92, 246, 0.1)' }}>
-                <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: langColors[repo.language] || langColors.default, marginRight: 5, flexShrink: 0 }} />
-                {repo.language}
-              </span>
-            )}
-          </div>
+        {/* Description & Expandable Toggle */}
+        <div className="premium-desc-wrapper">
+          <motion.div
+            layout="position"
+            animate={{ height: isExpanded ? 'auto' : '38px' }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            className="premium-desc-anim-container"
+          >
+            <p className={`premium-desc-text ${isExpanded ? 'expanded' : 'collapsed'}`}>
+              {description}
+            </p>
+          </motion.div>
 
-          {/* Title */}
-          <h3 className="cinematic-title">{repo.name}</h3>
+          {isLongDesc && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsExpanded(!isExpanded);
+              }}
+              className="premium-showmore-btn"
+            >
+              {isExpanded ? 'Show Less' : 'Show More'}
+            </button>
+          )}
+        </div>
 
-          {/* Description */}
-          <p className="cinematic-desc">{repo.description || 'No description provided.'}</p>
-
-          {/* Buttons Overlay (reveal on hover) */}
-          <div className="cinematic-links" onClick={e => e.stopPropagation()}>
-            <a href={repo.html_url} target="_blank" rel="noreferrer" className="cinematic-link github">
-              <LucideGithub size={13} /> Code
+        {/* Action Buttons */}
+        <div className="premium-actions-footer" onClick={e => e.stopPropagation()}>
+          <a href={repo.html_url} target="_blank" rel="noreferrer" className="premium-action-link github">
+            <LucideGithub size={13} /> Code
+          </a>
+          {(repo.homepage || REPO_HOMEPAGES[repo.name]) && (
+            <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="premium-action-link demo">
+              <LucideExternalLink size={13} /> Demo
             </a>
-            {(repo.homepage || REPO_HOMEPAGES[repo.name]) && (
-              <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="cinematic-link demo">
-                <LucideExternalLink size={13} /> Demo
-              </a>
-            )}
-          </div>
-
-          {/* View case study hint */}
-          <div className="cinematic-hint">
-            <LucideZap size={10} style={{ color: 'var(--purple-light)', marginRight: 4 }} /> View Case Study
-          </div>
+          )}
         </div>
       </div>
+
+      {/* Ambient Outer Hover Glow Layer */}
+      <div className="premium-card-ambient-glow" />
     </motion.div>
   );
 });
