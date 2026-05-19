@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { LucideExternalLink, LucideGithub, LucideStar, LucideGitFork, LucideZap, LucideArrowRight } from 'lucide-react';
+import { LucideExternalLink, LucideGithub, LucideStar, LucideGitFork, LucideZap, LucideArrowRight, LucideChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
@@ -366,6 +366,29 @@ const CollegeProjectCard = React.memo(({ repo, idx, onClick }) => {
   );
 });
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.16,
+    },
+  },
+};
+
+const sectionVariants = {
+  hidden: { opacity: 0, y: 35 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring',
+      stiffness: 90,
+      damping: 14,
+    },
+  },
+};
+
 /* ── Main Work Component ── */
 const Work = () => {
   const fadeRefs = useRef([]);
@@ -377,6 +400,36 @@ const Work = () => {
   const [selected, setSelected] = useState(null);
   const [isMobile, setIsMobile] = useState(isMobileDevice);
   const navigate = useNavigate();
+
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const getInitialLimit = () => {
+    if (windowWidth < 640) return 3;
+    if (windowWidth < 992) return 4;
+    return 6;
+  };
+
+  const initialLimit = getInitialLimit();
+
+  const handleToggleExpand = () => {
+    const nextState = !isExpanded;
+    setIsExpanded(nextState);
+    if (nextState) {
+      setTimeout(() => {
+        window.scrollBy({
+          top: 280,
+          behavior: 'smooth'
+        });
+      }, 150);
+    }
+  };
 
   useEffect(() => {
     const onResize = () => setIsMobile(isMobileDevice());
@@ -506,6 +559,9 @@ const Work = () => {
 
   const categorized = categorizeRepos();
   const hasContent = categorized.major.length > 0 || categorized.secondary.length > 0 || categorized.college.length > 0;
+  
+  const totalMajorProjects = categorized.major.length;
+  const visibleMajor = isExpanded ? categorized.major : categorized.major.slice(0, initialLimit);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -552,7 +608,7 @@ const Work = () => {
         {/* Grid Categories */}
         {!loading && (
           <>
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="popLayout">
               {/* Category 1: Major Projects */}
               {categorized.major.length > 0 && (
                 <div className="work-category-section fade-in" ref={addRef}>
@@ -563,64 +619,94 @@ const Work = () => {
                     </h3>
                     <div className="work-category-line" />
                   </div>
-                  <div className="projects-grid">
-                    {categorized.major.map((repo, idx) => (
-                      <MajorProjectCard
-                        key={repo.id}
-                        repo={repo}
-                        idx={idx}
-                        isMobile={isMobile}
-                        onClick={() => setSelected(repo)}
-                      />
-                    ))}
+                  <motion.div layout="position" className="projects-grid">
+                    <AnimatePresence mode="popLayout">
+                      {visibleMajor.map((repo, idx) => (
+                        <MajorProjectCard
+                          key={repo.id}
+                          repo={repo}
+                          idx={idx}
+                          isMobile={isMobile}
+                          onClick={() => setSelected(repo)}
+                        />
+                      ))}
+                    </AnimatePresence>
+                  </motion.div>
+                  
+                  {/* Centralized Premium Show More Button */}
+                  <div className="major-expand-btn-container">
+                    <motion.button
+                      className={`major-expand-btn ${isExpanded ? 'expanded' : ''}`}
+                      onClick={handleToggleExpand}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      layout
+                    >
+                      <span className="major-expand-btn-shimmer" />
+                      <span>{isExpanded ? 'Show Less' : 'Explore More Work'}</span>
+                      <span className="major-expand-btn-icon">
+                        <LucideChevronDown size={16} />
+                      </span>
+                    </motion.button>
                   </div>
                 </div>
               )}
 
-              {/* Category 2: Secondary Projects */}
-              {categorized.secondary.length > 0 && (
-                <div className="work-category-section fade-in" ref={addRef}>
-                  <div className="work-category-header">
-                    <h3 className="work-category-title">
-                      ✦ Secondary <span>Architectures</span>
-                      <span className="work-category-count">{categorized.secondary.length}</span>
-                    </h3>
-                    <div className="work-category-line" />
-                  </div>
-                  <div className="secondary-projects-grid">
-                    {categorized.secondary.map((repo, idx) => (
-                      <SecondaryProjectCard
-                        key={repo.id}
-                        repo={repo}
-                        idx={idx}
-                        onClick={() => setSelected(repo)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
+              {/* Curated Secondary & College Categories — Staggered and sequentially revealed when expanded */}
+              {isExpanded && (
+                <motion.div
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  style={{ width: '100%' }}
+                >
+                  {/* Category 2: Secondary Projects */}
+                  {categorized.secondary.length > 0 && (
+                    <motion.div variants={sectionVariants} className="work-category-section fade-in" ref={addRef}>
+                      <div className="work-category-header">
+                        <h3 className="work-category-title">
+                          ✦ Secondary <span>Architectures</span>
+                          <span className="work-category-count">{categorized.secondary.length}</span>
+                        </h3>
+                        <div className="work-category-line" />
+                      </div>
+                      <div className="secondary-projects-grid">
+                        {categorized.secondary.map((repo, idx) => (
+                          <SecondaryProjectCard
+                            key={repo.id}
+                            repo={repo}
+                            idx={idx}
+                            onClick={() => setSelected(repo)}
+                          />
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
 
-              {/* Category 3: College Projects */}
-              {categorized.college.length > 0 && (
-                <div className="work-category-section fade-in" ref={addRef}>
-                  <div className="work-category-header">
-                    <h3 className="work-category-title">
-                      ✦ Academic &amp; <span>Experiments</span>
-                      <span className="work-category-count">{categorized.college.length}</span>
-                    </h3>
-                    <div className="work-category-line" />
-                  </div>
-                  <div className="college-projects-grid">
-                    {categorized.college.map((repo, idx) => (
-                      <CollegeProjectCard
-                        key={repo.id}
-                        repo={repo}
-                        idx={idx}
-                        onClick={() => setSelected(repo)}
-                      />
-                    ))}
-                  </div>
-                </div>
+                  {/* Category 3: College Projects */}
+                  {categorized.college.length > 0 && (
+                    <motion.div variants={sectionVariants} className="work-category-section fade-in" ref={addRef}>
+                      <div className="work-category-header">
+                        <h3 className="work-category-title">
+                          ✦ Academic &amp; <span>Experiments</span>
+                          <span className="work-category-count">{categorized.college.length}</span>
+                        </h3>
+                        <div className="work-category-line" />
+                      </div>
+                      <div className="college-projects-grid">
+                        {categorized.college.map((repo, idx) => (
+                          <CollegeProjectCard
+                            key={repo.id}
+                            repo={repo}
+                            idx={idx}
+                            onClick={() => setSelected(repo)}
+                          />
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </motion.div>
               )}
             </AnimatePresence>
 

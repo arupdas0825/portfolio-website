@@ -4685,6 +4685,109 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   color: #fff;
 }
 
+/* Premium Show More / Show Less Button */
+.major-expand-btn-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+  width: 100%;
+}
+
+@keyframes neon-pulse {
+  0% {
+    box-shadow: 
+      0 4px 15px rgba(0, 0, 0, 0.3),
+      0 0 0px rgba(138, 92, 246, 0),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  50% {
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.3),
+      0 0 15px rgba(138, 92, 246, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  100% {
+    box-shadow: 
+      0 4px 15px rgba(0, 0, 0, 0.3),
+      0 0 0px rgba(138, 92, 246, 0),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+}
+
+.major-expand-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: rgba(138, 92, 246, 0.08);
+  border: 1px solid rgba(138, 92, 246, 0.25);
+  border-radius: 30px;
+  color: #fff;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform, box-shadow, border-color, background-color;
+  animation: neon-pulse 3s infinite ease-in-out;
+}
+
+.major-expand-btn:hover {
+  background: rgba(138, 92, 246, 0.18);
+  border-color: rgba(167, 139, 250, 0.5);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 
+    0 12px 30px rgba(138, 92, 246, 0.25),
+    0 0 20px rgba(138, 92, 246, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.major-expand-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Button Shimmer Effect */
+.major-expand-btn-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+
+.major-expand-btn:hover .major-expand-btn-shimmer {
+  left: 150%;
+  transition: left 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Glowing Neon Arrow Icon */
+.major-expand-btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  color: #a78bfa;
+  filter: drop-shadow(0 0 5px rgba(167, 139, 250, 0.6));
+}
+
+.major-expand-btn.expanded .major-expand-btn-icon {
+  transform: rotate(180deg);
+}
+
+
 
 
 
