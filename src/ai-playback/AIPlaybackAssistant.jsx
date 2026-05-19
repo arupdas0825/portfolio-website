@@ -16,7 +16,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import usePlaybackStore from './usePlaybackStore';
-import AIPlaybackButton from '../components/AIPlaybackButton';
 import './AIPlayback.css';
 
 const IS_TOUCH = typeof window !== 'undefined' &&
@@ -136,7 +135,29 @@ function SpeedSelector({ speed, onChangeSpeed }) {
   );
 }
 
-// Legacy StartButton replaced by premium responsive AIPlaybackButton component
+// ── Floating Start Button (Desktop) ───────────────────────────────────────
+function StartButton({ onClick }) {
+  return (
+    <motion.button
+      className="ai-start-btn"
+      onClick={onClick}
+      title="Start AI Playback"
+      initial={{ opacity: 0, y: -20, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -10, scale: 0.9 }}
+      whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(138,92,246,0.4)' }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 22 }}
+    >
+      <AIOrb isActive={false} size={22} />
+      <span className="ai-start-btn__text">
+        <span className="ai-start-btn__label">AI Playback</span>
+      </span>
+    </motion.button>
+  );
+}
+
+// Removed CompactTrigger - now integrated into MobileHeader
 
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -481,10 +502,10 @@ export default function AIPlaybackAssistant() {
 
   return (
     <>
-      {/* Start Trigger — shown when idle (Adaptive Responsive UI) */}
+      {/* Start Trigger — shown when idle (Desktop Only now) */}
       <AnimatePresence>
-        {!playback.isActive && (
-          <AIPlaybackButton key="ai-playback-trigger-btn" onClick={handleStart} />
+        {!playback.isActive && !isMobile && (
+          <StartButton onClick={handleStart} />
         )}
       </AnimatePresence>
 

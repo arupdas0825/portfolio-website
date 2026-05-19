@@ -22,6 +22,7 @@ import WelcomeScreen   from './WelcomeScreen';
 import PhotographyGallery from './PhotographyGallery';
 import PublicationsPage from './PublicationsPage';
 import AIPlaybackAssistant from './ai-playback/AIPlaybackAssistant';
+import usePlaybackStore from './ai-playback/usePlaybackStore';
 import './App.css';
 
 
@@ -31,12 +32,13 @@ const IS_TOUCH = typeof window !== 'undefined' &&
    navigator.maxTouchPoints > 0);
 
 function MobileHeader() {
+  const playback = usePlaybackStore();
   if (!IS_TOUCH) return null;
 
   return (
     <div className="mobile-header-container">
-      <div className="mobile-header-glass" style={{ justifyContent: 'center' }}>
-        {/* Centered Logo Section */}
+      <div className="mobile-header-glass">
+        {/* Logo Section */}
         <div className="mobile-logo-wrap" onClick={() => window.location.reload()}>
           <svg className="mobile-logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polygon points="12 2 2 7 12 12 22 7 12 2" />
@@ -45,6 +47,22 @@ function MobileHeader() {
           </svg>
           <span className="mobile-logo-text">arup.dev</span>
         </div>
+
+        {/* Separator */}
+        <div className="mobile-header-sep" />
+
+        {/* AI Playback Trigger */}
+        <button 
+          className={`mobile-ai-trigger ${playback.isActive ? 'active' : ''}`}
+          onClick={() => !playback.isActive && playback.start()}
+        >
+          <div className="mobile-ai-orb">
+            <div className="ai-orb-inner" />
+          </div>
+          <span className="mobile-ai-label">
+            {playback.isActive ? 'PRESENTING' : 'AI PLAYBACK'}
+          </span>
+        </button>
       </div>
     </div>
   );
@@ -129,10 +147,10 @@ export default function App() {
             </Routes>
             {adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
 
-          </div>
+            {/* ── AI Playback Assistant (floating overlay) ── */}
 
-          {/* ── AI Playback Assistant (floating overlay) ── */}
-          <AIPlaybackAssistant />
+            <AIPlaybackAssistant />
+          </div>
         </div>
       </div>
     </BrowserRouter>
