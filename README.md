@@ -41,6 +41,7 @@
 
 ---
 
+
 ## 🗺️ Table of Contents
 - [Overview](#-overview)
 - [What's New in v5.0 — AI Playback, Welcome Screen & More](#-whats-new-in-v50--ai-playback-welcome-screen--more)
