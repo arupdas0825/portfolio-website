@@ -813,6 +813,7 @@ body::before {
 .premium-desc-text.collapsed {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -937,6 +938,7 @@ body::before {
   .premium-desc-text.collapsed {
     max-height: none;
     -webkit-line-clamp: unset;
+    line-clamp: unset;
   }
   .premium-showmore-btn {
     display: none !important;
