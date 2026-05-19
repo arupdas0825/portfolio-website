@@ -1,27 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar         from './Navbar';
 import Home           from './Home';
 import About          from './About';
-import TechStack      from './TechStack';
-import Work           from './Work';
-import Internship     from './Internship';
-import Publications   from './Publications';
-import Certificates   from './Certificates';
-import CertificatesPage from './CertificatesPage';
-import GithubStats    from './GithubStats';
-import Gallery        from './Gallery';
-import Services       from './Services';
-import CV             from './CV';
-import Contact        from './Contact';
-import AdminPanel     from './admin/AdminPanel';
-import CustomCursor   from './CustomCursor';
+
+// Lazy load below-the-fold components to maximize performance & speed up welcome screen
+const TechStack = lazy(() => import('./TechStack'));
+const Work = lazy(() => import('./Work'));
+const Internship = lazy(() => import('./Internship'));
+const Publications = lazy(() => import('./Publications'));
+const Certificates = lazy(() => import('./Certificates'));
+const CertificatesPage = lazy(() => import('./CertificatesPage'));
+const GithubStats = lazy(() => import('./GithubStats'));
+const Gallery = lazy(() => import('./Gallery'));
+const Services = lazy(() => import('./Services'));
+const CV = lazy(() => import('./CV'));
+const Contact = lazy(() => import('./Contact'));
+const AdminPanel = lazy(() => import('./admin/AdminPanel'));
+const CustomCursor = lazy(() => import('./CustomCursor'));
+const WorkPage = lazy(() => import('./WorkPage'));
+const PhotographyGallery = lazy(() => import('./PhotographyGallery'));
+const PublicationsPage = lazy(() => import('./PublicationsPage'));
+const AIPlaybackAssistant = lazy(() => import('./ai-playback/AIPlaybackAssistant'));
+
 import ThreeBackground from './components/ThreeBackground';
-import WorkPage        from './WorkPage';
 import WelcomeScreen   from './WelcomeScreen';
-import PhotographyGallery from './PhotographyGallery';
-import PublicationsPage from './PublicationsPage';
-import AIPlaybackAssistant from './ai-playback/AIPlaybackAssistant';
 import usePlaybackStore from './ai-playback/usePlaybackStore';
 import './App.css';
 
@@ -76,16 +79,18 @@ function PortfolioHome({ onAdminOpen }) {
       <Navbar />
       <div id="home"><Home /></div>
       <div id="about"><About onPhotoDoubleClick={onAdminOpen} /></div>
-      <div id="techstack"><TechStack /></div>
-      <div id="work"><Work /></div>
-      <div id="internship"><Internship /></div>
-      <div id="publications"><Publications /></div>
-      <div id="certificates"><Certificates /></div>
-      <div id="githubstats"><GithubStats /></div>
-      <div id="gallery"><Gallery /></div>
-      <div id="services"><Services /></div>
-      <div id="cv"><CV /></div>
-      <div id="contact"><Contact /></div>
+      <Suspense fallback={null}>
+        <div id="techstack"><TechStack /></div>
+        <div id="work"><Work /></div>
+        <div id="internship"><Internship /></div>
+        <div id="publications"><Publications /></div>
+        <div id="certificates"><Certificates /></div>
+        <div id="githubstats"><GithubStats /></div>
+        <div id="gallery"><Gallery /></div>
+        <div id="services"><Services /></div>
+        <div id="cv"><CV /></div>
+        <div id="contact"><Contact /></div>
+      </Suspense>
       <footer className="site-footer">
         <span>© 2025 <a href="/">Arup Das</a>. Built with 💜 React &amp; Tailwind.</span>
         <span>B.Tech CSE (AIML) · Brainware University · Kolkata</span>
@@ -134,22 +139,23 @@ export default function App() {
           <MobileHeader />
 
           <div style={{ position: 'relative', zIndex: 10 }}>
+            <Suspense fallback={null}>
+              <Routes>
+                <Route
+                  path="/"
+                  element={<PortfolioHome onAdminOpen={() => setAdminOpen(true)} />}
+                />
+                <Route path="/work" element={<WorkPage />} />
+                <Route path="/photography-gallery" element={<PhotographyGallery />} />
+                <Route path="/publications" element={<PublicationsPage />} />
+                <Route path="/certificates" element={<CertificatesPage />} />
+              </Routes>
+              {adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
 
-            <Routes>
-              <Route
-                path="/"
-                element={<PortfolioHome onAdminOpen={() => setAdminOpen(true)} />}
-              />
-              <Route path="/work" element={<WorkPage />} />
-              <Route path="/photography-gallery" element={<PhotographyGallery />} />
-              <Route path="/publications" element={<PublicationsPage />} />
-              <Route path="/certificates" element={<CertificatesPage />} />
-            </Routes>
-            {adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
+              {/* ── AI Playback Assistant (floating overlay) ── */}
 
-            {/* ── AI Playback Assistant (floating overlay) ── */}
-
-            <AIPlaybackAssistant />
+              <AIPlaybackAssistant />
+            </Suspense>
           </div>
         </div>
       </div>

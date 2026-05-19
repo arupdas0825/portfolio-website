@@ -21,9 +21,9 @@ const IS_TOUCH = typeof window !== 'undefined' &&
 function StarField() {
   const ref = useRef();
 
-  // 3000 stars scattered in a 20-unit cube — generated once
+  // 1200 stars scattered in a 20-unit cube — generated once
   const [sphere] = useState(() => {
-    const count = 3000;
+    const count = 1200;
     const positions = new Float32Array(count * 3);
     for (let i = 0; i < count * 3; i++) {
       positions[i] = (Math.random() - 0.5) * 20;
@@ -34,8 +34,8 @@ function StarField() {
   // Gentle rotation — delta-based so it's frame-rate independent
   useFrame((_, delta) => {
     if (ref.current) {
-      ref.current.rotation.y += delta * 0.02;
-      ref.current.rotation.x += delta * 0.005;
+      ref.current.rotation.y += delta * 0.015;
+      ref.current.rotation.x += delta * 0.003;
     }
   });
 
@@ -44,10 +44,10 @@ function StarField() {
       <PointMaterial
         transparent
         color="#a78bfa"
-        size={0.018}
+        size={0.016}
         sizeAttenuation
         depthWrite={false}
-        opacity={0.6}
+        opacity={0.4}
       />
     </Points>
   );
