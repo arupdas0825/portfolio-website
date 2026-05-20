@@ -344,9 +344,9 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
 /* ─── Fully Interactive Multi-Language Analytics Donut Chart ─── */
 const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => {
   const size = 160;
-  const strokeWidth = 12;
-  const radius = (size - strokeWidth * 2) / 2; // 68
-  const circ = 2 * Math.PI * radius; // 427.26
+  const strokeWidth = 14; // Slightly thicker for a robust, premium look
+  const radius = (size - strokeWidth) / 2 - 4; // 69 (centered perfectly inside SVG)
+  const circ = 2 * Math.PI * radius; // 433.54
   
   // Normalize percentages to sum up to 100 to ensure a beautiful full circle
   const totalPct = langs.reduce((acc, l) => acc + l.pct, 0) || 1;
@@ -390,21 +390,16 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
         userSelect: 'none'
       }}
     >
-      {/* Subtle background ambient rotating glow */}
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
-        style={{
-          position: 'absolute',
-          width: size - 20,
-          height: size - 20,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(138, 92, 246, 0.1) 0%, transparent 80%)',
-          filter: 'blur(12px)',
-          pointerEvents: 'none',
-          zIndex: 0
-        }}
-      />
+      {/* Background soft shadow ring for premium depth */}
+      <div style={{
+        position: 'absolute',
+        width: radius * 2 + strokeWidth,
+        height: radius * 2 + strokeWidth,
+        borderRadius: '50%',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.45)',
+        pointerEvents: 'none',
+        zIndex: 0
+      }} />
       
       {/* SVG Donut */}
       <svg 
@@ -418,39 +413,13 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
           overflow: 'visible'
         }}
       >
-        <defs>
-          <linearGradient id="donutGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#8a5cf6" stopOpacity="0.8" />
-            <stop offset="50%" stopColor="#22d3ee" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="#c084fc" stopOpacity="0.8" />
-          </linearGradient>
-        </defs>
-
-        {/* Concentric Rotating Gradient Ring */}
-        <motion.g 
-          animate={{ rotate: 360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          style={{ transformOrigin: 'center' }}
-        >
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius + 10}
-            stroke="url(#donutGlow)"
-            strokeWidth="1.2"
-            fill="none"
-            strokeDasharray="30 80 50 60"
-            opacity="0.5"
-          />
-        </motion.g>
-
         {/* Background track circle */}
         <circle 
           cx={size / 2} 
           cy={size / 2} 
           r={radius} 
-          stroke="rgba(255, 255, 255, 0.03)" 
-          strokeWidth={strokeWidth - 2} 
+          stroke="rgba(255, 255, 255, 0.02)" 
+          strokeWidth={strokeWidth} 
           fill="none"
         />
         
@@ -459,8 +428,8 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
           const normalizedPct = (lang.pct / totalPct) * 100;
           const segmentLength = (normalizedPct / 100) * circ;
           
-          // Add a elegant physical spacing gap between segments
-          const gapSize = langs.length > 1 ? 2 : 0;
+          // Subtly gap segments for a premium dashboard visualization look
+          const gapSize = langs.length > 1 ? 1.5 : 0;
           const adjustedLength = Math.max(0.5, segmentLength - gapSize);
           
           // Calculate start rotation angle for this segment
@@ -477,22 +446,23 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
               cy={size / 2}
               r={radius}
               stroke={lang.color}
-              strokeWidth={isHovered ? strokeWidth + 4 : strokeWidth}
+              strokeWidth={isHovered ? strokeWidth + 2 : strokeWidth}
               fill="none"
               strokeDasharray={`${adjustedLength} ${circ - adjustedLength}`}
+              strokeLinecap="butt" // Flat butt caps ensure razor-sharp math and proportional sizing
               initial={{
                 strokeDashoffset: adjustedLength
               }}
               animate={{
-                strokeWidth: isHovered ? strokeWidth + 4 : strokeWidth,
+                strokeWidth: isHovered ? strokeWidth + 3 : strokeWidth,
                 strokeDashoffset: 0,
-                opacity: isAnyHovered ? (isHovered ? 1 : 0.45) : 0.9,
-                filter: isHovered ? `drop-shadow(0 0 8px ${lang.color})` : 'none'
+                opacity: isAnyHovered ? (isHovered ? 1 : 0.5) : 0.95,
+                filter: isHovered ? `drop-shadow(0 2px 8px ${lang.color}55)` : 'none'
               }}
               transition={{
-                strokeDashoffset: { duration: 1.4, ease: [0.25, 1, 0.5, 1] },
-                strokeWidth: { type: 'spring', stiffness: 300, damping: 22 },
-                opacity: { duration: 0.25 }
+                strokeDashoffset: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },
+                strokeWidth: { type: 'spring', stiffness: 400, damping: 28 },
+                opacity: { duration: 0.2 }
               }}
               onMouseEnter={() => !isMobile && setHoveredIdx(idx)}
               onMouseLeave={() => !isMobile && setHoveredIdx(null)}
@@ -501,7 +471,7 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
               style={{
                 cursor: 'pointer',
                 transformOrigin: 'center',
-                transition: 'filter 0.3s ease'
+                transition: 'filter 0.2s ease'
               }}
             />
           );
@@ -512,33 +482,33 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
       <div style={{ 
         position: 'absolute', 
         zIndex: 2, 
-        width: radius * 2 - 10, 
-        height: radius * 2 - 10,
+        width: radius * 2 - strokeWidth + 4, 
+        height: radius * 2 - strokeWidth + 4,
         borderRadius: '50%',
-        background: 'rgba(10, 8, 18, 0.45)',
-        backdropFilter: 'blur(6px)',
-        WebkitBackdropFilter: 'blur(6px)',
+        background: 'rgba(10, 8, 18, 0.55)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center',
         pointerEvents: 'none',
-        border: '1px solid rgba(255, 255, 255, 0.03)',
-        boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.8)'
+        border: '1px solid rgba(255, 255, 255, 0.05)',
+        boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.4)'
       }}>
         <AnimatePresence mode="wait">
           {activeLang && (
             <motion.div
               key={activeLang.name}
-              initial={{ opacity: 0, scale: 0.8, y: 4 }}
+              initial={{ opacity: 0, scale: 0.9, y: 3 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.8, y: -4 }}
-              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              exit={{ opacity: 0, scale: 0.9, y: -3 }}
+              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
               style={{ 
                 display: 'flex', 
                 flexDirection: 'column', 
                 alignItems: 'center', 
                 textAlign: 'center',
-                padding: 8
+                padding: 6
               }}
             >
               <span style={{ 
@@ -548,7 +518,7 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
                 color: '#fff', 
                 lineHeight: 1 
               }}>
-                <CountUp value={activeLang.pct} duration={0.5} />%
+                <CountUp value={activeLang.pct} duration={0.4} />%
               </span>
               <span style={{ 
                 fontFamily: 'Syne, sans-serif', 
@@ -556,11 +526,11 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
                 fontSize: 11, 
                 color: activeLang.color, 
                 marginTop: 4,
-                maxWidth: radius * 2 - 20,
+                maxWidth: radius * 2 - strokeWidth - 10,
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
-                textShadow: `0 0 8px ${activeLang.color}33`
+                textShadow: `0 0 6px ${activeLang.color}22`
               }}>
                 {activeLang.name}
               </span>
@@ -581,19 +551,19 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
       <AnimatePresence>
         {!isMobile && showTooltip && hoveredIdx !== null && langs[hoveredIdx] && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ 
               opacity: 1, 
               scale: 1,
               x: mousePos.x,
               y: mousePos.y - 12
             }}
-            exit={{ opacity: 0, scale: 0.8 }}
+            exit={{ opacity: 0, scale: 0.95 }}
             transition={{
               type: 'spring',
-              stiffness: 450,
-              damping: 28,
-              mass: 0.4
+              stiffness: 480,
+              damping: 30,
+              mass: 0.3
             }}
             style={{
               position: 'absolute',
@@ -605,34 +575,34 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
           >
             <div style={{
               transform: 'translate(-50%, -100%)',
-              background: 'rgba(11, 7, 20, 0.9)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
-              border: `1px solid ${langs[hoveredIdx].color}50`,
-              borderRadius: 10,
+              background: 'rgba(10, 8, 18, 0.92)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              border: `1px solid rgba(255, 255, 255, 0.08)`,
+              borderRadius: 8,
               padding: '10px 14px',
-              boxShadow: `0 8px 24px rgba(0, 0, 0, 0.6), 0 0 15px ${langs[hoveredIdx].color}20`,
-              minWidth: 140,
+              boxShadow: `0 8px 32px rgba(0, 0, 0, 0.6), 0 0 1px rgba(255, 255, 255, 0.1) inset`,
+              minWidth: 130,
               display: 'flex',
               flexDirection: 'column',
               gap: 2
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
                 <span style={{ 
-                  width: 8, 
-                  height: 8, 
+                  width: 7, 
+                  height: 7, 
                   borderRadius: '50%', 
                   background: langs[hoveredIdx].color,
-                  boxShadow: `0 0 6px ${langs[hoveredIdx].color}`
+                  boxShadow: `0 0 4px ${langs[hoveredIdx].color}`
                 }} />
-                <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 12, color: '#fff' }}>
+                <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 11, color: '#fff' }}>
                   {langs[hoveredIdx].name}
                 </span>
               </div>
-              <div style={{ fontSize: 11, color: '#fff', fontFamily: 'monospace', fontWeight: 700 }}>
+              <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.9)', fontFamily: 'monospace', fontWeight: 700 }}>
                 Share: {langs[hoveredIdx].pct}%
               </div>
-              <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.45)', fontFamily: 'monospace' }}>
+              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace' }}>
                 Volume: {langs[hoveredIdx].bytes ? `${(langs[hoveredIdx].bytes / 1024).toFixed(1)} KB` : '0 KB'}
               </div>
             </div>
