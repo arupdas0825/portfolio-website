@@ -354,16 +354,42 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
   
   const activeLang = hoveredIdx !== null ? langs[hoveredIdx] : langs[0];
   
+  // Cursor tracking for dynamic cursor-following tooltip
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [showTooltip, setShowTooltip] = useState(false);
+  const containerRef = useRef(null);
+  
+  const handleMouseMove = (e) => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setMousePos({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      });
+    }
+  };
+  
   return (
-    <div style={{ 
-      position: 'relative', 
-      width: size, 
-      height: size, 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      userSelect: 'none'
-    }}>
+    <div 
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => !isMobile && setShowTooltip(true)}
+      onMouseLeave={() => {
+        if (!isMobile) {
+          setShowTooltip(false);
+          setHoveredIdx(null);
+        }
+      }}
+      style={{ 
+        position: 'relative', 
+        width: size, 
+        height: size, 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        userSelect: 'none'
+      }}
+    >
       {/* Subtle background ambient rotating glow */}
       <motion.div
         animate={{ rotate: 360 }}
@@ -392,6 +418,32 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
           overflow: 'visible'
         }}
       >
+        <defs>
+          <linearGradient id="donutGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#8a5cf6" stopOpacity="0.8" />
+            <stop offset="50%" stopColor="#22d3ee" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#c084fc" stopOpacity="0.8" />
+          </linearGradient>
+        </defs>
+
+        {/* Concentric Rotating Gradient Ring */}
+        <motion.g 
+          animate={{ rotate: 360 }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+          style={{ transformOrigin: 'center' }}
+        >
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius + 10}
+            stroke="url(#donutGlow)"
+            strokeWidth="1.2"
+            fill="none"
+            strokeDasharray="30 80 50 60"
+            opacity="0.5"
+          />
+        </motion.g>
+
         {/* Background track circle */}
         <circle 
           cx={size / 2} 
@@ -425,17 +477,19 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
               stroke={lang.color}
               strokeWidth={isHovered ? strokeWidth + 3 : strokeWidth}
               fill="none"
-              strokeDasharray={`0 ${adjustedOffset} ${adjustedLength} ${circ - adjustedOffset - adjustedLength}`}
-              strokeLinecap="round"
+              initial={{
+                strokeDasharray: `0 ${adjustedOffset} 0 ${circ - adjustedOffset}`
+              }}
               animate={{
                 strokeWidth: isHovered ? strokeWidth + 4 : strokeWidth,
+                strokeDasharray: `0 ${adjustedOffset} ${adjustedLength} ${circ - adjustedOffset - adjustedLength}`,
                 opacity: isAnyHovered ? (isHovered ? 1 : 0.45) : 0.9,
                 filter: isHovered ? `drop-shadow(0 0 8px ${lang.color})` : 'none'
               }}
               transition={{
-                type: 'spring',
-                stiffness: 300,
-                damping: 22
+                strokeDasharray: { duration: 1.4, ease: [0.25, 1, 0.5, 1] },
+                strokeWidth: { type: 'spring', stiffness: 300, damping: 22 },
+                opacity: { duration: 0.25 }
               }}
               onMouseEnter={() => !isMobile && setHoveredIdx(idx)}
               onMouseLeave={() => !isMobile && setHoveredIdx(null)}
@@ -490,7 +544,7 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
                 color: '#fff', 
                 lineHeight: 1 
               }}>
-                {activeLang.pct}%
+                <CountUp value={activeLang.pct} duration={0.5} />%
               </span>
               <span style={{ 
                 fontFamily: 'Syne, sans-serif', 
@@ -518,6 +572,69 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
           )}
         </AnimatePresence>
       </div>
+
+      {/* Dynamic Cursor-Following Tooltip (Desktop Only) */}
+      <AnimatePresence>
+        {!isMobile && showTooltip && hoveredIdx !== null && langs[hoveredIdx] && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ 
+              opacity: 1, 
+              scale: 1,
+              x: mousePos.x,
+              y: mousePos.y - 12
+            }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{
+              type: 'spring',
+              stiffness: 450,
+              damping: 28,
+              mass: 0.4
+            }}
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              pointerEvents: 'none',
+              zIndex: 100
+            }}
+          >
+            <div style={{
+              transform: 'translate(-50%, -100%)',
+              background: 'rgba(11, 7, 20, 0.9)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              border: `1px solid ${langs[hoveredIdx].color}50`,
+              borderRadius: 10,
+              padding: '10px 14px',
+              boxShadow: `0 8px 24px rgba(0, 0, 0, 0.6), 0 0 15px ${langs[hoveredIdx].color}20`,
+              minWidth: 140,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                <span style={{ 
+                  width: 8, 
+                  height: 8, 
+                  borderRadius: '50%', 
+                  background: langs[hoveredIdx].color,
+                  boxShadow: `0 0 6px ${langs[hoveredIdx].color}`
+                }} />
+                <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 12, color: '#fff' }}>
+                  {langs[hoveredIdx].name}
+                </span>
+              </div>
+              <div style={{ fontSize: 11, color: '#fff', fontFamily: 'monospace', fontWeight: 700 }}>
+                Share: {langs[hoveredIdx].pct}%
+              </div>
+              <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.45)', fontFamily: 'monospace' }}>
+                Volume: {langs[hoveredIdx].bytes ? `${(langs[hoveredIdx].bytes / 1024).toFixed(1)} KB` : '0 KB'}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
