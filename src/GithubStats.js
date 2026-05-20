@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, animate } from 'framer-motion';
+import { motion, animate, AnimatePresence } from 'framer-motion';
 import {
   Star, GitFork, Package, Users, UserPlus,
   Github, Trophy, Zap, Clock, Code2,
@@ -341,6 +341,187 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
   );
 };
 
+/* ─── Fully Interactive Multi-Language Analytics Donut Chart ─── */
+const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => {
+  const size = 160;
+  const strokeWidth = 12;
+  const radius = (size - strokeWidth * 2) / 2; // 68
+  const circ = 2 * Math.PI * radius; // 427.26
+  
+  // Normalize percentages to sum up to 100 to ensure a beautiful full circle
+  const totalPct = langs.reduce((acc, l) => acc + l.pct, 0) || 1;
+  let accumulatedPercent = 0;
+  
+  const activeLang = hoveredIdx !== null ? langs[hoveredIdx] : langs[0];
+  
+  return (
+    <div style={{ 
+      position: 'relative', 
+      width: size, 
+      height: size, 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      userSelect: 'none'
+    }}>
+      {/* Subtle background ambient rotating glow */}
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+        style={{
+          position: 'absolute',
+          width: size - 20,
+          height: size - 20,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(138, 92, 246, 0.1) 0%, transparent 80%)',
+          filter: 'blur(12px)',
+          pointerEvents: 'none',
+          zIndex: 0
+        }}
+      />
+      
+      {/* SVG Donut */}
+      <svg 
+        width={size} 
+        height={size} 
+        style={{ 
+          transform: 'rotate(-90deg)', 
+          position: 'absolute', 
+          inset: 0, 
+          zIndex: 1,
+          overflow: 'visible'
+        }}
+      >
+        {/* Background track circle */}
+        <circle 
+          cx={size / 2} 
+          cy={size / 2} 
+          r={radius} 
+          stroke="rgba(255, 255, 255, 0.03)" 
+          strokeWidth={strokeWidth - 2} 
+          fill="none"
+        />
+        
+        {/* Colored language segments */}
+        {langs.map((lang, idx) => {
+          const normalizedPct = (lang.pct / totalPct) * 100;
+          const segmentLength = (normalizedPct / 100) * circ;
+          const startOffset = (accumulatedPercent / 100) * circ;
+          accumulatedPercent += normalizedPct;
+          
+          const isHovered = hoveredIdx === idx;
+          const isAnyHovered = hoveredIdx !== null;
+          
+          const gapSize = langs.length > 1 ? 2.5 : 0;
+          const adjustedLength = Math.max(0.5, segmentLength - gapSize);
+          const adjustedOffset = startOffset + gapSize / 2;
+          
+          return (
+            <motion.circle
+              key={lang.name}
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              stroke={lang.color}
+              strokeWidth={isHovered ? strokeWidth + 3 : strokeWidth}
+              fill="none"
+              strokeDasharray={`0 ${adjustedOffset} ${adjustedLength} ${circ - adjustedOffset - adjustedLength}`}
+              strokeLinecap="round"
+              animate={{
+                strokeWidth: isHovered ? strokeWidth + 4 : strokeWidth,
+                opacity: isAnyHovered ? (isHovered ? 1 : 0.45) : 0.9,
+                filter: isHovered ? `drop-shadow(0 0 8px ${lang.color})` : 'none'
+              }}
+              transition={{
+                type: 'spring',
+                stiffness: 300,
+                damping: 22
+              }}
+              onMouseEnter={() => !isMobile && setHoveredIdx(idx)}
+              onMouseLeave={() => !isMobile && setHoveredIdx(null)}
+              onClick={() => isMobile && setHoveredIdx(hoveredIdx === idx ? null : idx)}
+              style={{
+                cursor: 'pointer',
+                transformOrigin: 'center',
+                transition: 'filter 0.3s ease'
+              }}
+            />
+          );
+        })}
+      </svg>
+      
+      {/* Center content container - styled inside the hole */}
+      <div style={{ 
+        position: 'absolute', 
+        zIndex: 2, 
+        width: radius * 2 - 10, 
+        height: radius * 2 - 10,
+        borderRadius: '50%',
+        background: 'rgba(10, 8, 18, 0.45)',
+        backdropFilter: 'blur(6px)',
+        WebkitBackdropFilter: 'blur(6px)',
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        pointerEvents: 'none',
+        border: '1px solid rgba(255, 255, 255, 0.03)',
+        boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.8)'
+      }}>
+        <AnimatePresence mode="wait">
+          {activeLang && (
+            <motion.div
+              key={activeLang.name}
+              initial={{ opacity: 0, scale: 0.8, y: 4 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: -4 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                textAlign: 'center',
+                padding: 8
+              }}
+            >
+              <span style={{ 
+                fontSize: 22, 
+                fontFamily: 'Syne, sans-serif', 
+                fontWeight: 800, 
+                color: '#fff', 
+                lineHeight: 1 
+              }}>
+                {activeLang.pct}%
+              </span>
+              <span style={{ 
+                fontFamily: 'Syne, sans-serif', 
+                fontWeight: 700, 
+                fontSize: 11, 
+                color: activeLang.color, 
+                marginTop: 4,
+                maxWidth: radius * 2 - 20,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                textShadow: `0 0 8px ${activeLang.color}33`
+              }}>
+                {activeLang.name}
+              </span>
+              <span style={{ 
+                fontSize: 8.5, 
+                color: 'rgba(255,255,255,0.3)', 
+                fontFamily: 'monospace', 
+                marginTop: 2 
+              }}>
+                {activeLang.bytes ? `${(activeLang.bytes / 1024).toFixed(0)} KB` : ''}
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+};
+
 export default function GithubStats() {
   const sectionRef = useRef(null);
   const [data, setData] = useState({
@@ -354,6 +535,7 @@ export default function GithubStats() {
   const [loaded, setLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedYear, setSelectedYear] = useState(2026);
+  const [hoveredIdx, setHoveredIdx] = useState(null);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 992);
@@ -645,23 +827,53 @@ export default function GithubStats() {
                 </div>
               </div>
 
-              {/* Top language ring */}
+              {/* Interactive Donut Analytics Chart */}
               <div style={{
-                background:'rgba(138,92,246,0.06)',
-                border:'1px solid rgba(138,92,246,0.18)',
-                 borderRadius:18, padding:'22px 18px',
-                display:'flex', flexDirection:'column', alignItems:'center', gap:10, minWidth: isMobile ? '100%' : 150,
+                background: 'rgba(255, 255, 255, 0.015)',
+                border: '1px solid rgba(138, 92, 246, 0.15)',
+                borderRadius: 20, 
+                padding: '24px 20px',
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                gap: 14, 
+                minWidth: isMobile ? '100%' : 210,
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
+                position: 'relative',
+                overflow: 'hidden'
               }}>
-                <div style={{ fontSize:10, color:'rgba(255,255,255,0.3)', fontFamily:'Syne,sans-serif', fontWeight:700, letterSpacing:'1.5px', textTransform:'uppercase' }}>Top Language</div>
-                <Ring pct={data.topLangPct} color={LANG_COLORS[data.topLang]||'#8a5cf6'} size={110} stroke={8}>
-                  <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:20, color:'#fff' }}>{data.topLangPct}%</div>
-                </Ring>
-                <div style={{ fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:13, color:LANG_COLORS[data.topLang]||'#a78bfa', letterSpacing:'0.5px' }}>
-                  {data.topLang}
+                <div style={{ 
+                  fontSize: 10, 
+                  color: 'rgba(255,255,255,0.4)', 
+                  fontFamily: 'Syne,sans-serif', 
+                  fontWeight: 800, 
+                  letterSpacing: '1.5px', 
+                  textTransform: 'uppercase',
+                  textAlign: 'center'
+                }}>
+                  Language Distribution
                 </div>
-                <div style={{ display:'flex', alignItems:'center', gap:4 }}>
-                  <GitBranch size={11} style={{ color:'rgba(255,255,255,0.25)' }}/>
-                  <span style={{ fontSize:10, color:'rgba(255,255,255,0.25)', fontFamily:'Syne,sans-serif' }}>Primary</span>
+                
+                <AnalyticsDonutChart 
+                  langs={langs} 
+                  hoveredIdx={hoveredIdx} 
+                  setHoveredIdx={setHoveredIdx}
+                  isMobile={isMobile}
+                />
+                
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 5,
+                  fontSize: 9,
+                  color: 'rgba(255,255,255,0.25)',
+                  fontFamily: 'Syne,sans-serif',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  marginTop: 4
+                }}>
+                  <GitBranch size={10} style={{ color: '#a78bfa' }} />
+                  Interactive Analytics
                 </div>
               </div>
             </div>
@@ -673,9 +885,24 @@ export default function GithubStats() {
               <Code2 size={16} style={{ color:'#c084fc' }}/>
               <span style={{ fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:14, color:'#fff' }}>Language Breakdown</span>
             </div>
-            {langs.map(l=>(
-              <Bar key={l.name} label={l.name} pct={l.pct} color={l.color} bytes={l.bytes||null}/>
-            ))}
+            <div style={{ display:'flex', flexDirection:'column' }}>
+              {langs.map((l, idx) => (
+                <div 
+                  key={l.name}
+                  onMouseEnter={() => !isMobile && setHoveredIdx(idx)}
+                  onMouseLeave={() => !isMobile && setHoveredIdx(null)}
+                  onClick={() => isMobile && setHoveredIdx(hoveredIdx === idx ? null : idx)}
+                  style={{
+                    cursor: 'pointer',
+                    opacity: hoveredIdx !== null ? (hoveredIdx === idx ? 1 : 0.4) : 1,
+                    transform: hoveredIdx === idx ? 'translateX(4px)' : 'translateX(0)',
+                    transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'
+                  }}
+                >
+                  <Bar label={l.name} pct={l.pct} color={l.color} bytes={l.bytes||null}/>
+                </div>
+              ))}
+            </div>
           </Panel>
         </div>
 
