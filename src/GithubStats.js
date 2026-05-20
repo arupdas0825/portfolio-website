@@ -458,15 +458,17 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
         {langs.map((lang, idx) => {
           const normalizedPct = (lang.pct / totalPct) * 100;
           const segmentLength = (normalizedPct / 100) * circ;
-          const startOffset = (accumulatedPercent / 100) * circ;
+          
+          // Add a elegant physical spacing gap between segments
+          const gapSize = langs.length > 1 ? 2 : 0;
+          const adjustedLength = Math.max(0.5, segmentLength - gapSize);
+          
+          // Calculate start rotation angle for this segment
+          const startAngle = (accumulatedPercent / 100) * 360;
           accumulatedPercent += normalizedPct;
           
           const isHovered = hoveredIdx === idx;
           const isAnyHovered = hoveredIdx !== null;
-          
-          const gapSize = langs.length > 1 ? 2.5 : 0;
-          const adjustedLength = Math.max(0.5, segmentLength - gapSize);
-          const adjustedOffset = startOffset + gapSize / 2;
           
           return (
             <motion.circle
@@ -475,25 +477,27 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
               cy={size / 2}
               r={radius}
               stroke={lang.color}
-              strokeWidth={isHovered ? strokeWidth + 3 : strokeWidth}
+              strokeWidth={isHovered ? strokeWidth + 4 : strokeWidth}
               fill="none"
+              strokeDasharray={`${adjustedLength} ${circ - adjustedLength}`}
               initial={{
-                strokeDasharray: `0 ${adjustedOffset} 0 ${circ - adjustedOffset}`
+                strokeDashoffset: adjustedLength
               }}
               animate={{
                 strokeWidth: isHovered ? strokeWidth + 4 : strokeWidth,
-                strokeDasharray: `0 ${adjustedOffset} ${adjustedLength} ${circ - adjustedOffset - adjustedLength}`,
+                strokeDashoffset: 0,
                 opacity: isAnyHovered ? (isHovered ? 1 : 0.45) : 0.9,
                 filter: isHovered ? `drop-shadow(0 0 8px ${lang.color})` : 'none'
               }}
               transition={{
-                strokeDasharray: { duration: 1.4, ease: [0.25, 1, 0.5, 1] },
+                strokeDashoffset: { duration: 1.4, ease: [0.25, 1, 0.5, 1] },
                 strokeWidth: { type: 'spring', stiffness: 300, damping: 22 },
                 opacity: { duration: 0.25 }
               }}
               onMouseEnter={() => !isMobile && setHoveredIdx(idx)}
               onMouseLeave={() => !isMobile && setHoveredIdx(null)}
               onClick={() => isMobile && setHoveredIdx(hoveredIdx === idx ? null : idx)}
+              transform={`rotate(${startAngle} ${size / 2} ${size / 2})`}
               style={{
                 cursor: 'pointer',
                 transformOrigin: 'center',
