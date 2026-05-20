@@ -4464,7 +4464,8 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 6px 10px;
 }
 
 .work-category-title span {
@@ -4490,6 +4491,39 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   flex-grow: 1;
   height: 1px;
   background: linear-gradient(90deg, rgba(167, 139, 250, 0.2) 0%, rgba(255, 255, 255, 0.02) 100%);
+}
+
+/* Mobile Responsive Work Category Headers */
+@media (max-width: 768px) {
+  .work-category-header {
+    gap: 12px;
+    margin-bottom: 20px;
+    align-items: flex-end; /* Align the decorative line with the bottom line of the text */
+  }
+  
+  .work-category-title {
+    font-size: clamp(1.2rem, 5vw, 1.55rem);
+    flex-wrap: wrap;
+    gap: 6px 8px;
+    line-height: 1.25;
+    max-width: 82%; /* Ensure title has space to wrap elegantly without squeezing the divider */
+  }
+  
+  .work-category-count {
+    font-size: 0.72rem;
+    padding: 1px 8px;
+    margin-left: 2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+  }
+  
+  .work-category-line {
+    margin-bottom: 6px; /* Perfect baseline alignment for the decorative divider line */
+    min-width: 24px; /* Ensure line is visible and consistent on all mobile devices */
+    opacity: 0.7;
+  }
 }
 
 /* Secondary Projects Grid & Card Layout */
