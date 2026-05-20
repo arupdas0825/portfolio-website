@@ -344,7 +344,7 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
 /* ─── Fully Interactive Multi-Language Analytics Donut Chart ─── */
 const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => {
   const size = 160;
-  const strokeWidth = 14; // Slightly thicker for a robust, premium look
+  const strokeWidth = 14; // Robust, premium thickness
   const radius = (size - strokeWidth) / 2 - 4; // 69 (centered perfectly inside SVG)
   const circ = 2 * Math.PI * radius; // 433.54
   
@@ -384,15 +384,14 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
         position: 'relative', 
         width: size, 
         height: size, 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
+        display: 'grid', 
+        placeItems: 'center',
         userSelect: 'none'
       }}
     >
       {/* Background soft shadow ring for premium depth */}
       <div style={{
-        position: 'absolute',
+        gridArea: '1 / 1',
         width: radius * 2 + strokeWidth,
         height: radius * 2 + strokeWidth,
         borderRadius: '50%',
@@ -406,9 +405,7 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
         width={size} 
         height={size} 
         style={{ 
-          transform: 'rotate(-90deg)', 
-          position: 'absolute', 
-          inset: 0, 
+          gridArea: '1 / 1',
           zIndex: 1,
           overflow: 'visible'
         }}
@@ -428,13 +425,25 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
           const normalizedPct = (lang.pct / totalPct) * 100;
           const segmentLength = (normalizedPct / 100) * circ;
           
-          // Subtly gap segments for a premium dashboard visualization look
-          const gapSize = langs.length > 1 ? 1.5 : 0;
-          const adjustedLength = Math.max(0.5, segmentLength - gapSize);
+          // Gap size subtracted from segment length for visual separation.
+          // Subtract strokeWidth to allow beautiful strokeLinecap="round" caps without overlap.
+          const gapPixels = 4; // Gorgeous 4px gap for modern SaaS feel
+          const subtraction = strokeWidth + gapPixels;
+          const adjustedLength = Math.max(1, segmentLength - subtraction);
           
           // Calculate start rotation angle for this segment
           const startAngle = (accumulatedPercent / 100) * 360;
           accumulatedPercent += normalizedPct;
+          
+          // Calculate the mid-angle of the slice for the hover expansion translation
+          const midAngle = startAngle + (normalizedPct / 2) * 360 / 100 - 90;
+          const rad = (midAngle * Math.PI) / 180;
+          const dx = Math.cos(rad) * 4.5;
+          const dy = Math.sin(rad) * 4.5;
+          
+          // Shift rotation to offset the round linecap (half of strokeWidth + half of gap)
+          const capOffsetDegrees = ((strokeWidth / 2 + gapPixels / 2) / circ) * 360;
+          const finalAngle = startAngle + capOffsetDegrees - 90;
           
           const isHovered = hoveredIdx === idx;
           const isAnyHovered = hoveredIdx !== null;
@@ -449,7 +458,7 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
               strokeWidth={isHovered ? strokeWidth + 2 : strokeWidth}
               fill="none"
               strokeDasharray={`${adjustedLength} ${circ - adjustedLength}`}
-              strokeLinecap="butt" // Flat butt caps ensure razor-sharp math and proportional sizing
+              strokeLinecap="round" // Gorgeous smooth rounded segment caps
               initial={{
                 strokeDashoffset: adjustedLength
               }}
@@ -457,17 +466,21 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
                 strokeWidth: isHovered ? strokeWidth + 3 : strokeWidth,
                 strokeDashoffset: 0,
                 opacity: isAnyHovered ? (isHovered ? 1 : 0.5) : 0.95,
-                filter: isHovered ? `drop-shadow(0 2px 8px ${lang.color}55)` : 'none'
+                filter: isHovered ? `drop-shadow(0 2px 8px ${lang.color}55)` : 'none',
+                x: isHovered ? dx : 0,
+                y: isHovered ? dy : 0
               }}
               transition={{
                 strokeDashoffset: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },
                 strokeWidth: { type: 'spring', stiffness: 400, damping: 28 },
+                x: { type: 'spring', stiffness: 400, damping: 28 },
+                y: { type: 'spring', stiffness: 400, damping: 28 },
                 opacity: { duration: 0.2 }
               }}
               onMouseEnter={() => !isMobile && setHoveredIdx(idx)}
               onMouseLeave={() => !isMobile && setHoveredIdx(null)}
               onClick={() => isMobile && setHoveredIdx(hoveredIdx === idx ? null : idx)}
-              transform={`rotate(${startAngle} ${size / 2} ${size / 2})`}
+              transform={`rotate(${finalAngle} ${size / 2} ${size / 2})`}
               style={{
                 cursor: 'pointer',
                 transformOrigin: 'center',
@@ -480,7 +493,7 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
       
       {/* Center content container - styled inside the hole */}
       <div style={{ 
-        position: 'absolute', 
+        gridArea: '1 / 1',
         zIndex: 2, 
         width: radius * 2 - strokeWidth + 4, 
         height: radius * 2 - strokeWidth + 4,
