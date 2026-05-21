@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, animate, AnimatePresence } from 'framer-motion';
+import { motion, animate, AnimatePresence, useInView } from 'framer-motion';
 import {
   Star, GitFork, Package, Users, UserPlus,
   Github, Trophy, Zap, Clock, Code2,
@@ -173,6 +173,9 @@ const SidePanel = ({ title, items, icon: Icon, color }) => (
 
 /* ─── Contribution Heatmap ─── */
 const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
+  const containerRef = useRef(null);
+  const isInView = useInView(containerRef, { once: true, amount: 0.1 });
+
   if (!rawData || rawData.length === 0) return null;
 
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -242,7 +245,7 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
   });
 
   return (
-    <div style={{ marginTop: 30, marginBottom: 40 }}>
+    <div ref={containerRef} style={{ marginTop: 30, marginBottom: 40 }}>
       <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
@@ -305,23 +308,34 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
             <div style={{ display: 'flex', gap: 3 }}>
               {weeks.map((week, wi) => (
                 <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  {week.map((day, di) => (
-                    <motion.div
-                      key={di}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: (wi * 0.01) + (di * 0.005) }}
-                      viewport={{ once: true }}
-                      style={{
-                        width: 10,
-                        height: 10,
-                        borderRadius: 2,
-                        background: day ? getColor(day.count) : 'transparent',
-                        cursor: day ? 'pointer' : 'default'
-                      }}
-                      title={day ? `${day.date}: ${day.count} contributions` : ''}
-                    />
-                  ))}
+                  {week.map((day, di) => {
+                    const delay = (wi * 0.012) + (di * 0.004);
+                    const cellColor = day ? getColor(day.count) : 'transparent';
+                    let glowColor = 'transparent';
+                    if (day && day.count !== null) {
+                      if (day.count === 0) glowColor = 'rgba(138, 92, 246, 0.35)'; // Sleek cyber purple glow
+                      else if (day.count < 3) glowColor = 'rgba(14, 68, 41, 0.8)';
+                      else if (day.count < 6) glowColor = 'rgba(0, 109, 50, 0.8)';
+                      else if (day.count < 9) glowColor = 'rgba(38, 166, 65, 0.9)';
+                      else glowColor = 'rgba(57, 211, 83, 1)'; // Vibrant neon green glow
+                    }
+                    return (
+                      <div
+                        key={di}
+                        className={`contribution-cell ${isInView ? 'cell-animate' : 'cell-initial'}`}
+                        style={{
+                          width: 10,
+                          height: 10,
+                          borderRadius: 2,
+                          background: cellColor,
+                          cursor: day ? 'pointer' : 'default',
+                          '--delay': `${delay}s`,
+                          '--glow-color': glowColor
+                        }}
+                        title={day ? `${day.date}: ${day.count} contributions` : ''}
+                      />
+                    );
+                  })}
                 </div>
               ))}
             </div>

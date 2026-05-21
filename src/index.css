@@ -73,3 +73,44 @@ html.lenis, html.lenis body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ─── Cinematic Heatmap Activation Animation ─── */
+@keyframes contribution-neural-activation {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+    box-shadow: 0 0 0 transparent;
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.3); /* Cinematic scale pop */
+    /* Neon glow pulse on activation using custom HSL/RGB colors */
+    box-shadow: 0 0 14px var(--glow-color), 0 0 4px var(--glow-color);
+  }
+  80% {
+    transform: scale(0.92);
+    box-shadow: 0 0 6px var(--glow-color);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 transparent; /* Glow fades away for clean final state */
+  }
+}
+
+.contribution-cell {
+  opacity: 0;
+  transform: scale(0.3);
+  will-change: transform, opacity;
+}
+
+.cell-initial {
+  opacity: 0;
+  transform: scale(0.3);
+}
+
+.cell-animate {
+  animation: contribution-neural-activation 0.85s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  animation-delay: var(--delay);
+}
+
