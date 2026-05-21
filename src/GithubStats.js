@@ -308,14 +308,27 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
                 <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   {week.map((day, di) => {
                     const delay = (wi * 0.012) + (di * 0.004);
+                    const breathDur = 3.0 + ((wi + di) % 7) * 0.4; // pseudo-random desynchronized breathing: 3.0s to 5.4s
                     const cellColor = day ? getColor(day.count) : 'transparent';
                     let glowColor = 'transparent';
+                    let glowRadius = '0px';
                     if (day && day.count !== null) {
-                      if (day.count === 0) glowColor = 'rgba(138, 92, 246, 0.35)'; // Sleek cyber purple glow
-                      else if (day.count < 3) glowColor = 'rgba(14, 68, 41, 0.8)';
-                      else if (day.count < 6) glowColor = 'rgba(0, 109, 50, 0.8)';
-                      else if (day.count < 9) glowColor = 'rgba(38, 166, 65, 0.9)';
-                      else glowColor = 'rgba(57, 211, 83, 1)'; // Vibrant neon green glow
+                      if (day.count === 0) {
+                        glowColor = 'rgba(138, 92, 246, 0.35)'; // Sleek cyber purple glow
+                        glowRadius = '4px';
+                      } else if (day.count < 3) {
+                        glowColor = 'rgba(14, 68, 41, 0.8)';
+                        glowRadius = '5px';
+                      } else if (day.count < 6) {
+                        glowColor = 'rgba(0, 109, 50, 0.8)';
+                        glowRadius = '7px';
+                      } else if (day.count < 9) {
+                        glowColor = 'rgba(38, 166, 65, 0.9)';
+                        glowRadius = '9px';
+                      } else {
+                        glowColor = 'rgba(57, 211, 83, 1)'; // Vibrant neon green glow
+                        glowRadius = '12px';
+                      }
                     }
                     return (
                       <div
@@ -328,7 +341,9 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
                           background: cellColor,
                           cursor: day ? 'pointer' : 'default',
                           '--delay': `${delay}s`,
-                          '--glow-color': glowColor
+                          '--breath-dur': `${breathDur}s`,
+                          '--glow-color': glowColor,
+                          '--glow-radius': glowRadius
                         }}
                         title={day ? `${day.date}: ${day.count} contributions` : ''}
                       />

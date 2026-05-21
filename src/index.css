@@ -110,7 +110,39 @@ html.lenis, html.lenis body {
 }
 
 .cell-animate {
-  animation: contribution-neural-activation 0.85s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-  animation-delay: var(--delay);
+  animation-name: contribution-neural-activation, cell-neural-breath;
+  animation-duration: 0.85s, var(--breath-dur);
+  animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1), ease-in-out;
+  animation-iteration-count: 1, infinite;
+  animation-direction: normal, alternate;
+  animation-fill-mode: forwards, none;
+  animation-delay: var(--delay), calc(var(--delay) + 0.85s);
+}
+
+@keyframes cell-neural-breath {
+  0% {
+    opacity: 0.82;
+    filter: brightness(0.92);
+    box-shadow: 0 0 0 transparent;
+  }
+  100% {
+    opacity: 1;
+    filter: brightness(1.15); /* Sleek neon bloom bloom effect */
+    box-shadow: 0 0 var(--glow-radius) var(--glow-color), 0 0 2px var(--glow-color);
+  }
+}
+
+/* Mobile Performance Optimization: Disable heavy box shadows on smaller screens */
+@media (max-width: 768px) {
+  @keyframes cell-neural-breath {
+    0% {
+      opacity: 0.82;
+      filter: brightness(0.92);
+    }
+    100% {
+      opacity: 1;
+      filter: brightness(1.08);
+    }
+  }
 }
 
