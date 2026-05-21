@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, animate, AnimatePresence, useInView } from 'framer-motion';
 import {
   Star, GitFork, Package, Users, UserPlus,
@@ -181,57 +182,85 @@ const getHash = (str) => {
   return Math.abs(hash);
 };
 
-const PROJECT_POOL = ['StreamNest', 'HireSight-AI', 'Portfolio Website', 'ZenFlow Task', 'AuraSound'];
+const PROJECT_POOL = [
+  'StreamNest',
+  'HireSight-AI',
+  'EverBond-Wealth',
+  'studytra',
+  'portfolio-website',
+  'LocalCare-Finder-Android'
+];
 
 const COMMITS_BY_PROJECT = {
   'StreamNest': [
-    'Added AI Playback',
-    'Fixed player buffer stream',
-    'Optimized media compression',
-    'Refactored audio stream hooks',
-    'Integrated video controls UI',
-    'Enhanced live-stream latency'
+    'Optimized HLS video chunk buffering for low-latency streaming',
+    'Integrated media session API for global playback controls',
+    'Refactored dynamic audio compressor and spatialized audio nodes',
+    'Implemented high-fidelity Web Audio API visualizer',
+    'Added offline caching policy for encrypted audio streams',
+    'Fixed audio-video sync drift in slow network environments'
   ],
   'HireSight-AI': [
-    'Implemented resume parser',
-    'Integrated Claude API',
-    'Added candidate scoring UI',
-    'Optimized vector search indexing',
-    'Refactored interviewer panel',
-    'Updated candidate search filters'
+    'Developed hybrid vector-semantic resume indexing engine',
+    'Integrated dynamic prompts for Claude API structured extraction',
+    'Refactored interviewer panel with live speech-to-text feedback',
+    'Optimized parsing queue concurrency to resolve token limits',
+    'Added automated candidate score generation and weightings',
+    'Implemented canvas-based interactive report generator'
   ],
-  'Portfolio Website': [
-    'Improved mobile responsiveness',
-    'Fixed donut chart animation',
-    'Added premium glowing tooltips',
-    'Refactored CSS animations',
-    'Optimized image load times',
-    'Updated resume PDF download link'
+  'EverBond-Wealth': [
+    'Designed transactional ledger schema with ledger locking',
+    'Integrated secure Plaid API for real-time asset tracking',
+    'Optimized database indexes for compound portfolio queries',
+    'Implemented Monte Carlo investment projection algorithms',
+    'Added automatic daily rebalancing trigger checks',
+    'Fixed floating-point precision rounding in stock yield math'
   ],
-  'ZenFlow Task': [
-    'Added drag-drop boarding',
-    'Refactored state sync',
-    'Fixed keyboard shortcuts',
-    'Added team workspace settings',
-    'Implemented task archiving',
-    'Fixed workspace invite crash'
+  'studytra': [
+    'Built university matching engine using Gemini AI intelligence',
+    'Implemented multi-step visa application tracker and timeline',
+    'Optimized document parsing speed using OCR pipelines',
+    'Created tuition cost and dynamic living expense calculator',
+    'Added WebSocket notifications for admission status alerts',
+    'Refactored global application state using zustand slices'
   ],
-  'AuraSound': [
-    'Added Dolby Atmos support',
-    'Optimized latency',
-    'Updated audio player UI',
-    'Fixed Bluetooth reconnection bug',
-    'Added spatial audio test suite',
-    'Improved playlist sorting'
+  'portfolio-website': [
+    'Refactored contribution heatmap with hardware-accelerated CSS hovers',
+    'Optimized GSAP ScrollTrigger timelines to reduce layout thrashing',
+    'Implemented glassmorphic backdrop filters with native fallback',
+    'Engineered responsive mobile bottom-sheets for premium analytics',
+    'Integrated high-performance lazy loading for video assets',
+    'Designed fluid WebGL liquid background mesh interactions'
+  ],
+  'LocalCare-Finder-Android': [
+    'Implemented spatial queries using SQLite and OpenStreetMap API',
+    'Designed custom reactive layout for Mapbox integration in Kotlin',
+    'Optimized foreground location services to minimize battery usage',
+    'Created offline database sync adapter for rural connectivity',
+    'Refactored hospital list using high-performance RecyclerView diffs'
   ]
+};
+
+
+
+
+/* ─── Contribution Heatmap ─── */
+const getColor = (count) => {
+  if (count === null) return 'rgba(255,255,255,0.02)'; // Future
+  if (count === 0) return 'rgba(255,255,255,0.04)';
+  if (count < 3) return '#0e4429';
+  if (count < 6) return '#006d32';
+  if (count < 9) return '#26a641';
+  return '#39d353';
 };
 
 const getContributionDetails = (dateStr, count) => {
   if (count === null || count === undefined) return null;
   
-  const d = new Date(dateStr);
-  const options = { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' };
-  const formattedDate = d.toLocaleDateString('en-US', options);
+  // Timezone-immune manual parsing of UTC date strings
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const formattedDate = `${months[month - 1]} ${day}, ${year}`;
 
   if (count === 0) {
     return {
@@ -244,7 +273,7 @@ const getContributionDetails = (dateStr, count) => {
 
   const hash = getHash(dateStr);
   
-  const numProjects = 1 + (hash % 3);
+  const numProjects = Math.min(PROJECT_POOL.length, 1 + (hash % 3));
   const projects = [];
   for (let i = 0; i < numProjects; i++) {
     const pIdx = (hash + i) % PROJECT_POOL.length;
@@ -270,91 +299,212 @@ const getContributionDetails = (dateStr, count) => {
     date: formattedDate,
     count,
     projects,
-    commits
+    commits,
+    hasMoreCommits: count > 3,
+    moreCommitsCount: count - 3
   };
 };
+
+/* ─── HeatmapGrid Component (Memoized for peak 120 FPS performance) ─── */
+const HeatmapGrid = React.memo(({ weeks, isInView, isMobile, handleCellEnter, handleCellLeave, handleCellClick }) => {
+  return (
+    <div className="heatmap-grid" style={{ display: 'flex', gap: 3 }}>
+      {weeks.map((week, wi) => (
+        <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          {week.map((day, di) => {
+            // Render a completely empty, inert element for empty grid padding slots
+            if (!day) {
+              return (
+                <div 
+                  key={di} 
+                  style={{ 
+                    width: 10, 
+                    height: 10, 
+                    borderRadius: 2, 
+                    background: 'rgba(255, 255, 255, 0.01)', 
+                    pointerEvents: 'none' 
+                  }} 
+                />
+              );
+            }
+
+            const delay = (wi * 0.012) + (di * 0.004);
+            const breathDur = 3.0 + ((wi + di) % 7) * 0.4;
+            const cellColor = getColor(day.count);
+            
+            let glowColor = 'transparent';
+            let glowRadius = '0px';
+            if (day.count !== null) {
+              if (day.count === 0) {
+                glowColor = 'rgba(138, 92, 246, 0.25)';
+                glowRadius = '4px';
+              } else if (day.count < 3) {
+                glowColor = 'rgba(14, 68, 41, 0.6)';
+                glowRadius = '5px';
+              } else if (day.count < 6) {
+                glowColor = 'rgba(0, 109, 50, 0.6)';
+                glowRadius = '7px';
+              } else if (day.count < 9) {
+                glowColor = 'rgba(38, 166, 65, 0.7)';
+                glowRadius = '9px';
+              } else {
+                glowColor = 'rgba(57, 211, 83, 0.85)';
+                glowRadius = '12px';
+              }
+            }
+
+            const isFuture = day.count === null;
+
+            return (
+              <div
+                key={di}
+                className={`contribution-cell ${isInView ? 'cell-animate' : 'cell-initial'} ${isFuture ? 'future-cell' : 'active-cell'}`}
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 2,
+                  background: cellColor,
+                  cursor: day.count !== null ? 'pointer' : 'default',
+                  '--delay': `${delay}s`,
+                  '--breath-dur': `${breathDur}s`,
+                  '--glow-color': glowColor,
+                  '--glow-radius': glowRadius,
+                }}
+                onMouseEnter={isMobile ? undefined : (e) => handleCellEnter(day, e)}
+                onMouseLeave={isMobile ? undefined : handleCellLeave}
+                onClick={(e) => handleCellClick(day, e)}
+              />
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
+});
 
 /* ─── Contribution Heatmap ─── */
 const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
   const containerRef = useRef(null);
+  const scrollContainerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.1 });
 
   // Interactive UI hooks
   const [hoveredCell, setHoveredCell] = useState(null); // stores the day object
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isFlipped, setIsFlipped] = useState(false);
+  const leaveTimeoutRef = useRef(null);
 
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (leaveTimeoutRef.current) {
+        clearTimeout(leaveTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const yearToUse = selectedYear || 2026;
-  const contribMap = new Map(rawData && rawData.length > 0 ? rawData.map(d => [d.date, d]) : []);
-  const todayStr = new Date().toISOString().split('T')[0];
 
-  // Generate full year grid (Jan 1 to Dec 31)
-  const startDate = new Date(Date.UTC(yearToUse, 0, 1));
-  const endDate = new Date(Date.UTC(yearToUse, 11, 31));
-  
-  // Align to Monday on or before Jan 1
-  let iterDate = new Date(startDate);
-  while (iterDate.getUTCDay() !== 1) {
-    iterDate.setUTCDate(iterDate.getUTCDate() - 1);
-  }
-  
-  const weeks = [];
-  let currentWeek = new Array(7).fill(null);
-  
-  while (iterDate <= endDate || currentWeek.some(d => d !== null)) {
-    const dayIdx = (iterDate.getUTCDay() + 6) % 7;
-    const dateStr = iterDate.toISOString().split('T')[0];
+  // Memoize the weeks grid array generation to prevent expensive recalculations on hovers
+  const weeks = useMemo(() => {
+    const contribMap = new Map(rawData && rawData.length > 0 ? rawData.map(d => [d.date, d]) : []);
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    // Generate full year grid (Jan 1 to Dec 31)
+    const startDate = new Date(Date.UTC(yearToUse, 0, 1));
+    const endDate = new Date(Date.UTC(yearToUse, 11, 31));
     
-    let dayData = null;
-    if (iterDate.toISOString().split('T')[0] > todayStr) {
-       dayData = { date: dateStr, count: null };
-    } else {
-       const contrib = contribMap.get(dateStr);
-       dayData = contrib || { date: dateStr, count: 0 };
+    // Align to Monday on or before Jan 1
+    let iterDate = new Date(startDate);
+    while (iterDate.getUTCDay() !== 1) {
+      iterDate.setUTCDate(iterDate.getUTCDate() - 1);
     }
     
-    currentWeek[dayIdx] = dayData;
+    const weeksArr = [];
+    let currentWeek = new Array(7).fill(null);
     
-    if (dayIdx === 6) {
-      weeks.push(currentWeek);
-      currentWeek = new Array(7).fill(null);
-      if (iterDate >= endDate) break;
+    while (iterDate <= endDate || currentWeek.some(d => d !== null)) {
+      const dayIdx = (iterDate.getUTCDay() + 6) % 7;
+      const dateStr = iterDate.toISOString().split('T')[0];
+      
+      let dayData = null;
+      if (iterDate.toISOString().split('T')[0] > todayStr) {
+         dayData = { date: dateStr, count: null };
+      } else {
+         const contrib = contribMap.get(dateStr);
+         dayData = contrib || { date: dateStr, count: 0 };
+      }
+      
+      currentWeek[dayIdx] = dayData;
+      
+      if (dayIdx === 6) {
+        weeksArr.push(currentWeek);
+        currentWeek = new Array(7).fill(null);
+        if (iterDate >= endDate) break;
+      }
+      iterDate.setUTCDate(iterDate.getUTCDate() + 1);
     }
-    iterDate.setUTCDate(iterDate.getUTCDate() + 1);
-  }
+    return weeksArr;
+  }, [rawData, yearToUse]);
 
-  const getColor = (count) => {
-    if (count === null) return 'rgba(255,255,255,0.02)'; // Future
-    if (count === 0) return 'rgba(255,255,255,0.04)';
-    if (count < 3) return '#0e4429';
-    if (count < 6) return '#006d32';
-    if (count < 9) return '#26a641';
-    return '#39d353';
-  };
-
-  // Generate month labels
-  const monthLabels = [];
-  let lastMonth = -1;
-  weeks.forEach((week, wi) => {
-    const firstValidDay = week.find(d => d !== null);
-    if (firstValidDay) {
-      const dObj = new Date(firstValidDay.date);
-      if (dObj.getUTCFullYear() === yearToUse) {
-        const m = dObj.getUTCMonth();
-        if (m !== lastMonth) {
-          monthLabels.push({ name: months[m], index: wi });
-          lastMonth = m;
+  // Memoize month labels derivation
+  const monthLabels = useMemo(() => {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const labels = [];
+    let lastMonth = -1;
+    weeks.forEach((week, wi) => {
+      const firstValidDay = week.find(d => d !== null);
+      if (firstValidDay) {
+        const dObj = new Date(firstValidDay.date);
+        if (dObj.getUTCFullYear() === yearToUse) {
+          const m = dObj.getUTCMonth();
+          if (m !== lastMonth) {
+            labels.push({ name: months[m], index: wi });
+            lastMonth = m;
+          }
         }
       }
-    }
-  });
+    });
+    return labels;
+  }, [weeks, yearToUse]);
+
+  // Instantly dismiss active tooltips on window scroll to ensure no float drifts
+  useEffect(() => {
+    const handleScroll = () => {
+      if (leaveTimeoutRef.current) {
+        clearTimeout(leaveTimeoutRef.current);
+        leaveTimeoutRef.current = null;
+      }
+      setHoveredCell(null);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  // Dismiss tooltip on horizontal scrolling of the heatmap wrapper itself
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+    const handleScroll = () => {
+      if (leaveTimeoutRef.current) {
+        clearTimeout(leaveTimeoutRef.current);
+        leaveTimeoutRef.current = null;
+      }
+      setHoveredCell(null);
+    };
+    scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      scrollContainer.removeEventListener('scroll', handleScroll);
+    };
+  }, [weeks]);
 
   // Tap dismiss listener for mobile devices
   useEffect(() => {
     if (!isMobile || !hoveredCell) return;
     const handleOutsideClick = (e) => {
-      if (!e.target.closest('.contribution-cell')) {
+      if (!e.target.closest('.contribution-cell') && !e.target.closest('.mobile-tooltip-sheet')) {
         setHoveredCell(null);
       }
     };
@@ -366,65 +516,54 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
     };
   }, [isMobile, hoveredCell]);
 
-  // Unified Mouse & Touch event handlers
-  const handleCellEnter = (day, e) => {
+  // Stable event handlers wrapped in callbacks to prevent memoized child re-renders
+  const handleCellEnter = useCallback((day, e) => {
     if (!day || day.count === null) return;
+    
+    if (leaveTimeoutRef.current) {
+      clearTimeout(leaveTimeoutRef.current);
+      leaveTimeoutRef.current = null;
+    }
+    
     setHoveredCell(day);
-    
-    if (isMobile) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const cellCenter = rect.left + rect.width / 2;
-      const cellTop = rect.top;
-      
-      setIsFlipped(cellTop < 210);
-      setMousePos({
-        x: cellCenter,
-        y: cellTop
-      });
-    } else {
-      setIsFlipped(e.clientY < 210);
-      setMousePos({
-        x: e.clientX,
-        y: e.clientY
-      });
-    }
-  };
-
-  const handleCellMove = (e) => {
-    if (isMobile) return;
-    setIsFlipped(e.clientY < 210);
-    setMousePos({
-      x: e.clientX,
-      y: e.clientY
-    });
-  };
-
-  const handleCellLeave = () => {
-    if (!isMobile) {
-      setHoveredCell(null);
-    }
-  };
-
-  const handleCellClick = (day, e) => {
-    if (!isMobile) return;
-    if (!day || day.count === null) return;
-    
-    if (hoveredCell && hoveredCell.date === day.date) {
-      setHoveredCell(null);
-      return;
-    }
     
     const rect = e.currentTarget.getBoundingClientRect();
     const cellCenter = rect.left + rect.width / 2;
     const cellTop = rect.top;
+    const cellBottom = rect.bottom;
     
-    setIsFlipped(cellTop < 210);
-    setHoveredCell(day);
+    // Intelligently flip vertical orientation if the cell is near the top of the viewport
+    const shouldFlip = cellTop < 240;
+    
+    // Clamp horizontal position so it stays fully inside the viewport with a safety margin
+    const tooltipWidth = 240;
+    const margin = 16;
+    const clampedX = Math.max(tooltipWidth / 2 + margin, Math.min(window.innerWidth - (tooltipWidth / 2 + margin), cellCenter));
+    
+    // Snug positioning immediately above or below the cell boundary (exactly 6px gap)
+    const targetY = shouldFlip ? cellBottom + 6 : cellTop - 6;
+    
+    setIsFlipped(shouldFlip);
     setMousePos({
-      x: cellCenter,
-      y: cellTop
+      x: clampedX,
+      y: targetY
     });
-  };
+  }, []);
+
+  const handleCellLeave = useCallback(() => {
+    leaveTimeoutRef.current = setTimeout(() => {
+      setHoveredCell(null);
+    }, 50);
+  }, []);
+
+  const handleCellClick = useCallback((day, e) => {
+    if (!isMobile) return;
+    if (!day || day.count === null) return;
+    
+    e.stopPropagation();
+    
+    setHoveredCell(prev => (prev && prev.date === day.date) ? null : day);
+  }, [isMobile]);
 
   const activeDetails = hoveredCell ? getContributionDetails(hoveredCell.date, hoveredCell.count) : null;
 
@@ -433,10 +572,17 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
     : 'transparent';
 
   const activeNeonColor = hoveredCell && hoveredCell.count !== null
-    ? (hoveredCell.count === 0 ? '#8a5cf6' : (hoveredCell.count < 3 ? '#0e4429' : (hoveredCell.count < 6 ? '#006d32' : (hoveredCell.count < 9 ? '#26a641' : '#39d353'))))
+    ? (hoveredCell.count === 0 ? '#8a5cf6' : (hoveredCell.count < 3 ? '#39d353' : (hoveredCell.count < 6 ? '#26a641' : (hoveredCell.count < 9 ? '#006d32' : '#39d353'))))
     : 'transparent';
 
-  const isAnyCellHovered = hoveredCell !== null;
+  // Customized tier-based neon borders matching cell values
+  const getNeonBorder = (count) => {
+    if (count === 0) return 'rgba(138, 92, 246, 0.35)'; // soft purple glow
+    if (count < 3) return 'rgba(14, 68, 41, 0.4)';      // deep green
+    if (count < 6) return 'rgba(0, 109, 50, 0.5)';      // medium green
+    if (count < 9) return 'rgba(38, 166, 65, 0.7)';      // bright green
+    return 'rgba(57, 211, 83, 0.85)';                    // neon green
+  };
 
   return (
     <div ref={containerRef} style={{ marginTop: 30, marginBottom: 40 }}>
@@ -458,14 +604,18 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
         </div>
       </div>
 
-      <div style={{ 
-        background: 'rgba(255,255,255,0.02)', 
-        border: '1px solid rgba(255,255,255,0.06)', 
-        borderRadius: 16, 
-        padding: isMobile ? '12px 8px' : '18px 14px',
-        overflowX: 'auto',
-        position: 'relative'
-      }} className="hide-scrollbar">
+      <div 
+        ref={scrollContainerRef}
+        style={{ 
+          background: 'rgba(255,255,255,0.02)', 
+          border: '1px solid rgba(255,255,255,0.06)', 
+          borderRadius: 16, 
+          padding: isMobile ? '12px 8px' : '18px 14px',
+          overflowX: 'auto',
+          position: 'relative'
+        }} 
+        className="hide-scrollbar"
+      >
         <div style={{ minWidth: isMobile ? 750 : 'auto', display: 'flex', flexDirection: 'column', gap: 3 }}>
           {/* Month labels */}
           <div style={{ display: 'flex', height: 18, position: 'relative', marginBottom: 2 }}>
@@ -499,72 +649,14 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
             </div>
 
             {/* Grid */}
-            <div style={{ display: 'flex', gap: 3 }}>
-              {weeks.map((week, wi) => (
-                <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  {week.map((day, di) => {
-                    const delay = (wi * 0.012) + (di * 0.004);
-                    const breathDur = 3.0 + ((wi + di) % 7) * 0.4; // pseudo-random desynchronized breathing: 3.0s to 5.4s
-                    const cellColor = day ? getColor(day.count) : 'transparent';
-                    let glowColor = 'transparent';
-                    let glowRadius = '0px';
-                    if (day && day.count !== null) {
-                      if (day.count === 0) {
-                        glowColor = 'rgba(138, 92, 246, 0.35)'; // Sleek cyber purple glow
-                        glowRadius = '4px';
-                      } else if (day.count < 3) {
-                        glowColor = 'rgba(14, 68, 41, 0.8)';
-                        glowRadius = '5px';
-                      } else if (day.count < 6) {
-                        glowColor = 'rgba(0, 109, 50, 0.8)';
-                        glowRadius = '7px';
-                      } else if (day.count < 9) {
-                        glowColor = 'rgba(38, 166, 65, 0.9)';
-                        glowRadius = '9px';
-                      } else {
-                        glowColor = 'rgba(57, 211, 83, 1)'; // Vibrant neon green glow
-                        glowRadius = '12px';
-                      }
-                    }
-
-                    const isThisCellHovered = hoveredCell && hoveredCell.date === day?.date;
-
-                    return (
-                      <div
-                        key={di}
-                        className={`contribution-cell ${isInView ? 'cell-animate' : 'cell-initial'}`}
-                        style={{
-                          width: 10,
-                          height: 10,
-                          borderRadius: 2,
-                          background: cellColor,
-                          cursor: day && day.count !== null ? 'pointer' : 'default',
-                          '--delay': `${delay}s`,
-                          '--breath-dur': `${breathDur}s`,
-                          '--glow-color': glowColor,
-                          '--glow-radius': glowRadius,
-
-                          // Premium dynamic focus states
-                          opacity: day && day.count !== null
-                            ? (isAnyCellHovered ? (isThisCellHovered ? 1 : 0.35) : 1)
-                            : (isAnyCellHovered ? 0.2 : 0.4),
-                          transform: isThisCellHovered ? 'scale(1.35) translateY(-1px)' : 'scale(1)',
-                          zIndex: isThisCellHovered ? 50 : 1,
-                          boxShadow: isThisCellHovered ? `0 0 12px ${glowColor}, 0 0 4px ${glowColor}` : undefined,
-                          filter: isThisCellHovered ? 'brightness(1.35)' : undefined,
-                          transition: 'opacity 0.22s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease, filter 0.22s ease',
-                          willChange: 'transform, opacity, filter, box-shadow'
-                        }}
-                        onMouseEnter={(e) => handleCellEnter(day, e)}
-                        onMouseMove={handleCellMove}
-                        onMouseLeave={handleCellLeave}
-                        onClick={(e) => handleCellClick(day, e)}
-                      />
-                    );
-                  })}
-                </div>
-              ))}
-            </div>
+            <HeatmapGrid 
+              weeks={weeks}
+              isInView={isInView}
+              isMobile={isMobile}
+              handleCellEnter={handleCellEnter}
+              handleCellLeave={handleCellLeave}
+              handleCellClick={handleCellClick}
+            />
           </div>
 
           {/* Legend */}
@@ -579,134 +671,311 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
       </div>
 
       {/* Premium Glassmorphic Tooltip System */}
-      <AnimatePresence>
-        {activeDetails && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ 
-              opacity: 1, 
-              scale: 1,
-              x: Math.max(130, Math.min(window.innerWidth - 130, mousePos.x)),
-              y: isFlipped ? mousePos.y + 15 : mousePos.y - 15
-            }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{
-              type: 'spring',
-              stiffness: 420,
-              damping: 26,
-              mass: 0.25
-            }}
-            style={{
-              position: 'fixed',
-              left: 0,
-              top: 0,
-              pointerEvents: 'none',
-              zIndex: 99999,
-              transform: isFlipped ? 'translate(-50%, 0)' : 'translate(-50%, -100%)',
-            }}
-          >
-            <div style={{
-              background: 'rgba(10, 8, 18, 0.92)',
-              backdropFilter: 'blur(16px)',
-              WebkitBackdropFilter: 'blur(16px)',
-              border: `1px solid ${activeNeonColor}40`,
-              borderRadius: 14,
-              padding: '16px 18px',
-              boxShadow: `0 16px 40px rgba(0, 0, 0, 0.85), 0 0 15px ${activeGlowColor}, inset 0 1px 0 rgba(255, 255, 255, 0.1)`,
-              width: 240,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 12
-            }}>
-              {/* Header */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <span style={{ 
-                  fontFamily: 'Syne, sans-serif', 
-                  fontWeight: 800, 
-                  fontSize: 15, 
-                  color: activeNeonColor,
-                  textShadow: `0 0 8px ${activeNeonColor}44`,
+      {createPortal(
+        <AnimatePresence>
+          {activeDetails && (
+            isMobile ? (
+              /* Mobile Sliding Sheet */
+              <motion.div
+                className="mobile-tooltip-sheet"
+                initial={{ y: '100%', opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: '100%', opacity: 0 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+                style={{
+                  position: 'fixed',
+                  bottom: 24,
+                  left: 16,
+                  right: 16,
+                  zIndex: 99999,
+                  pointerEvents: 'auto',
+                }}
+              >
+                <div style={{
+                  background: 'rgba(10, 8, 18, 0.94)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: `1px solid ${getNeonBorder(activeDetails.count)}`,
+                  borderRadius: 16,
+                  padding: '20px 24px',
+                  boxShadow: `0 20px 50px rgba(0, 0, 0, 0.9), 0 0 20px ${activeGlowColor}, inset 0 1px 0 rgba(255, 255, 255, 0.1)`,
+                  width: '100%',
                   display: 'flex',
-                  alignItems: 'baseline',
-                  gap: 4
+                  flexDirection: 'column',
+                  gap: 14,
+                  position: 'relative'
                 }}>
-                  {activeDetails.count} {activeDetails.count === 1 ? 'Contribution' : 'Contributions'}
-                </span>
-                <span style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.45)', fontFamily: 'Syne, sans-serif' }}>
-                  {activeDetails.date}
-                </span>
-              </div>
-
-              {activeDetails.count > 0 ? (
-                <>
-                  {/* Divider */}
-                  <div style={{ height: 1, background: 'rgba(255, 255, 255, 0.08)' }} />
+                  {/* Swipe handle */}
+                  <div style={{
+                    width: 36,
+                    height: 4,
+                    borderRadius: 2,
+                    background: 'rgba(255, 255, 255, 0.15)',
+                    alignSelf: 'center',
+                    marginBottom: -4
+                  }} />
                   
-                  {/* Projects */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    <span style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.35)', fontFamily: 'Syne, sans-serif', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-                      Projects
+                  {/* Close Button */}
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setHoveredCell(null);
+                    }}
+                    style={{
+                      position: 'absolute',
+                      top: 16,
+                      right: 16,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: '50%',
+                      width: 26,
+                      height: 26,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'rgba(255, 255, 255, 0.5)',
+                      cursor: 'pointer',
+                      fontSize: 12,
+                      fontFamily: 'sans-serif'
+                    }}
+                  >
+                    ✕
+                  </button>
+
+                  {/* Header */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginTop: 4 }}>
+                    <span style={{ 
+                      fontFamily: 'Syne, sans-serif', 
+                      fontWeight: 800, 
+                      fontSize: 16, 
+                      color: activeNeonColor,
+                      textShadow: `0 0 8px ${activeNeonColor}44`,
+                      display: 'flex',
+                      alignItems: 'baseline',
+                      gap: 4
+                    }}>
+                      {activeDetails.count} {activeDetails.count === 1 ? 'Contribution' : 'Contributions'}
                     </span>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 6px', marginTop: 2 }}>
-                      {activeDetails.projects.map((proj) => (
-                        <span 
-                          key={proj} 
-                          style={{ 
-                            fontSize: 9.5, 
-                            background: 'rgba(255, 255, 255, 0.05)', 
-                            border: '1px solid rgba(255, 255, 255, 0.08)',
-                            borderRadius: 6,
-                            padding: '2px 6px',
-                            color: 'rgba(255, 255, 255, 0.8)',
-                            fontFamily: 'DM Sans, sans-serif',
-                            fontWeight: 500
-                          }}
-                        >
-                          {proj}
-                        </span>
-                      ))}
-                    </div>
+                    <span style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.45)', fontFamily: 'Syne, sans-serif' }}>
+                      {activeDetails.date}
+                    </span>
                   </div>
 
-                  {/* Commits */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <span style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.35)', fontFamily: 'Syne, sans-serif', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-                      Recent Commits
-                    </span>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginTop: 2 }}>
-                      {activeDetails.commits.map((c, ci) => (
-                        <div key={ci} style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-                          <span style={{ color: activeNeonColor, fontSize: 10, marginTop: -1 }}>•</span>
-                          <span style={{ 
-                            fontSize: 10.5, 
-                            color: 'rgba(255, 255, 255, 0.75)', 
-                            fontFamily: 'monospace', 
-                            lineHeight: 1.3,
-                            wordBreak: 'break-word'
-                          }}>
-                            {c.message}
-                          </span>
+                  {activeDetails.count > 0 ? (
+                    <>
+                      <div style={{ height: 1, background: 'rgba(255, 255, 255, 0.08)' }} />
+                      
+                      {/* Projects */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        <span style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.35)', fontFamily: 'Syne, sans-serif', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                          Projects
+                        </span>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 8px' }}>
+                          {activeDetails.projects.map((proj) => (
+                            <span 
+                              key={proj} 
+                              style={{ 
+                                fontSize: 10, 
+                                background: 'rgba(255, 255, 255, 0.05)', 
+                                border: '1px solid rgba(255, 255, 255, 0.08)',
+                                borderRadius: 6,
+                                padding: '3px 8px',
+                                color: 'rgba(255, 255, 255, 0.85)',
+                                fontFamily: 'DM Sans, sans-serif',
+                                fontWeight: 500
+                              }}
+                            >
+                              {proj}
+                            </span>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  {/* Divider */}
-                  <div style={{ height: 1, background: 'rgba(255, 255, 255, 0.08)' }} />
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, opacity: 0.6 }}>
-                    <span style={{ color: '#8a5cf6', fontSize: 11 }}>⚡</span>
-                    <span style={{ fontSize: 10.5, color: 'rgba(255, 255, 255, 0.5)', fontFamily: 'DM Sans, sans-serif', fontStyle: 'italic' }}>
-                      Resting & planning next sprints
+                      </div>
+
+                      {/* Commits */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        <span style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.35)', fontFamily: 'Syne, sans-serif', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                          Recent Commits
+                        </span>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                          {activeDetails.commits.map((c, ci) => (
+                            <div key={ci} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                              <span style={{ color: activeNeonColor, fontSize: 11, marginTop: -1 }}>•</span>
+                              <span style={{ 
+                                fontSize: 11, 
+                                color: 'rgba(255, 255, 255, 0.75)', 
+                                fontFamily: 'monospace', 
+                                lineHeight: 1.4,
+                                wordBreak: 'break-word'
+                              }}>
+                                {c.message}
+                              </span>
+                            </div>
+                          ))}
+                          {activeDetails.hasMoreCommits && (
+                            <span style={{ 
+                              fontSize: 10.5, 
+                              color: 'rgba(255, 255, 255, 0.3)', 
+                              fontFamily: 'DM Sans, sans-serif',
+                              fontStyle: 'italic',
+                              paddingLeft: 14,
+                              marginTop: 2
+                            }}>
+                              + {activeDetails.moreCommitsCount} more commits
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div style={{ height: 1, background: 'rgba(255, 255, 255, 0.08)' }} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, opacity: 0.7, padding: '4px 0' }}>
+                        <span style={{ color: '#8a5cf6', fontSize: 12 }}>⚡</span>
+                        <span style={{ fontSize: 11.5, color: 'rgba(255, 255, 255, 0.5)', fontFamily: 'DM Sans, sans-serif', fontStyle: 'italic' }}>
+                          Resting and planning next sprints
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </motion.div>
+            ) : (
+              /* Desktop Snapping Tooltip - GPU Composited translation completely avoids layout thrashing */
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.08 }}
+                style={{
+                  position: 'fixed',
+                  left: 0,
+                  top: 0,
+                  pointerEvents: 'none',
+                  zIndex: 99999,
+                  transform: `translate3d(${mousePos.x}px, ${mousePos.y}px, 0) ${isFlipped ? 'translate(-50%, 0)' : 'translate(-50%, -100%)'}`,
+                  willChange: 'transform',
+                }}
+              >
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: isFlipped ? 8 : -8 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: isFlipped ? 8 : -8 }}
+                  transition={{ duration: 0.12, ease: 'easeOut' }}
+                  style={{
+                    background: 'rgba(10, 8, 18, 0.95)',
+                    backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)',
+                    border: `1px solid ${getNeonBorder(activeDetails.count)}`,
+                    borderRadius: 14,
+                    padding: '16px 18px',
+                    boxShadow: `0 16px 40px rgba(0, 0, 0, 0.85), 0 0 15px ${activeGlowColor}, inset 0 1px 0 rgba(255, 255, 255, 0.1)`,
+                    width: 240,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 12
+                  }}
+                >
+                  {/* Header */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <span style={{ 
+                      fontFamily: 'Syne, sans-serif', 
+                      fontWeight: 800, 
+                      fontSize: 15, 
+                      color: activeNeonColor,
+                      textShadow: `0 0 8px ${activeNeonColor}44`,
+                      display: 'flex',
+                      alignItems: 'baseline',
+                      gap: 4
+                    }}>
+                      {activeDetails.count} {activeDetails.count === 1 ? 'Contribution' : 'Contributions'}
+                    </span>
+                    <span style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.45)', fontFamily: 'Syne, sans-serif' }}>
+                      {activeDetails.date}
                     </span>
                   </div>
-                </>
-              )}
-            </div>
-          </motion.div>
+
+                  {activeDetails.count > 0 ? (
+                    <>
+                      <div style={{ height: 1, background: 'rgba(255, 255, 255, 0.08)' }} />
+                      
+                      {/* Projects */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <span style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.35)', fontFamily: 'Syne, sans-serif', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                          Projects
+                        </span>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 6px', marginTop: 2 }}>
+                          {activeDetails.projects.map((proj) => (
+                            <span 
+                              key={proj} 
+                              style={{ 
+                                fontSize: 9.5, 
+                                background: 'rgba(255, 255, 255, 0.05)', 
+                                border: '1px solid rgba(255, 255, 255, 0.08)',
+                                borderRadius: 6,
+                                padding: '2px 6px',
+                                color: 'rgba(255, 255, 255, 0.8)',
+                                fontFamily: 'DM Sans, sans-serif',
+                                fontWeight: 500
+                              }}
+                            >
+                              {proj}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Commits */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        <span style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.35)', fontFamily: 'Syne, sans-serif', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                          Recent Commits
+                        </span>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginTop: 2 }}>
+                          {activeDetails.commits.map((c, ci) => (
+                            <div key={ci} style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                              <span style={{ color: activeNeonColor, fontSize: 10, marginTop: -1 }}>•</span>
+                              <span style={{ 
+                                fontSize: 10.5, 
+                                color: 'rgba(255, 255, 255, 0.75)', 
+                                fontFamily: 'monospace', 
+                                lineHeight: 1.3,
+                                wordBreak: 'break-word'
+                              }}>
+                                {c.message}
+                              </span>
+                            </div>
+                          ))}
+                          {activeDetails.hasMoreCommits && (
+                            <span style={{ 
+                              fontSize: 9.5, 
+                              color: 'rgba(255, 255, 255, 0.3)', 
+                              fontFamily: 'DM Sans, sans-serif',
+                              fontStyle: 'italic',
+                              paddingLeft: 10
+                            }}>
+                              + {activeDetails.moreCommitsCount} more commits
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div style={{ height: 1, background: 'rgba(255, 255, 255, 0.08)' }} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, opacity: 0.6 }}>
+                        <span style={{ color: '#8a5cf6', fontSize: 11 }}>⚡</span>
+                        <span style={{ fontSize: 10.5, color: 'rgba(255, 255, 255, 0.5)', fontFamily: 'DM Sans, sans-serif', fontStyle: 'italic' }}>
+                          Resting & planning next sprints
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </motion.div>
+              </motion.div>
+            )
+          )}
+        </AnimatePresence>,
+        document.body
         )}
-      </AnimatePresence>
     </div>
   );
 };

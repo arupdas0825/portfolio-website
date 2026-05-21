@@ -101,7 +101,8 @@ html.lenis, html.lenis body {
 .contribution-cell {
   opacity: 1;
   transform: scale(1);
-  will-change: transform, opacity;
+  will-change: transform, opacity, filter, box-shadow;
+  transition: opacity 0.15s ease, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease, filter 0.15s ease !important;
 }
 
 .cell-initial {
@@ -132,6 +133,27 @@ html.lenis, html.lenis body {
   }
 }
 
+/* ─── Hardware-Accelerated Heatmap Grid Focus States ─── */
+.heatmap-grid:hover .contribution-cell {
+  opacity: 0.35 !important;
+  box-shadow: none !important;
+  filter: brightness(0.85) !important;
+}
+
+.heatmap-grid:hover .contribution-cell.future-cell {
+  opacity: 0.12 !important;
+  box-shadow: none !important;
+  filter: brightness(0.7) !important;
+}
+
+.heatmap-grid .contribution-cell.active-cell:hover {
+  opacity: 1 !important;
+  transform: scale(1.4) translateY(-1px) !important;
+  z-index: 50 !important;
+  filter: brightness(1.35) !important;
+  box-shadow: 0 0 14px var(--glow-color), 0 0 4px var(--glow-color) !important;
+}
+
 /* Mobile Performance Optimization: Disable heavy box shadows on smaller screens */
 @media (max-width: 768px) {
   @keyframes cell-neural-breath {
@@ -144,5 +166,15 @@ html.lenis, html.lenis body {
       filter: brightness(1.08);
     }
   }
+  
+  .heatmap-grid:hover .contribution-cell {
+    opacity: 0.45 !important;
+  }
+  
+  .heatmap-grid .contribution-cell.active-cell:hover {
+    transform: scale(1.15) !important;
+    box-shadow: none !important;
+  }
 }
+
 
