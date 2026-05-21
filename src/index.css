@@ -77,8 +77,8 @@ html.lenis, html.lenis body {
 /* ─── Cinematic Heatmap Activation Animation ─── */
 @keyframes contribution-neural-activation {
   0% {
-    opacity: 0;
-    transform: scale(0.3);
+    opacity: 0.15;
+    transform: scale(1);
     box-shadow: 0 0 0 transparent;
   }
   60% {
@@ -99,14 +99,14 @@ html.lenis, html.lenis body {
 }
 
 .contribution-cell {
-  opacity: 0;
-  transform: scale(0.3);
+  opacity: 1;
+  transform: scale(1);
   will-change: transform, opacity;
 }
 
 .cell-initial {
-  opacity: 0;
-  transform: scale(0.3);
+  opacity: 0.15;
+  transform: scale(1);
 }
 
 .cell-animate {

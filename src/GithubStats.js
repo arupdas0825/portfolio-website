@@ -176,11 +176,9 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.1 });
 
-  if (!rawData || rawData.length === 0) return null;
-
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const yearToUse = selectedYear || 2026;
-  const contribMap = new Map(rawData.map(d => [d.date, d]));
+  const contribMap = new Map(rawData && rawData.length > 0 ? rawData.map(d => [d.date, d]) : []);
   const todayStr = new Date().toISOString().split('T')[0];
 
   // 1. Generate full year grid (Jan 1 to Dec 31)
