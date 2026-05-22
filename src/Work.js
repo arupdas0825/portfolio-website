@@ -346,9 +346,34 @@ const SecondaryProjectCard = React.memo(({ repo, idx, onClick }) => {
   );
 });
 
-/* ── 3. COLLEGE PROJECT CARD (Compact Premium Glassmorphic Layout) ── */
+/* ── 3. COLLEGE PROJECT CARD (Premium Cinematic Layout) ── */
 const CollegeProjectCard = React.memo(({ repo, idx, onClick }) => {
+  const videoRef = useRef(null);
+  const [isIntersecting, setIsIntersecting] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([e]) => setIsIntersecting(e.isIntersecting), { threshold: 0.1 });
+    observer.observe(el);
+    return () => observer.unobserve(el);
+  }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (isIntersecting) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [isIntersecting]);
+
+  const videoUrl = REPO_VIDEOS[repo.name] || (repo.name ? REPO_VIDEOS[repo.name.toLowerCase()] : null);
   const imageUrl = getRepoImage(repo);
+  const hasVideo = !!videoUrl;
+
   return (
     <motion.div
       layout
@@ -360,40 +385,68 @@ const CollegeProjectCard = React.memo(({ repo, idx, onClick }) => {
       style={{ animationDelay: `${(idx % 6) * 0.04}s` }}
       onClick={onClick}
     >
-      <div className="academic-tag-indicator">ACADEMIC PROJECT</div>
-      
-      {imageUrl ? (
-        <div className="academic-media-section">
-          <div className="academic-image" style={{ background: `url(${imageUrl}) center/cover no-repeat` }} />
-          <div className="academic-media-gradient-overlay" />
-        </div>
-      ) : (
-        <div className="academic-media-section">
+      <div className="academic-media-section">
+        {hasVideo ? (
+          <>
+            <video
+              ref={videoRef}
+              className={`academic-video ${videoLoaded ? 'loaded' : ''}`}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              onLoadedData={() => setVideoLoaded(true)}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            >
+              <source src={videoUrl} type="video/mp4" />
+            </video>
+            {imageUrl && (
+              <div
+                className={`academic-image placeholder ${videoLoaded ? 'fade-out' : ''}`}
+                style={{ background: `url(${imageUrl}) center/cover no-repeat`, position: 'absolute', inset: 0 }}
+              />
+            )}
+          </>
+        ) : imageUrl ? (
+          <div className="academic-image" style={{ background: `url(${imageUrl}) center/cover no-repeat`, width: '100%', height: '100%' }} />
+        ) : (
           <div className="academic-fallback" style={{ background: `linear-gradient(135deg, ${(langColors[repo.language] || langColors.default)}15, rgba(10,8,18,0.95))` }}>
             <div className="fallback-emoji">{getRepoEmoji(repo.language)}</div>
           </div>
-        </div>
-      )}
-
-      <div className="college-header">
-        <div className="college-title-group">
-          <h4 className="college-title">{repo.name}</h4>
-        </div>
-        <span className="college-icon-emoji">{getRepoEmoji(repo.language)}</span>
-      </div>
-      <p className="college-desc">{repo.description || 'No description provided.'}</p>
-      <div className="college-footer">
-        {repo.language && (
-          <span className="college-lang">
-            <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: langColors[repo.language] || langColors.default, marginRight: 6 }} />
-            {repo.language}
-          </span>
         )}
-        <div className="college-links" onClick={e => e.stopPropagation()}>
-          <a href={repo.html_url} target="_blank" rel="noreferrer" className="premium-action-link github" style={{ padding: '6px 12px', fontSize: '0.72rem', gap: '5px' }} title="Code"><LucideGithub size={11} /> Code</a>
-          {(repo.homepage || REPO_HOMEPAGES[repo.name]) && (
-            <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="premium-action-link demo" style={{ padding: '6px 12px', fontSize: '0.72rem', gap: '5px' }} title="Live Demo"><LucideExternalLink size={11} /> Demo</a>
+        <div className="academic-media-gradient-overlay" />
+        
+        {/* Floating Academic tag badge */}
+        <div className="academic-tag-indicator-floating">ACADEMIC</div>
+        
+        {/* Star Badge */}
+        <div className="academic-meta-badges">
+          <div className="academic-meta-badge"><LucideStar size={10} /> {repo.stargazers_count}</div>
+        </div>
+      </div>
+
+      <div className="college-info-section">
+        <div className="college-header">
+          <div className="college-title-group">
+            <h4 className="college-title">{repo.name}</h4>
+          </div>
+          <span className="college-icon-emoji">{getRepoEmoji(repo.language)}</span>
+        </div>
+        <p className="college-desc">{repo.description || 'No description provided.'}</p>
+        <div className="college-footer">
+          {repo.language && (
+            <span className="college-lang">
+              <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: langColors[repo.language] || langColors.default, marginRight: 6 }} />
+              {repo.language}
+            </span>
           )}
+          <div className="college-links" onClick={e => e.stopPropagation()}>
+            <a href={repo.html_url} target="_blank" rel="noreferrer" className="premium-action-link github" style={{ padding: '6px 12px', fontSize: '0.72rem', gap: '5px' }} title="Code"><LucideGithub size={11} /> Code</a>
+            {(repo.homepage || REPO_HOMEPAGES[repo.name]) && (
+              <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="premium-action-link demo" style={{ padding: '6px 12px', fontSize: '0.72rem', gap: '5px' }} title="Live Demo"><LucideExternalLink size={11} /> Demo</a>
+            )}
+          </div>
         </div>
       </div>
       <div className="academic-card-ambient-glow" />
