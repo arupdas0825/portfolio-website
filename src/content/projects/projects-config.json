@@ -14,13 +14,13 @@
     "ai-image-caption-generator",
     "sahasrajit-foundation",
     "client-portfolio",
-    "streamnest",
-    "Space-Combat-Game"
+    "streamnest"
   ],
 
   "college": [
     "scientific-calculator",
     "quiz-web",
-    "algorithm-visualizer"
+    "algorithm-visualizer",
+    "Space-Combat-Game"
   ]
 }
