@@ -36,6 +36,7 @@ const REPO_IMAGES = {
   'LocalCare-Finder-Android': '/LocalCare-Finder-Android.jpeg',
   'NEURAL-RIFT': '/NEURAL-RIFT.png',
   'HyperLane': '/HyperLane.jpeg',
+  'Space-Combat-Game': '/Space-Combat-Game.png',
 };
 
 const REPO_VIDEOS = {
@@ -43,6 +44,7 @@ const REPO_VIDEOS = {
   'streamnest': '/videos/streamnest.mp4',
   'HireSight-AI': '/videos/HireSight-AI.mp4',
   'EverBond-Wealth': '/videos/everbond-wealth.mp4',
+  'Space-Combat-Game': '/videos/Space-Combat-Game.mp4',
 };
 
 const REPO_HOMEPAGES = {
@@ -131,6 +133,13 @@ const FALLBACK_REPOS = [
     description: 'Study Abroad Execution Platform for Indian students wanting to study in Germany, USA or Canada. Powered by Gemini AI.',
     language: 'JavaScript', stargazers_count: 5, forks_count: 1,
     html_url: 'https://github.com/arupdas0825/studytra', homepage: '',
+    languages_url: '',
+  },
+  {
+    id: 10, name: 'Space-Combat-Game', fork: false,
+    description: 'A 3D space flight combat simulation game built with HTML Canvas, WebGL, and custom particle engines.',
+    language: 'JavaScript', stargazers_count: 5, forks_count: 0,
+    html_url: 'https://github.com/arupdas0825/Space-Combat-Game', homepage: '',
     languages_url: '',
   },
 ];

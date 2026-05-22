@@ -34,6 +34,7 @@ const REPO_IMAGES = {
   'LocalCare-Finder-Android': '/LocalCare-Finder-Android.jpeg',
   'NEURAL-RIFT': '/NEURAL-RIFT.png',
   'HyperLane': '/HyperLane.jpeg',
+  'Space-Combat-Game': '/Space-Combat-Game.png',
 };
 
 const REPO_VIDEOS = {
@@ -41,6 +42,7 @@ const REPO_VIDEOS = {
   'streamnest': '/videos/streamnest.mp4',
   'HireSight-AI': '/videos/HireSight-AI.mp4',
   'EverBond-Wealth': '/videos/everbond-wealth.mp4',
+  'Space-Combat-Game': '/videos/Space-Combat-Game.mp4',
 };
 
 const REPO_HOMEPAGES = {
@@ -76,6 +78,7 @@ const FALLBACK_REPOS = [
   { id: 7, name: 'Online-Examination-System-Java', language: 'Java', stargazers_count: 1, forks_count: 0, description: 'Scalable Java web app for online assessment with secure auth and auto-evaluation.', html_url: 'https://github.com/arupdas0825/Online-Examination-System-Java', homepage: '' },
   { id: 8, name: 'localcare-finder', language: 'CSS', stargazers_count: 1, forks_count: 0, description: 'Public utility web app to locate nearby healthcare services.', html_url: 'https://github.com/arupdas0825/localcare-finder', homepage: '' },
   { id: 9, name: 'studytra', language: 'JavaScript', stargazers_count: 5, forks_count: 1, description: 'Study Abroad platform for Indian students. Powered by Gemini AI.', html_url: 'https://github.com/arupdas0825/studytra', homepage: '' },
+  { id: 10, name: 'Space-Combat-Game', language: 'JavaScript', stargazers_count: 5, forks_count: 0, description: 'A 3D space flight combat simulation game built with HTML Canvas, WebGL, and custom particle engines.', html_url: 'https://github.com/arupdas0825/Space-Combat-Game', homepage: '' },
 ];
 
 /* ── 1. MAJOR PROJECT CARD FOR SUBPAGE ── */
