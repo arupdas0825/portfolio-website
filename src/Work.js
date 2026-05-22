@@ -41,7 +41,7 @@ const REPO_IMAGES = {
 const REPO_VIDEOS = {
   'portfolio-website': '/videos/portfolio-website.mp4',
   'streamnest': '/videos/streamnest.mp4',
-  'HireSight-AI': '/videos/hiresight-ai.mp4',
+  'HireSight-AI': '/videos/HireSight-AI.mp4',
   'EverBond-Wealth': '/videos/everbond-wealth.mp4',
 };
 
