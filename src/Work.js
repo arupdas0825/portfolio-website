@@ -489,7 +489,7 @@ const Work = () => {
   const [isMobile, setIsMobile] = useState(isMobileDevice);
   const navigate = useNavigate();
 
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('Major');
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
 
   useEffect(() => {
@@ -497,34 +497,6 @@ const Work = () => {
     window.addEventListener('resize', handleResize, { passive: true });
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  const getInitialLimit = () => {
-    if (windowWidth < 640) return 3;
-    if (windowWidth < 992) return 4;
-    return 6;
-  };
-
-  const initialLimit = getInitialLimit();
-
-  const handleToggleExpand = () => {
-    const nextState = !isExpanded;
-    setIsExpanded(nextState);
-    if (nextState) {
-      setTimeout(() => {
-        window.scrollBy({
-          top: 280,
-          behavior: 'smooth'
-        });
-      }, 150);
-    } else {
-      setTimeout(() => {
-        const el = document.getElementById('work');
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 50);
-    }
-  };
 
   useEffect(() => {
     const onResize = () => setIsMobile(isMobileDevice());
@@ -654,9 +626,6 @@ const Work = () => {
 
   const categorized = categorizeRepos();
   const hasContent = categorized.major.length > 0 || categorized.secondary.length > 0 || categorized.college.length > 0;
-  
-  const totalMajorProjects = categorized.major.length;
-  const visibleMajor = isExpanded ? categorized.major : categorized.major.slice(0, initialLimit);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -665,7 +634,7 @@ const Work = () => {
     );
     fadeRefs.current.forEach(el => el && observer.observe(el));
     return () => observer.disconnect();
-  }, [repos, filter]);
+  }, [repos, filter, activeCategory]);
 
   const addRef = el => { if (el && !fadeRefs.current.includes(el)) fadeRefs.current.push(el); };
 
@@ -692,6 +661,27 @@ const Work = () => {
           </div>
         )}
 
+        {/* Category Filters */}
+        {!loading && (
+          <div className="work-category-tabs-container fade-in" ref={addRef}>
+            <div className="work-category-tabs">
+              {[
+                { id: 'Major', label: 'Major Projects', count: categorized.major.length },
+                { id: 'Secondary', label: 'Secondary Projects', count: categorized.secondary.length },
+                { id: 'Academic', label: 'Academic Projects', count: categorized.college.length }
+              ].map(cat => (
+                <button
+                  key={cat.id}
+                  className={`work-category-tab ${activeCategory === cat.id ? 'active' : ''}`}
+                  onClick={() => setActiveCategory(cat.id)}
+                >
+                  {cat.label} <span style={{ marginLeft: '6px', fontSize: '0.75rem', opacity: 0.6 }}>({cat.count})</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Loading */}
         {loading && (
           <div className="work-loading">
@@ -700,74 +690,45 @@ const Work = () => {
           </div>
         )}
 
-        {/* Grid Categories */}
+        {/* Grid Categories with framer-motion transitions */}
         {!loading && (
           <>
-            <AnimatePresence mode="popLayout">
-              {/* Category 1: Major Projects */}
-              {categorized.major.length > 0 && (
-                <div className="work-category-section fade-in" ref={addRef}>
-                  <div className="work-category-header">
-                    <h3 className="work-category-title">
-                      ✦ Major <span>Projects</span>
-                      <span className="work-category-count">{categorized.major.length}</span>
-                    </h3>
-                    <div className="work-category-line" />
-                  </div>
-                  <motion.div layout="position" className="projects-grid">
-                    <AnimatePresence mode="popLayout">
-                      {visibleMajor.map((repo, idx) => (
-                        <MajorProjectCard
-                          key={repo.id}
-                          repo={repo}
-                          idx={idx}
-                          isMobile={isMobile}
-                          onClick={() => setSelected(repo)}
-                        />
-                      ))}
-                    </AnimatePresence>
-                  </motion.div>
-                  
-                  {/* Centralized Premium Show More Button (Shown only when collapsed) */}
-                  {!isExpanded && (
-                    <div className="major-expand-btn-container">
-                      <motion.button
-                        className="major-expand-btn"
-                        onClick={handleToggleExpand}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        layoutId="expand-toggle-btn"
-                      >
-                        <span className="major-expand-btn-shimmer" />
-                        <span>Explore More Work</span>
-                        <span className="major-expand-btn-icon">
-                          <LucideChevronDown size={16} />
-                        </span>
-                      </motion.button>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Curated Secondary & College Categories — Staggered and sequentially revealed when expanded */}
-              {isExpanded && (
-                <motion.div
-                  variants={containerVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="hidden"
-                  style={{ width: '100%' }}
-                >
-                  {/* Category 2: Secondary Projects */}
-                  {categorized.secondary.length > 0 && (
-                    <motion.div variants={sectionVariants} className="work-category-section fade-in" ref={addRef}>
-                       <div className="work-category-header">
-                        <h3 className="work-category-title">
-                          ✦ Secondary <span>Architectures</span>
-                          <span className="work-category-count">{categorized.secondary.length}</span>
-                        </h3>
-                        <div className="work-category-line" />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeCategory}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.25, ease: 'easeInOut' }}
+                style={{ width: '100%' }}
+              >
+                {/* Category 1: Major Projects */}
+                {activeCategory === 'Major' && (
+                  <div className="work-category-section">
+                    {categorized.major.length > 0 ? (
+                      <div className="projects-grid">
+                        {categorized.major.map((repo, idx) => (
+                          <MajorProjectCard
+                            key={repo.id}
+                            repo={repo}
+                            idx={idx}
+                            isMobile={isMobile}
+                            onClick={() => setSelected(repo)}
+                          />
+                        ))}
                       </div>
+                    ) : (
+                      <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '48px 0' }}>
+                        No Major projects found for the selected language.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Category 2: Secondary Projects */}
+                {activeCategory === 'Secondary' && (
+                  <div className="work-category-section">
+                    {categorized.secondary.length > 0 ? (
                       <div className="secondary-projects-grid">
                         {categorized.secondary.map((repo, idx) => (
                           <SecondaryProjectCard
@@ -778,19 +739,18 @@ const Work = () => {
                           />
                         ))}
                       </div>
-                    </motion.div>
-                  )}
+                    ) : (
+                      <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '48px 0' }}>
+                        No Secondary projects found for the selected language.
+                      </p>
+                    )}
+                  </div>
+                )}
 
-                  {/* Category 3: College Projects */}
-                  {categorized.college.length > 0 && (
-                    <motion.div variants={sectionVariants} className="work-category-section fade-in" ref={addRef}>
-                      <div className="work-category-header">
-                        <h3 className="work-category-title">
-                          ✦ Academic <span>Projects</span>
-                          <span className="work-category-count">{categorized.college.length}</span>
-                        </h3>
-                        <div className="work-category-line" />
-                      </div>
+                {/* Category 3: Academic Projects */}
+                {activeCategory === 'Academic' && (
+                  <div className="work-category-section">
+                    {categorized.college.length > 0 ? (
                       <div className="college-projects-grid">
                         {categorized.college.map((repo, idx) => (
                           <CollegeProjectCard
@@ -801,31 +761,14 @@ const Work = () => {
                           />
                         ))}
                       </div>
-                    </motion.div>
-                  )}
-
-                  {/* Centralized Premium Show Less Button (Shown at the very bottom when expanded) */}
-                  <motion.div 
-                    variants={sectionVariants} 
-                    className="major-expand-btn-container" 
-                    style={{ marginTop: '48px', marginBottom: '16px' }}
-                  >
-                    <motion.button
-                      className="major-expand-btn expanded"
-                      onClick={handleToggleExpand}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      layoutId="expand-toggle-btn"
-                    >
-                      <span className="major-expand-btn-shimmer" />
-                      <span>Show Less</span>
-                      <span className="major-expand-btn-icon" style={{ transform: 'rotate(180deg)', display: 'inline-flex' }}>
-                        <LucideChevronDown size={16} />
-                      </span>
-                    </motion.button>
-                  </motion.div>
-                </motion.div>
-              )}
+                    ) : (
+                      <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '48px 0' }}>
+                        No Academic projects found for the selected language.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </motion.div>
             </AnimatePresence>
 
             {!hasContent && (
@@ -834,24 +777,20 @@ const Work = () => {
               </p>
             )}
 
-            {/* ── Visual Footer Buttons ── */}
-            <div className="work-see-more fade-in" ref={addRef} style={{ marginTop: '56px' }}>
-              <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <motion.button
-                  className="work-see-more-btn"
-                  onClick={() => navigate('/work')}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                >
-                  Explore Interactive Work Hub
-                  <LucideArrowRight size={16} />
-                </motion.button>
-
-                <a href={`https://github.com/${GITHUB_USERNAME}?tab=repositories`} target="_blank" rel="noreferrer" className="btn-secondary" style={{ display: 'inline-flex', alignItems: 'center' }}>
-                  <LucideGithub size={16} style={{ marginRight: 8 }} /> View All on GitHub
-                </a>
-              </div>
+            {/* ── Visual Footer Centered GitHub Button ── */}
+            <div className="work-see-more fade-in" ref={addRef} style={{ marginTop: '48px', display: 'flex', justifyContent: 'center' }}>
+              <motion.a
+                href={`https://github.com/${GITHUB_USERNAME}?tab=repositories`}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-secondary"
+                style={{ display: 'inline-flex', alignItems: 'center' }}
+                whileHover={{ scale: 1.03, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              >
+                <LucideGithub size={16} style={{ marginRight: 8 }} /> View All on GitHub
+              </motion.a>
             </div>
           </>
         )}
@@ -864,3 +803,4 @@ const Work = () => {
 };
 
 export default Work;
+

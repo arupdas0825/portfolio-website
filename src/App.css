@@ -5079,7 +5079,104 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   transform: rotate(180deg);
 }
 
+/* ===== WORK CATEGORY TABS (Upgrade) ===== */
+.work-category-tabs-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 48px;
+  width: 100%;
+  padding: 0 16px;
+}
 
+.work-category-tabs {
+  display: flex;
+  background: rgba(15, 10, 28, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 100px;
+  padding: 6px;
+  gap: 6px;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
 
+.work-category-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px;
+  border-radius: 100px;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  z-index: 1;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.03em;
+}
 
+.work-category-tab:hover {
+  color: var(--white);
+  border-color: rgba(138, 92, 246, 0.3);
+  text-shadow: 0 0 8px rgba(138, 92, 246, 0.6);
+}
+
+/* Inactive tabs hover soft glow */
+.work-category-tab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 100px;
+  background: radial-gradient(circle, rgba(138, 92, 246, 0.15) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.work-category-tab:hover::before {
+  opacity: 1;
+}
+
+/* Active tab styling */
+.work-category-tab.active {
+  color: var(--white);
+  background: rgba(138, 92, 246, 0.15);
+  box-shadow: 
+    0 0 20px rgba(138, 92, 246, 0.25),
+    inset 0 0 12px rgba(138, 92, 246, 0.2);
+  border: 1px solid rgba(138, 92, 246, 0.5);
+  text-shadow: 0 0 10px rgba(138, 92, 246, 0.8);
+}
+
+/* Mobile responsive scrollable pills */
+@media (max-width: 768px) {
+  .work-category-tabs-container {
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Hide standard Firefox scrollbar */
+    padding: 4px 16px;
+  }
+  
+  .work-category-tabs-container::-webkit-scrollbar {
+    display: none; /* Hide Safari and Chrome scrollbar */
+  }
+  
+  .work-category-tabs {
+    flex-shrink: 0;
+    border-radius: 30px;
+    padding: 4px;
+    white-space: nowrap;
+    width: max-content;
+  }
+  
+  .work-category-tab {
+    padding: 8px 18px;
+    font-size: 0.8rem;
+  }
+}
 
