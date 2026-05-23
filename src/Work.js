@@ -145,7 +145,7 @@ const FALLBACK_REPOS = [
 ];
 
 /* ── 1. MAJOR PROJECT CARD (Largest Premium Grid Layout) ── */
-const MajorProjectCard = React.memo(({ repo, idx, isMobile, onClick }) => {
+export const MajorProjectCard = React.memo(({ repo, idx, isMobile, onClick }) => {
   const videoRef = useRef(null);
   const cardRef = useRef(null);
   const [isIntersecting, setIsIntersecting] = useState(false);
@@ -260,7 +260,7 @@ const MajorProjectCard = React.memo(({ repo, idx, isMobile, onClick }) => {
 });
 
 /* ── 2. SECONDARY PROJECT CARD (Medium Visual Grid Layout) ── */
-const SecondaryProjectCard = React.memo(({ repo, idx, onClick }) => {
+export const SecondaryProjectCard = React.memo(({ repo, idx, onClick }) => {
   const videoRef = useRef(null);
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
@@ -347,7 +347,7 @@ const SecondaryProjectCard = React.memo(({ repo, idx, onClick }) => {
 });
 
 /* ── 3. COLLEGE PROJECT CARD (Premium Cinematic Layout) ── */
-const CollegeProjectCard = React.memo(({ repo, idx, onClick }) => {
+export const CollegeProjectCard = React.memo(({ repo, idx, onClick }) => {
   const videoRef = useRef(null);
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
@@ -711,17 +711,32 @@ const Work = () => {
                 {activeCategory === 'Major' && (
                   <div className="work-category-section">
                     {categorized.major.length > 0 ? (
-                      <div className="projects-grid">
-                        {categorized.major.map((repo, idx) => (
-                          <MajorProjectCard
-                            key={repo.id}
-                            repo={repo}
-                            idx={idx}
-                            isMobile={isMobile}
-                            onClick={() => setSelected(repo)}
-                          />
-                        ))}
-                      </div>
+                      <>
+                        <div className="projects-grid">
+                          {(isMobile ? categorized.major.slice(0, 3) : categorized.major).map((repo, idx) => (
+                            <MajorProjectCard
+                              key={repo.id}
+                              repo={repo}
+                              idx={idx}
+                              isMobile={isMobile}
+                              onClick={() => setSelected(repo)}
+                            />
+                          ))}
+                        </div>
+                        {isMobile && categorized.major.length > 3 && (
+                          <div className="work-explore-more-btn-container">
+                            <motion.button
+                              className="work-explore-more-btn"
+                              onClick={() => navigate('/work/major-projects')}
+                              whileHover={{ scale: 1.03 }}
+                              whileTap={{ scale: 0.97 }}
+                            >
+                              Explore More Major Projects
+                              <LucideArrowRight size={16} />
+                            </motion.button>
+                          </div>
+                        )}
+                      </>
                     ) : (
                       <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '48px 0' }}>
                         No Major projects found for the selected language.
@@ -734,16 +749,31 @@ const Work = () => {
                 {activeCategory === 'Secondary' && (
                   <div className="work-category-section">
                     {categorized.secondary.length > 0 ? (
-                      <div className="secondary-projects-grid">
-                        {categorized.secondary.map((repo, idx) => (
-                          <SecondaryProjectCard
-                            key={repo.id}
-                            repo={repo}
-                            idx={idx}
-                            onClick={() => setSelected(repo)}
-                          />
-                        ))}
-                      </div>
+                      <>
+                        <div className="secondary-projects-grid">
+                          {(isMobile ? categorized.secondary.slice(0, 3) : categorized.secondary).map((repo, idx) => (
+                            <SecondaryProjectCard
+                              key={repo.id}
+                              repo={repo}
+                              idx={idx}
+                              onClick={() => setSelected(repo)}
+                            />
+                          ))}
+                        </div>
+                        {isMobile && categorized.secondary.length > 3 && (
+                          <div className="work-explore-more-btn-container">
+                            <motion.button
+                              className="work-explore-more-btn"
+                              onClick={() => navigate('/work/secondary-projects')}
+                              whileHover={{ scale: 1.03 }}
+                              whileTap={{ scale: 0.97 }}
+                            >
+                              Explore More Secondary Projects
+                              <LucideArrowRight size={16} />
+                            </motion.button>
+                          </div>
+                        )}
+                      </>
                     ) : (
                       <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '48px 0' }}>
                         No Secondary projects found for the selected language.
@@ -756,16 +786,31 @@ const Work = () => {
                 {activeCategory === 'Academic' && (
                   <div className="work-category-section">
                     {categorized.college.length > 0 ? (
-                      <div className="college-projects-grid">
-                        {categorized.college.map((repo, idx) => (
-                          <CollegeProjectCard
-                            key={repo.id}
-                            repo={repo}
-                            idx={idx}
-                            onClick={() => setSelected(repo)}
-                          />
-                        ))}
-                      </div>
+                      <>
+                        <div className="college-projects-grid">
+                          {(isMobile ? categorized.college.slice(0, 3) : categorized.college).map((repo, idx) => (
+                            <CollegeProjectCard
+                              key={repo.id}
+                              repo={repo}
+                              idx={idx}
+                              onClick={() => setSelected(repo)}
+                            />
+                          ))}
+                        </div>
+                        {isMobile && categorized.college.length > 3 && (
+                          <div className="work-explore-more-btn-container">
+                            <motion.button
+                              className="work-explore-more-btn"
+                              onClick={() => navigate('/work/academic-projects')}
+                              whileHover={{ scale: 1.03 }}
+                              whileTap={{ scale: 0.97 }}
+                            >
+                              Explore More Academic Projects
+                              <LucideArrowRight size={16} />
+                            </motion.button>
+                          </div>
+                        )}
+                      </>
                     ) : (
                       <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '48px 0' }}>
                         No Academic projects found for the selected language.

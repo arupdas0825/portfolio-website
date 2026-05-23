@@ -19,6 +19,7 @@ const Contact = lazy(() => import('./Contact'));
 const AdminPanel = lazy(() => import('./admin/AdminPanel'));
 const CustomCursor = lazy(() => import('./CustomCursor'));
 const WorkPage = lazy(() => import('./WorkPage'));
+const WorkCategoryPage = lazy(() => import('./WorkCategoryPage'));
 const PhotographyGallery = lazy(() => import('./PhotographyGallery'));
 const PublicationsPage = lazy(() => import('./PublicationsPage'));
 const AIPlaybackAssistant = lazy(() => import('./ai-playback/AIPlaybackAssistant'));
@@ -146,6 +147,7 @@ export default function App() {
                   element={<PortfolioHome onAdminOpen={() => setAdminOpen(true)} />}
                 />
                 <Route path="/work" element={<WorkPage />} />
+                <Route path="/work/:categorySlug" element={<WorkCategoryPage />} />
                 <Route path="/photography-gallery" element={<PhotographyGallery />} />
                 <Route path="/publications" element={<PublicationsPage />} />
                 <Route path="/certificates" element={<CertificatesPage />} />
