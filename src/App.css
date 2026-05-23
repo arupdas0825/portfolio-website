@@ -5292,4 +5292,77 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   transform: translateX(4px);
 }
 
+/* ===== PREMIUM CATEGORIZED CERTIFICATE CARDS ===== */
+.cert-card-compact {
+  background: rgba(15, 10, 28, 0.6) !important;
+  border-radius: 20px !important;
+  padding: 20px !important;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.4s ease, box-shadow 0.4s ease !important;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.cert-card-compact:hover {
+  transform: translateY(-6px) scale(1.01) !important;
+  border-color: rgba(138, 92, 246, 0.4) !important;
+}
+
+.cert-compact-img-wrap {
+  border-radius: 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  aspect-ratio: 1.5 / 1 !important;
+  transition: border-color 0.3s ease !important;
+}
+
+.cert-card-compact:hover .cert-compact-img-wrap {
+  border-color: rgba(0, 242, 254, 0.3) !important;
+}
+
+/* Cinematic overlay zoom hint icon */
+.cert-preview-overlay {
+  background: rgba(15, 10, 28, 0.7) !important;
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  color: #fff !important;
+}
+
+.cert-compact-img-wrap:hover .cert-preview-overlay {
+  opacity: 1 !important;
+}
+
+/* Dual button styling */
+.cert-card-actions .cert-compact-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px !important;
+  border-radius: 12px !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+  font-family: 'Syne', sans-serif !important;
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important;
+}
+
+.cert-card-actions .cert-compact-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 15px rgba(138, 92, 246, 0.25) !important;
+}
+
+.cert-card-actions .cert-compact-btn.verify {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.cert-card-actions .cert-compact-btn.verify:hover {
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: #fff !important;
+}
+
 

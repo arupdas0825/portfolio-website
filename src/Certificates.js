@@ -3,21 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { LucideExternalLink, LucideCheckCircle, LucideMaximize2, LucideX } from 'lucide-react';
+import ALL_CERTIFICATES from './data/certificates.json';
 
 gsap.registerPlugin(ScrollTrigger);
-
-const ALL_CERTIFICATES = [
-  {
-    id: 1,
-    title: "“The Prompters” at TEXIBITION 2K26",
-    issuer: "Brainware University Tech Club",
-    date: "2026",
-    image: "/certificate .jpeg",
-    description: "Participated in “The Prompters” at TEXIBITION 2K26, organized by Brainware University Tech Club and Institution’s Innovation Council. Contributed innovative prompting ideas, showcased enthusiasm for AI-driven creativity, and actively engaged in collaborative tech discussions and activities.",
-    tags: ["Generative AI", "Prompt Engineering", "Tech Club"],
-    color: "#8a5cf6",
-  }
-];
 
 const IS_TOUCH = typeof window !== 'undefined' &&
   (window.matchMedia('(pointer: coarse)').matches ||
@@ -25,6 +14,7 @@ const IS_TOUCH = typeof window !== 'undefined' &&
    navigator.maxTouchPoints > 0);
 
 export default function Certificates({ featuredOnly = false }) {
+  const [activeTab, setActiveTab] = useState('Academic Certifications');
   const [selectedCert, setSelectedCert] = useState(null);
   const titleRef = useRef(null);
   const navigate = useNavigate();
@@ -38,99 +28,199 @@ export default function Certificates({ featuredOnly = false }) {
     );
   }, []);
 
-  /* Responsive preview limits:
-     Mobile (touch): show 1 card
-     Desktop: show up to 4 cards */
-  const MOBILE_LIMIT = 1;
-  const DESKTOP_LIMIT = 4;
-  const previewLimit = IS_TOUCH ? MOBILE_LIMIT : DESKTOP_LIMIT;
+  const categories = [
+    'Academic Certifications',
+    'Professional Experience',
+    'Industry Certifications'
+  ];
+
+  // Helper to filter and sort certificates dynamically
+  const getProcessedCertificates = () => {
+    const filtered = ALL_CERTIFICATES.filter(cert => {
+      const cat = cert.category || "Industry Certifications";
+      return cat === activeTab;
+    });
+
+    // Dynamic sorting: priority first (smaller number = higher priority), then descending by date
+    return filtered.sort((a, b) => {
+      if (a.priority !== undefined && b.priority !== undefined) {
+        if (a.priority !== b.priority) {
+          return a.priority - b.priority;
+        }
+      }
+      const yearA = parseInt(a.date) || 0;
+      const yearB = parseInt(b.date) || 0;
+      return yearB - yearA;
+    });
+  };
+
+  const processedCerts = getProcessedCertificates();
   
-  // By default (on homepage), we use featuredOnly logic or similar
-  const displayCerts = featuredOnly ? ALL_CERTIFICATES.slice(0, previewLimit) : ALL_CERTIFICATES.slice(0, previewLimit);
-  const hasMore = ALL_CERTIFICATES.length > previewLimit;
+  // Limiter for homepage previews (responsive limits)
+  const MOBILE_LIMIT = 2;
+  const DESKTOP_LIMIT = 3;
+  const limit = IS_TOUCH ? MOBILE_LIMIT : DESKTOP_LIMIT;
+  
+  const displayCerts = featuredOnly ? processedCerts.slice(0, limit) : processedCerts;
+  const hasMore = featuredOnly && processedCerts.length > limit;
 
   return (
     <section id="certificates" className="page-section cert-section">
       <div className="section-inner">
-        {/* ── Header ─────────────────────────────────────────────── */}
+        {/* Header */}
         <span className="section-label">✦ CREDENTIALS & ACHIEVEMENTS ✦</span>
         <h2 className="section-title" ref={titleRef}>
           Professional <span>Certifications</span>
         </h2>
         <div className="section-line" />
         <p className="section-sub">
-          Continuous learning and professional development through globally recognized certifications.
+          Continuous learning, industry credentials, and academic achievements showcased in a futuristic portfolio hub.
         </p>
 
-        {/* ── Compact Grid ────────────────────────────────────────── */}
-        <div className="cert-grid-compact">
-          {displayCerts.map((cert, idx) => (
-            <motion.div
-              key={cert.id}
-              className="cert-card-compact"
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.55, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
-              whileHover={{ y: -4, boxShadow: '0 16px 48px rgba(138,92,246,0.2)' }}
-            >
-              <div className="cert-compact-img-wrap" onClick={() => setSelectedCert(cert)}>
-                <img src={cert.image} alt={cert.title} className="cert-compact-img" />
-                <div className="cert-preview-overlay">
-                  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
-                  </svg>
-                </div>
-              </div>
-
-              <div className="cert-compact-info">
-                <div className="cert-compact-header">
-                  <h3 className="cert-compact-title">{cert.title}</h3>
-                  <span className="cert-compact-date">{cert.date}</span>
-                </div>
-                <p className="cert-compact-issuer">{cert.issuer}</p>
-                <div className="cert-compact-tags">
-                  {cert.tags.map(tag => (
-                    <span key={tag} className="cert-tag" style={{ color: cert.color, borderColor: `${cert.color}44`, fontSize: '0.65rem', padding: '2px 8px' }}>
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-                <p className="cert-compact-description">{cert.description}</p>
-                <button className="cert-compact-btn" onClick={() => setSelectedCert(cert)}>
-                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                  </svg>
-                  View Certificate
+        {/* Dynamic Category Tabs */}
+        <div className="work-category-tabs-container fade-in">
+          <div className="work-category-tabs">
+            {categories.map(cat => {
+              const count = ALL_CERTIFICATES.filter(c => (c.category || "Industry Certifications") === cat).length;
+              return (
+                <button
+                  key={cat}
+                  className={`work-category-tab ${activeTab === cat ? 'active' : ''}`}
+                  onClick={() => setActiveTab(cat)}
+                >
+                  {cat} <span style={{ marginLeft: '6px', fontSize: '0.75rem', opacity: 0.6 }}>({count})</span>
                 </button>
-              </div>
-            </motion.div>
-          ))}
+              );
+            })}
+          </div>
         </div>
 
-        {/* ── "See More Certificates" Button ─────────────────────── */}
+        {/* Certificate Cards Grid */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.25 }}
+            className="cert-grid-compact"
+            style={{ marginTop: '28px' }}
+          >
+            {displayCerts.length > 0 ? (
+              displayCerts.map((cert, idx) => (
+                <motion.div
+                  key={cert.id}
+                  className="cert-card-compact"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-40px' }}
+                  transition={{ duration: 0.5, delay: idx * 0.08, ease: 'easeOut' }}
+                  whileHover={{ y: -6 }}
+                  style={{ 
+                    border: `1.5px solid ${cert.color}22`,
+                    boxShadow: `0 8px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05)`,
+                    background: 'rgba(15, 10, 28, 0.75)',
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)'
+                  }}
+                >
+                  {/* Image Section with magnifying zoom hover */}
+                  <div className="cert-compact-img-wrap" onClick={() => setSelectedCert(cert)}>
+                    <img src={cert.image} alt={cert.title} className="cert-compact-img" />
+                    <div className="cert-preview-overlay">
+                      <LucideMaximize2 size={18} />
+                    </div>
+                  </div>
+
+                  {/* Card Info Content */}
+                  <div className="cert-compact-info" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <div className="cert-compact-header">
+                      <h3 className="cert-compact-title">{cert.title}</h3>
+                      <span className="cert-compact-date">{cert.date}</span>
+                    </div>
+                    <p className="cert-compact-issuer" style={{ color: cert.color }}>{cert.issuer}</p>
+                    
+                    {/* Tags list */}
+                    <div className="cert-compact-tags">
+                      {cert.tags.map(tag => (
+                        <span 
+                          key={tag} 
+                          className="cert-tag" 
+                          style={{ 
+                            color: cert.color, 
+                            borderColor: `${cert.color}33`, 
+                            background: `${cert.color}08`,
+                            fontSize: '0.65rem', 
+                            padding: '2px 8px' 
+                          }}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    
+                    <p className="cert-compact-description">{cert.description}</p>
+                    
+                    {/* Dual Action Buttons */}
+                    <div className="cert-card-actions" style={{ display: 'flex', gap: '8px', marginTop: 'auto', paddingTop: '12px' }}>
+                      <a 
+                        href={cert.credentialLink} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="cert-compact-btn flex-1" 
+                        style={{ 
+                          textDecoration: 'none',
+                          background: `${cert.color}15`,
+                          borderColor: `${cert.color}44`,
+                          color: '#fff'
+                        }}
+                      >
+                        <LucideExternalLink size={12} style={{ marginRight: '4px' }} /> View
+                      </a>
+                      <a 
+                        href={cert.verifyLink || cert.credentialLink} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="cert-compact-btn verify flex-1" 
+                        style={{ 
+                          textDecoration: 'none', 
+                          background: 'transparent', 
+                          borderColor: 'rgba(255, 255, 255, 0.15)',
+                          color: 'var(--text-muted)'
+                        }}
+                      >
+                        <LucideCheckCircle size={12} style={{ marginRight: '4px' }} /> Verify
+                      </a>
+                    </div>
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              <p style={{ textAlign: 'center', color: 'var(--text-muted)', width: '100%', padding: '48px 0' }}>
+                No certifications found in this category.
+              </p>
+            )}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Homepage See More Button */}
         {hasMore && (
           <motion.div
             className="cert-see-more-wrap"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
             <button className="cert-see-more-btn" onClick={() => navigate('/certificates')}>
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-              </svg>
               See More Certificates
-              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
+              <LucideExternalLink size={14} style={{ marginLeft: 6 }} />
             </button>
           </motion.div>
         )}
       </div>
 
-      {/* ── Fullscreen View ──────────────────────────────────────── */}
+      {/* Fullscreen Zoom overlay */}
       <AnimatePresence>
         {selectedCert && (
           <motion.div
@@ -153,9 +243,7 @@ export default function Certificates({ featuredOnly = false }) {
                   <p>{selectedCert.issuer} • {selectedCert.date}</p>
                 </div>
                 <button className="cert-back-btn" onClick={() => setSelectedCert(null)}>
-                  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
+                  <LucideX size={20} />
                 </button>
               </div>
               <div className="cert-fullscreen-image-wrap">
