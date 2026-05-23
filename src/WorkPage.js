@@ -481,14 +481,19 @@ export default function WorkPage() {
       }
     });
 
-    const applyFilter = (list) => {
-      return filter === 'All' ? list : list.filter(r => r.language === filter);
+    const processList = (list) => {
+      const filtered = filter === 'All' ? list : list.filter(r => r.language === filter);
+      return [...filtered].sort((a, b) => {
+        const timeA = new Date(a.pushed_at || a.updated_at || 0).getTime();
+        const timeB = new Date(b.pushed_at || b.updated_at || 0).getTime();
+        return timeB - timeA;
+      });
     };
 
     return {
-      major: applyFilter(major),
-      secondary: applyFilter(secondary),
-      college: applyFilter(college),
+      major: processList(major),
+      secondary: processList(secondary),
+      college: processList(college),
     };
   };
 
