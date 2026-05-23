@@ -10,6 +10,71 @@ const IS_TOUCH = typeof window !== 'undefined' &&
    'ontouchstart' in window ||
    navigator.maxTouchPoints > 0);
 
+// Cyber-holographic empty state component for incoming certifications
+function CertificatesEmptyState({ category }) {
+  const isProfessional = category === 'Professional Experience';
+  const text = isProfessional 
+    ? 'Professional experience certifications coming soon.'
+    : 'Industry certifications will be added soon.';
+  
+  const glowAccent = isProfessional ? '#ec4899' : '#00f2fe';
+  const glowColor = isProfessional ? 'rgba(236, 72, 153, 0.15)' : 'rgba(0, 242, 254, 0.15)';
+  const glowAccentAlpha = isProfessional ? 'rgba(236, 72, 153, 0.15)' : 'rgba(0, 242, 254, 0.15)';
+  const icon = isProfessional ? '💼' : '🛡️';
+
+  // Floating background particles
+  const particles = Array.from({ length: 6 }).map((_, i) => {
+    const left = `${15 + Math.random() * 70}%`;
+    const delay = `${Math.random() * 4}s`;
+    const driftX = `${-25 + Math.random() * 50}px`;
+    return (
+      <span 
+        key={i} 
+        className="cert-particle" 
+        style={{ 
+          left, 
+          animationDelay: delay, 
+          '--drift-x': driftX 
+        }} 
+      />
+    );
+  });
+
+  return (
+    <div 
+      className="cert-empty-state-card"
+      style={{ 
+        '--glow-accent': glowAccent,
+        '--glow-color': glowColor,
+        '--glow-accent-alpha': glowAccentAlpha
+      }}
+    >
+      {/* Laser Corner Brackets */}
+      <div className="cert-cyber-bracket tl" />
+      <div className="cert-cyber-bracket tr" />
+      <div className="cert-cyber-bracket bl" />
+      <div className="cert-cyber-bracket br" />
+
+      {/* Cyber Glow Core */}
+      <div className="cert-empty-glow-spot" />
+
+      {/* Pulsing Hologram Base */}
+      <div className="cert-empty-hologram">
+        <div className="cert-hologram-ring" />
+        <div className="cert-hologram-ring ring-inner" />
+        <div className="cert-hologram-icon">{icon}</div>
+      </div>
+
+      {/* Category Coming Soon Text */}
+      <h4 className="cert-empty-title">Coming Soon</h4>
+      <p className="cert-empty-desc">{text}</p>
+
+      {/* Ambient Float Particles */}
+      {particles}
+    </div>
+  );
+}
+
 export default function CertificatesPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Academic Certifications');
@@ -189,9 +254,7 @@ export default function CertificatesPage() {
                 </motion.div>
               ))
             ) : (
-              <p style={{ textAlign: 'center', color: 'var(--text-muted)', width: '100%', padding: '48px 0' }}>
-                No certifications found in this category.
-              </p>
+              <CertificatesEmptyState category={activeTab} />
             )}
           </motion.div>
         </AnimatePresence>

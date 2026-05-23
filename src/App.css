@@ -5365,4 +5365,168 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   color: #fff !important;
 }
 
+/* ===== PREMIUM CATEGORIZED CERTIFICATES - EMPTY STATE PLACEHOLDERS ===== */
+.cert-empty-state-card {
+  position: relative;
+  min-height: 280px;
+  background: rgba(10, 8, 22, 0.45) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-radius: 24px !important;
+  border: 1.5px dashed rgba(138, 92, 246, 0.25) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 40px 24px !important;
+  text-align: center !important;
+  overflow: hidden !important;
+  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35) !important;
+  grid-column: 1 / -1 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* cyber grid mesh background */
+.cert-empty-state-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(138, 92, 246, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(138, 92, 246, 0.04) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: center;
+  z-index: 0;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* ambient blur light source inside card */
+.cert-empty-glow-spot {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, var(--glow-color, rgba(138, 92, 246, 0.15)) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 0;
+  filter: blur(25px);
+  pointer-events: none;
+  animation: cert-glow-pulse 4s ease-in-out infinite alternate;
+}
+
+.cert-empty-state-card:hover {
+  transform: translateY(-4px) !important;
+  background: rgba(15, 12, 32, 0.6) !important;
+  border-color: var(--glow-accent, rgba(138, 92, 246, 0.6)) !important;
+  box-shadow: 
+    0 16px 40px rgba(0, 0, 0, 0.5),
+    0 0 30px var(--glow-accent-alpha, rgba(138, 92, 246, 0.15)) !important;
+}
+
+.cert-empty-hologram {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.cert-hologram-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--glow-accent, #8a5cf6);
+  opacity: 0.3;
+  animation: cert-ring-pulsate 3s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+.cert-hologram-ring.ring-inner {
+  inset: 12px;
+  animation-delay: 0.5s;
+}
+
+.cert-hologram-icon {
+  font-size: 1.8rem;
+  color: var(--glow-accent, #8a5cf6);
+  filter: drop-shadow(0 0 10px var(--glow-accent, rgba(138, 92, 246, 0.8)));
+  animation: cert-icon-float 3s ease-in-out infinite alternate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cert-empty-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #fff;
+  margin-bottom: 8px;
+  z-index: 1;
+  text-transform: uppercase;
+}
+
+.cert-empty-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  max-width: 380px;
+  line-height: 1.6;
+  z-index: 1;
+}
+
+/* cyber details corner brackets */
+.cert-cyber-bracket {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid var(--glow-accent, #8a5cf6);
+  opacity: 0.4;
+  z-index: 1;
+}
+.cert-cyber-bracket.tl { top: 16px; left: 16px; border-right: none !important; border-bottom: none !important; }
+.cert-cyber-bracket.tr { top: 16px; right: 16px; border-left: none !important; border-bottom: none !important; }
+.cert-cyber-bracket.bl { bottom: 16px; left: 16px; border-right: none !important; border-top: none !important; }
+.cert-cyber-bracket.br { bottom: 16px; right: 16px; border-left: none !important; border-top: none !important; }
+
+/* floating particle elements */
+.cert-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: var(--glow-accent, #8a5cf6);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  animation: cert-particle-float 6s linear infinite;
+}
+
+@keyframes cert-glow-pulse {
+  0% { transform: scale(0.9); opacity: 0.5; }
+  100% { transform: scale(1.1); opacity: 0.8; }
+}
+
+@keyframes cert-ring-pulsate {
+  0% { transform: scale(0.85); opacity: 0.6; }
+  50% { opacity: 0.2; }
+  100% { transform: scale(1.2); opacity: 0; }
+}
+
+@keyframes cert-icon-float {
+  0% { transform: translateY(-4px) rotate(-3deg); }
+  100% { transform: translateY(4px) rotate(3deg); }
+}
+
+@keyframes cert-particle-float {
+  0% { transform: translateY(120%) translateX(0); opacity: 0; }
+  10% { opacity: 0.7; }
+  90% { opacity: 0.7; }
+  100% { transform: translateY(-20%) translateX(var(--drift-x, 20px)); opacity: 0; }
+}
+
+
 

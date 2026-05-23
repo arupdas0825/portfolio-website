@@ -85,7 +85,7 @@ function PortfolioHome({ onAdminOpen }) {
         <div id="work"><Work /></div>
         <div id="internship"><Internship /></div>
         <div id="publications"><Publications /></div>
-        <div id="certificates"><Certificates /></div>
+        <div id="certificates"><Certificates featuredOnly={true} /></div>
         <div id="githubstats"><GithubStats /></div>
         <div id="gallery"><Gallery /></div>
         <div id="services"><Services /></div>
