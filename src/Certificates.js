@@ -143,7 +143,7 @@ export default function Certificates({ featuredOnly = true }) {
         </p>
 
         {/* Dynamic Category Tabs */}
-        <div className="work-category-tabs-container fade-in">
+        <div className="work-category-tabs-container">
           <div className="work-category-tabs">
             {categories.map(cat => {
               const count = ALL_CERTIFICATES.filter(c => (c.category || "Industry Certifications") === cat).length;

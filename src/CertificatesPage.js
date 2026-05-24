@@ -139,7 +139,7 @@ export default function CertificatesPage() {
       </div>
 
       {/* Category Navigation Tabs */}
-      <div className="work-category-tabs-container fade-in" style={{ maxWidth: '1200px', margin: '0 auto 12px' }}>
+      <div className="work-category-tabs-container" style={{ maxWidth: '1200px', margin: '0 auto 12px' }}>
         <div className="work-category-tabs" style={{ margin: '0 auto' }}>
           {categories.map(cat => {
             const count = ALL_CERTIFICATES.filter(c => (c.category || "Industry Certifications") === cat).length;
