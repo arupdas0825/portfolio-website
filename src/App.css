@@ -5146,11 +5146,12 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
 
 /* Active tab: premium Conic-Gradient Rotating border & soft breathing pulse */
 .work-category-tab.active {
-  color: var(--white);
-  border: none;
-  background: transparent;
+  color: var(--white) !important;
+  border: 1.5px solid transparent !important;
+  background: transparent !important;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
   animation: active-tab-pulse 4s ease-in-out infinite alternate;
+  isolation: isolate; /* Force stacking context isolation to prevent browser z-index bleed */
 }
 
 /* Conic gradient rotating layer (GPU accelerated & perfectly circular to prevent jitter/distortion) */
@@ -5183,11 +5184,11 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   -webkit-backface-visibility: hidden;
 }
 
-/* Inner overlay mask to keep border 1.5px thick */
+/* Inner overlay mask covering content inside the transparent border footprint */
 .work-category-tab.active::after {
   content: '';
   position: absolute;
-  inset: 1.5px;
+  inset: 0; /* Cover content box perfectly, letting outer transparent border shine */
   background: rgba(10, 8, 22, 0.95);
   border-radius: 100px;
   z-index: -1;
