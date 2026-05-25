@@ -5079,7 +5079,7 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   transform: rotate(180deg);
 }
 
-/* ===== WORK CATEGORY TABS (High-Performance Engineering Dashboard Redesign) ===== */
+/* ===== WORK CATEGORY TABS (High-Performance Engineering Dashboard - Clean Premium UI) ===== */
 .work-category-tabs-container {
   display: flex;
   justify-content: center;
@@ -5090,14 +5090,14 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
 
 .work-category-tabs {
   display: flex;
-  background: rgba(15, 10, 28, 0.6);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(10, 8, 22, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 100px;
   padding: 6px;
   gap: 6px;
   position: relative;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .work-category-tab {
@@ -5111,8 +5111,8 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   font-size: 0.88rem;
   font-weight: 700;
   color: var(--text-muted);
-  background: rgba(15, 10, 28, 0.4);
-  border: 1.5px solid rgba(255, 255, 255, 0.04);
+  background: rgba(10, 8, 22, 0.45);
+  border: 1.5px solid rgba(255, 255, 255, 0.03);
   cursor: pointer;
   z-index: 1;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -5122,10 +5122,10 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
 
 .work-category-tab:hover {
   color: var(--white);
-  border-color: rgba(0, 242, 254, 0.45);
-  text-shadow: 0 0 8px rgba(0, 242, 254, 0.7);
-  transform: scale(1.055);
-  box-shadow: 0 4px 25px rgba(0, 242, 254, 0.22);
+  border-color: rgba(0, 242, 254, 0.35);
+  text-shadow: 0 0 8px rgba(0, 242, 254, 0.5);
+  transform: scale(1.035);
+  box-shadow: 0 4px 15px rgba(0, 242, 254, 0.12);
 }
 
 /* Inactive tabs hover soft glow background */
@@ -5134,7 +5134,7 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   position: absolute;
   inset: 0;
   border-radius: 100px;
-  background: radial-gradient(circle, rgba(0, 242, 254, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(0, 242, 254, 0.08) 0%, transparent 70%);
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: -1;
@@ -5144,34 +5144,34 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   opacity: 1;
 }
 
-/* Active tab: premium Conic-Gradient Rotating border & energetic breathing pulse */
+/* Active tab: premium Conic-Gradient Rotating border with crisp traveling highlight */
 .work-category-tab.active {
   color: var(--white) !important;
   border: 1.5px solid transparent !important;
   background: transparent !important;
-  text-shadow: 0 0 12px rgba(0, 242, 254, 0.85);
+  text-shadow: 0 0 8px rgba(0, 242, 254, 0.65);
   animation: work-tab-pulse 3.5s ease-in-out infinite alternate;
   isolation: isolate; /* Force stacking context isolation to prevent browser z-index bleed */
 }
 
-/* Conic gradient rotating layer (GPU accelerated, perfectly circular & high-tech speed) */
+/* Conic gradient rotating layer - sharp cyan/blue sweep, dark baseline everywhere else */
 .work-category-tab.active::before {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 250px;
-  height: 250px;
-  margin-top: -125px;
-  margin-left: -125px;
+  width: 320px; /* Enhanced diameter to prevent clipping on wider tabs */
+  height: 320px;
+  margin-top: -160px;
+  margin-left: -160px;
   background: conic-gradient(
     from 0deg,
-    #00f2fe 0%,     /* Electric Cyan */
-    #3b82f6 20%,    /* Holographic Blue */
-    #8a5cf6 40%,    /* Neon Purple */
-    #6366f1 60%,    /* Deep Violet */
-    #4facfe 80%,    /* Plasma Blue */
-    #00f2fe 100%    /* Loop back to Cyan */
+    #00f2fe 0%,       /* Bright Electric Cyan */
+    #3b82f6 12%,      /* Plasma Blue */
+    rgba(0, 242, 254, 0.08) 25%, /* Faint baseline */
+    rgba(0, 242, 254, 0.08) 75%, /* Faint baseline */
+    #3b82f6 88%,      /* Plasma Blue */
+    #00f2fe 100%      /* Loop back */
   );
   opacity: 1;
   animation: rotate-conic-glow 2.5s linear infinite; /* Energetic fast-medium speed */
@@ -5188,27 +5188,23 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   content: '';
   position: absolute;
   inset: 0; /* Cover content box perfectly, letting outer transparent border shine */
-  background: rgba(10, 8, 22, 0.95);
+  background: rgba(10, 8, 22, 0.96);
   border-radius: 100px;
   z-index: -1;
-  box-shadow: inset 0 0 12px rgba(0, 242, 254, 0.25);
+  box-shadow: inset 0 0 8px rgba(0, 242, 254, 0.15);
 }
 
-/* Multi-layered premium breathing glow pulse animation (high energy) */
+/* Tight, premium breathing glow pulse animation for Work active tab */
 @keyframes work-tab-pulse {
   0% {
     box-shadow: 
-      0 0 15px rgba(0, 242, 254, 0.3),
-      0 0 30px rgba(138, 92, 246, 0.2),
-      inset 0 0 8px rgba(0, 242, 254, 0.2);
-    transform: scale(1.02);
+      0 2px 8px rgba(0, 242, 254, 0.08),
+      inset 0 0 4px rgba(0, 242, 254, 0.1);
   }
   100% {
     box-shadow: 
-      0 0 28px rgba(0, 242, 254, 0.55),
-      0 0 50px rgba(138, 92, 246, 0.4),
-      inset 0 0 16px rgba(0, 242, 254, 0.35);
-    transform: scale(1.055);
+      0 4px 16px rgba(0, 242, 254, 0.18),
+      inset 0 0 10px rgba(0, 242, 254, 0.25);
   }
 }
 
@@ -5222,36 +5218,8 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   }
 }
 
-/* Mobile responsive scrollable pills */
-@media (max-width: 768px) {
-  .work-category-tabs-container {
-    justify-content: flex-start;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Hide standard Firefox scrollbar */
-    padding: 4px 16px;
-  }
-  
-  .work-category-tabs-container::-webkit-scrollbar {
-    display: none; /* Hide Safari and Chrome scrollbar */
-  }
-  
-  .work-category-tabs {
-    flex-shrink: 0;
-    border-radius: 30px;
-    padding: 4px;
-    white-space: nowrap;
-    width: max-content;
-  }
-  
-  .work-category-tab {
-    padding: 8px 18px;
-    font-size: 0.8rem;
-  }
-}
 
-
-/* ===== CERTIFICATE CATEGORY TABS (Luxury Credential System Redesign) ===== */
+/* ===== CERTIFICATE CATEGORY TABS (Luxury Credential System - Clean Premium UI) ===== */
 .cert-category-tabs-container {
   display: flex;
   justify-content: center;
@@ -5294,10 +5262,10 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
 
 .cert-category-tab:hover {
   color: var(--white);
-  border-color: rgba(236, 72, 153, 0.35);
-  text-shadow: 0 0 8px rgba(236, 72, 153, 0.5);
+  border-color: rgba(236, 72, 153, 0.3);
+  text-shadow: 0 0 8px rgba(236, 72, 153, 0.4);
   transform: scale(1.035);
-  box-shadow: 0 4px 20px rgba(236, 72, 153, 0.12);
+  box-shadow: 0 4px 15px rgba(236, 72, 153, 0.1);
 }
 
 /* Inactive tabs hover soft glow background */
@@ -5306,7 +5274,7 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   position: absolute;
   inset: 0;
   border-radius: 100px;
-  background: radial-gradient(circle, rgba(236, 72, 153, 0.08) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.06) 0%, transparent 70%);
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: -1;
@@ -5316,37 +5284,37 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   opacity: 1;
 }
 
-/* Active tab: premium Conic-Gradient Rotating border & luxury breathing pulse */
+/* Active tab: premium Conic-Gradient Rotating border with slower luxury highlight */
 .cert-category-tab.active {
   color: var(--white) !important;
   border: 1.5px solid transparent !important;
   background: transparent !important;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.95);
+  text-shadow: 0 0 8px rgba(236, 72, 153, 0.65);
   animation: cert-tab-pulse 5s ease-in-out infinite alternate;
   isolation: isolate; /* Force stacking context isolation to prevent browser z-index bleed */
 }
 
-/* Conic gradient rotating layer (Ultra smooth slow rotation & luxury palette) */
+/* Conic gradient rotating layer - sharp magenta/violet sweep, dark baseline everywhere else */
 .cert-category-tab.active::before {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 250px;
-  height: 250px;
-  margin-top: -125px;
-  margin-left: -125px;
+  width: 320px; /* Enhanced diameter to prevent clipping on wider tabs */
+  height: 320px;
+  margin-top: -160px;
+  margin-left: -160px;
   background: conic-gradient(
     from 0deg,
-    #8a5cf6 0%,     /* Royal Violet */
-    #4f46e5 18%,    /* Premium Indigo */
-    #db2777 36%,    /* Deep Magenta */
-    #ec4899 54%,    /* Soft Pink */
-    #e9d5ff 72%,    /* Lavender Neon */
-    #8a5cf6 100%    /* Loop back */
+    #ff4da6 0%,       /* Bright Premium Pink Neon */
+    #8a5cf6 12%,      /* Royal Violet */
+    rgba(219, 39, 119, 0.08) 25%, /* Faint baseline */
+    rgba(219, 39, 119, 0.08) 75%, /* Faint baseline */
+    #8a5cf6 88%,      /* Royal Violet */
+    #ff4da6 100%      /* Loop back */
   );
   opacity: 1;
-  animation: rotate-conic-glow-slow 5.5s linear infinite; /* Luxury slower rotation speed */
+  animation: rotate-conic-glow-slow 5.5s linear infinite; /* Slower luxury rotation speed */
   z-index: -2;
   border-radius: 50%;
   transform-origin: center center;
@@ -5360,31 +5328,27 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   content: '';
   position: absolute;
   inset: 0; /* Cover content box perfectly, letting outer transparent border shine */
-  background: rgba(10, 8, 22, 0.95);
+  background: rgba(10, 8, 22, 0.96);
   border-radius: 100px;
   z-index: -1;
-  box-shadow: inset 0 0 12px rgba(236, 72, 153, 0.15);
+  box-shadow: inset 0 0 8px rgba(236, 72, 153, 0.12);
 }
 
-/* Multi-layered premium breathing glow pulse animation (luxury/elegant) */
+/* Tight, premium breathing glow pulse animation for Certificates active tab */
 @keyframes cert-tab-pulse {
   0% {
     box-shadow: 
-      0 0 12px rgba(236, 72, 153, 0.18),
-      0 0 25px rgba(138, 92, 246, 0.12),
-      inset 0 0 6px rgba(236, 72, 153, 0.15);
-    transform: scale(1.015);
+      0 2px 8px rgba(236, 72, 153, 0.06),
+      inset 0 0 4px rgba(236, 72, 153, 0.08);
   }
   100% {
     box-shadow: 
-      0 0 18px rgba(236, 72, 153, 0.35),
-      0 0 35px rgba(138, 92, 246, 0.25),
-      inset 0 0 10px rgba(236, 72, 153, 0.25);
-    transform: scale(1.035);
+      0 4px 16px rgba(236, 72, 153, 0.15),
+      inset 0 0 8px rgba(236, 72, 153, 0.2);
   }
 }
 
-/* Perfect 360 degree conic rotation keyframes with GPU 3D translation context (slow) */
+/* Slower perfect 360 degree conic rotation keyframes with GPU 3D translation context */
 @keyframes rotate-conic-glow-slow {
   0% {
     transform: translate3d(0, 0, 0) rotate(0deg);
@@ -5394,8 +5358,10 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   }
 }
 
-/* Mobile responsive scrollable pills for certificates tabs */
+
+/* ===== RESPONSIVE MEDIA QUERIES FOR TABS ===== */
 @media (max-width: 768px) {
+  .work-category-tabs-container,
   .cert-category-tabs-container {
     justify-content: flex-start;
     overflow-x: auto;
@@ -5404,10 +5370,12 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
     padding: 4px 16px;
   }
   
+  .work-category-tabs-container::-webkit-scrollbar,
   .cert-category-tabs-container::-webkit-scrollbar {
     display: none; /* Hide Safari and Chrome scrollbar */
   }
   
+  .work-category-tabs,
   .cert-category-tabs {
     flex-shrink: 0;
     border-radius: 30px;
@@ -5416,37 +5384,8 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
     width: max-content;
   }
   
+  .work-category-tab,
   .cert-category-tab {
-    padding: 8px 18px;
-    font-size: 0.8rem;
-  }
-}
-
-
-
-/* Mobile responsive scrollable pills */
-@media (max-width: 768px) {
-  .work-category-tabs-container {
-    justify-content: flex-start;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Hide standard Firefox scrollbar */
-    padding: 4px 16px;
-  }
-  
-  .work-category-tabs-container::-webkit-scrollbar {
-    display: none; /* Hide Safari and Chrome scrollbar */
-  }
-  
-  .work-category-tabs {
-    flex-shrink: 0;
-    border-radius: 30px;
-    padding: 4px;
-    white-space: nowrap;
-    width: max-content;
-  }
-  
-  .work-category-tab {
     padding: 8px 18px;
     font-size: 0.8rem;
   }
