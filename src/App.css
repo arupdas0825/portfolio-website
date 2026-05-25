@@ -5147,7 +5147,7 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
 /* Active tab: premium Conic-Gradient Rotating border with crisp traveling highlight */
 .work-category-tab.active {
   color: var(--white) !important;
-  border: 3.5px solid transparent !important;
+  border: 4.5px solid transparent !important;
   background: transparent !important;
   text-shadow: 0 0 8px rgba(0, 242, 254, 0.8);
   animation: work-tab-pulse 3.5s ease-in-out infinite alternate;
@@ -5293,7 +5293,7 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
 /* Active tab: premium Conic-Gradient Rotating border with slower luxury highlight */
 .cert-category-tab.active {
   color: var(--white) !important;
-  border: 3.5px solid transparent !important;
+  border: 4.5px solid transparent !important;
   background: transparent !important;
   text-shadow: 0 0 8px rgba(138, 92, 246, 0.8);
   animation: cert-tab-pulse 5s ease-in-out infinite alternate;
