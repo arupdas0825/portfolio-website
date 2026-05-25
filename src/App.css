@@ -185,14 +185,13 @@ body::before {
 .desktop-header-wrap {
   position: fixed;
   top: 20px;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
   max-width: 1400px;
-  margin: 0 auto;
   padding: 0 32px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center; /* Center the navigation menu perfectly in the middle */
   align-items: center;
   z-index: 100;
   pointer-events: none; /* Let pointer events fall through empty spaces */
@@ -200,6 +199,8 @@ body::before {
 
 .brand-dock {
   pointer-events: auto; /* Enable clicks */
+  position: absolute;
+  left: 32px; /* Float independently on the far left */
   display: flex;
   align-items: center;
   gap: 10px;
@@ -283,13 +284,15 @@ body::before {
   gap: 4px;
   transition: all 0.3s;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.03);
-  margin: 0;
   
-  /* Horizontal scroll for safety on medium screens */
-  max-width: calc(100% - 190px);
+  /* Slightly offset navigation menu to the left to balance both sides visually */
+  margin: 0 0 0 -80px; 
+  
+  /* Horizontal scroll safety limit to strictly prevent overlapping brand or AI start voice button */
+  max-width: calc(100% - 380px);
   overflow-x: auto;
   white-space: nowrap;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none; /* Hide scrollbar Firefox */
 }
 
 .navbar::-webkit-scrollbar {
