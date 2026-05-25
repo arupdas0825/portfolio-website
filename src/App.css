@@ -181,7 +181,7 @@ body::before {
 .blob-2 { width: 400px; height: 400px; background: #5b21b6; bottom: -100px; right: -100px; }
 .blob-3 { width: 300px; height: 300px; background: #7c3aed; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
-/* ===== DESKTOP HEADER & INDEPENDENT FLOATING NAVBAR ===== */
+/* ===== DESKTOP HEADER & INDEPENDENT FLOATING NAVBAR (Apple Liquid Glassmorphism Redesign) ===== */
 /* ===== BRANDING DOCK (Independent Floating Brand Container) ===== */
 .brand-dock {
   position: fixed;
@@ -193,27 +193,65 @@ body::before {
   gap: 10px;
   height: 44px; /* Standard premium height matching the AI Voice container */
   box-sizing: border-box;
-  background: rgba(10, 8, 22, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: linear-gradient(135deg, rgba(16, 12, 32, 0.55) 0%, rgba(8, 6, 18, 0.8) 100%);
+  backdrop-filter: blur(32px) saturate(1.8);
+  -webkit-backdrop-filter: blur(32px) saturate(1.8);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 100px;
   padding: 0 22px;
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.5),
-    0 0 15px rgba(0, 242, 254, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 4px 30px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 0 20px rgba(0, 242, 254, 0.02);
   cursor: pointer;
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden; /* For specular shimmer clip */
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Hardware-accelerated Specular Shimmer Reflection */
+.brand-dock::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.01) 20%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.01) 80%,
+    transparent
+  );
+  transform: skewX(-25deg);
+  transition: left 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.brand-dock:hover::before {
+  left: 150%;
 }
 
 .brand-dock:hover {
-  transform: translateY(-2px) scale(1.03);
-  border-color: rgba(0, 242, 254, 0.35);
+  transform: translateY(-2px) scale(1.02);
+  border-color: rgba(255, 255, 255, 0.18);
+  background: linear-gradient(135deg, rgba(20, 16, 38, 0.65) 0%, rgba(12, 9, 24, 0.85) 100%);
   box-shadow: 
-    0 12px 40px rgba(0, 0, 0, 0.6),
-    0 0 25px rgba(0, 242, 254, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 12px 40px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.6),
+    0 0 25px rgba(0, 242, 254, 0.1);
+}
+
+.brand-logo-icon,
+.brand-logo-text,
+.brand-accent-dot {
+  position: relative;
+  z-index: 2;
 }
 
 .brand-logo-icon {
@@ -270,17 +308,22 @@ body::before {
   margin: 0 !important;
   height: 44px; /* Perfectly matching heights */
   box-sizing: border-box;
-  background: rgba(10, 8, 22, 0.7) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  background: linear-gradient(135deg, rgba(16, 12, 32, 0.45) 0%, rgba(8, 6, 18, 0.7) 100%) !important;
+  backdrop-filter: blur(32px) saturate(1.8) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(1.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 100px !important;
   padding: 4px !important;
   display: flex !important;
   align-items: center !important;
   gap: 2px !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
-  transition: all 0.3s;
+  box-shadow: 
+    0 4px 30px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+    0 0 20px rgba(0, 242, 254, 0.02) !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   
   /* Adaptive Width Equation to prevent any overlap on narrower screens */
   max-width: calc(100vw - 360px);
@@ -294,7 +337,15 @@ body::before {
 }
 
 .navbar-scrolled {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
+  background: linear-gradient(135deg, rgba(10, 8, 20, 0.6) 0%, rgba(5, 4, 12, 0.8) 100%) !important;
+  border-color: rgba(255, 255, 255, 0.09) !important;
+  backdrop-filter: blur(40px) saturate(2.0) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(2.0) !important;
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(0, 242, 254, 0.04) !important;
 }
 
 .nav-item {
@@ -317,13 +368,21 @@ body::before {
 
 .nav-item:hover {
   color: var(--white);
-  background: var(--purple-dim);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .nav-item.active {
-  background: var(--purple);
-  color: var(--white);
-  box-shadow: 0 0 15px var(--glow);
+  background: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%),
+    linear-gradient(135deg, rgba(0, 242, 254, 0.05) 0%, rgba(138, 92, 246, 0.08) 100%) !important;
+  color: var(--white) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.25),
+    0 0 15px rgba(138, 92, 246, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* Responsive spacing scaling for desktop nav items to avoid edge clipping or cuts */
