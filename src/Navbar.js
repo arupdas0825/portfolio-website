@@ -207,7 +207,7 @@ export default function Navbar() {
 
   // ── DESKTOP NAV (scroll-based blur) ──
   return (
-    <header className="desktop-header-wrap">
+    <>
       <div className="brand-dock" onClick={() => window.location.reload()} title="Refresh Page">
         <svg className="brand-logo-icon" viewBox="0 0 24 24" fill="none" stroke="url(#cyan-blue-logo-grad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <defs>
@@ -238,6 +238,6 @@ export default function Navbar() {
           </button>
         ))}
       </nav>
-    </header>
+    </>
   );
 }

@@ -182,34 +182,23 @@ body::before {
 .blob-3 { width: 300px; height: 300px; background: #7c3aed; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
 /* ===== DESKTOP HEADER & INDEPENDENT FLOATING NAVBAR ===== */
-.desktop-header-wrap {
+/* ===== BRANDING DOCK (Independent Floating Brand Container) ===== */
+.brand-dock {
   position: fixed;
   top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 1400px;
-  padding: 0 32px;
-  display: flex;
-  justify-content: center; /* Center the navigation menu perfectly in the middle */
-  align-items: center;
-  z-index: 100;
-  pointer-events: none; /* Let pointer events fall through empty spaces */
-}
-
-.brand-dock {
-  pointer-events: auto; /* Enable clicks */
-  position: absolute;
-  left: 32px; /* Float independently on the far left */
+  left: 32px;
+  z-index: 1000;
   display: flex;
   align-items: center;
   gap: 10px;
+  height: 44px; /* Standard premium height matching the AI Voice container */
+  box-sizing: border-box;
   background: rgba(10, 8, 22, 0.7);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 100px;
-  padding: 10px 22px;
+  padding: 0 22px;
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.5),
     0 0 15px rgba(0, 242, 254, 0.08),
@@ -270,26 +259,31 @@ body::before {
   }
 }
 
+
+/* ===== FLOATING NAVBAR (Exactly Centered Top Navigation) ===== */
 .navbar {
-  pointer-events: auto; /* Enable clicks */
-  position: static !important;
-  transform: none !important;
-  background: rgba(10, 8, 22, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 50px;
-  padding: 8px;
-  display: flex;
-  gap: 4px;
+  position: fixed !important;
+  top: 20px;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 999;
+  margin: 0 !important;
+  height: 44px; /* Perfectly matching heights */
+  box-sizing: border-box;
+  background: rgba(10, 8, 22, 0.7) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 100px !important;
+  padding: 4px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
   transition: all 0.3s;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.03);
   
-  /* Slightly offset navigation menu to the left to balance both sides visually */
-  margin: 0 0 0 -80px; 
-  
-  /* Horizontal scroll safety limit to strictly prevent overlapping brand or AI start voice button */
-  max-width: calc(100% - 380px);
+  /* Adaptive Width Equation to prevent any overlap on narrower screens */
+  max-width: calc(100vw - 360px);
   overflow-x: auto;
   white-space: nowrap;
   scrollbar-width: none; /* Hide scrollbar Firefox */
@@ -306,18 +300,19 @@ body::before {
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 9px 18px;
-  border-radius: 40px;
+  height: 100%;
+  padding: 0 13px; /* Optimized premium width spacing */
+  border-radius: 100px;
   font-family: 'Syne', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.82rem; /* Crisp micro scale */
+  font-weight: 700; /* Extremely legible contrast */
   color: var(--text-muted);
   cursor: pointer;
   transition: all 0.25s;
   white-space: nowrap;
   background: transparent;
   border: none;
+  letter-spacing: -0.01em;
 }
 
 .nav-item:hover {
@@ -328,7 +323,32 @@ body::before {
 .nav-item.active {
   background: var(--purple);
   color: var(--white);
-  box-shadow: 0 0 20px var(--glow);
+  box-shadow: 0 0 15px var(--glow);
+}
+
+/* Responsive spacing scaling for desktop nav items to avoid edge clipping or cuts */
+@media (max-width: 1300px) {
+  .nav-item {
+    padding: 0 10px;
+    font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 1100px) {
+  .nav-item {
+    padding: 0 8px;
+    font-size: 0.74rem;
+  }
+  .navbar {
+    max-width: calc(100vw - 320px);
+  }
+}
+
+@media (max-width: 900px) {
+  .nav-item {
+    padding: 0 6px;
+    font-size: 0.7rem;
+  }
 }
 
 @keyframes gradientLoop {
