@@ -5147,14 +5147,14 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
 /* Active tab: premium Conic-Gradient Rotating border with crisp traveling highlight */
 .work-category-tab.active {
   color: var(--white) !important;
-  border: 2.5px solid transparent !important;
+  border: 3.5px solid transparent !important;
   background: transparent !important;
   text-shadow: 0 0 8px rgba(0, 242, 254, 0.8);
   animation: work-tab-pulse 3.5s ease-in-out infinite alternate;
   isolation: isolate; /* Force stacking context isolation to prevent browser z-index bleed */
 }
 
-/* Conic gradient rotating layer - sharp cyan/blue sweep, dark baseline everywhere else */
+/* Conic gradient rotating layer - segmented 3-streak cyber current */
 .work-category-tab.active::before {
   content: '';
   position: absolute;
@@ -5166,15 +5166,21 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   margin-left: -160px;
   background: conic-gradient(
     from 0deg,
-    #00f2fe 0%,       /* Bright Electric Cyan */
-    #0077ff 15%,      /* Punchy Electric Blue */
-    rgba(0, 242, 254, 0.15) 30%, /* Faint baseline */
-    rgba(0, 242, 254, 0.15) 70%, /* Faint baseline */
-    #0077ff 85%,      /* Punchy Electric Blue */
-    #00f2fe 100%      /* Loop back */
+    #00f2fe 0%,         /* Streak 1 Start: Electric Cyan */
+    #0066ff 12%,        /* Neon Blue */
+    rgba(0, 242, 254, 0.1) 18%,  /* Break to baseline */
+    rgba(0, 242, 254, 0.1) 32%,  /* Baseline */
+    #8a5cf6 38%,        /* Streak 2 Start: Violet */
+    #d946ef 50%,        /* Holographic Purple */
+    rgba(138, 92, 246, 0.1) 56%, /* Break to baseline */
+    rgba(138, 92, 246, 0.1) 68%, /* Baseline */
+    #00f2fe 74%,        /* Streak 3 Start: Electric Cyan */
+    #8a5cf6 86%,        /* Violet */
+    rgba(0, 242, 254, 0.1) 92%,  /* Break to baseline */
+    rgba(0, 242, 254, 0.1) 100%
   );
   opacity: 1;
-  animation: rotate-conic-glow 2.5s linear infinite; /* Energetic fast-medium speed */
+  animation: rotate-conic-glow 2.5s linear infinite; /* Fast futuristic motion */
   z-index: -2;
   border-radius: 50%;
   transform-origin: center center;
@@ -5198,13 +5204,13 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
 @keyframes work-tab-pulse {
   0% {
     box-shadow: 
-      0 2px 10px rgba(0, 242, 254, 0.12),
+      0 2px 12px rgba(0, 242, 254, 0.12),
       inset 0 0 6px rgba(0, 242, 254, 0.15);
   }
   100% {
     box-shadow: 
-      0 4px 20px rgba(0, 242, 254, 0.25),
-      inset 0 0 12px rgba(0, 242, 254, 0.35);
+      0 4px 22px rgba(0, 242, 254, 0.22),
+      inset 0 0 12px rgba(0, 242, 254, 0.3);
   }
 }
 
@@ -5262,10 +5268,10 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
 
 .cert-category-tab:hover {
   color: var(--white);
-  border-color: rgba(236, 72, 153, 0.3);
-  text-shadow: 0 0 8px rgba(236, 72, 153, 0.4);
+  border-color: rgba(138, 92, 246, 0.35); /* Cohesive Violet Hover */
+  text-shadow: 0 0 8px rgba(138, 92, 246, 0.5);
   transform: scale(1.035);
-  box-shadow: 0 4px 15px rgba(236, 72, 153, 0.1);
+  box-shadow: 0 4px 15px rgba(138, 92, 246, 0.12);
 }
 
 /* Inactive tabs hover soft glow background */
@@ -5274,7 +5280,7 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   position: absolute;
   inset: 0;
   border-radius: 100px;
-  background: radial-gradient(circle, rgba(236, 72, 153, 0.06) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(138, 92, 246, 0.08) 0%, transparent 70%); /* Violet Soft Hover */
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: -1;
@@ -5287,14 +5293,14 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
 /* Active tab: premium Conic-Gradient Rotating border with slower luxury highlight */
 .cert-category-tab.active {
   color: var(--white) !important;
-  border: 1.5px solid transparent !important;
+  border: 3.5px solid transparent !important;
   background: transparent !important;
-  text-shadow: 0 0 8px rgba(236, 72, 153, 0.65);
+  text-shadow: 0 0 8px rgba(138, 92, 246, 0.8);
   animation: cert-tab-pulse 5s ease-in-out infinite alternate;
   isolation: isolate; /* Force stacking context isolation to prevent browser z-index bleed */
 }
 
-/* Conic gradient rotating layer - sharp magenta/violet sweep, dark baseline everywhere else */
+/* Conic gradient rotating layer - smooth single continuous wave */
 .cert-category-tab.active::before {
   content: '';
   position: absolute;
@@ -5306,15 +5312,16 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   margin-left: -160px;
   background: conic-gradient(
     from 0deg,
-    #ff4da6 0%,       /* Bright Premium Pink Neon */
-    #8a5cf6 12%,      /* Royal Violet */
-    rgba(219, 39, 119, 0.08) 25%, /* Faint baseline */
-    rgba(219, 39, 119, 0.08) 75%, /* Faint baseline */
-    #8a5cf6 88%,      /* Royal Violet */
-    #ff4da6 100%      /* Loop back */
+    #00f2fe 0%,         /* Electric Cyan */
+    #0066ff 12%,        /* Neon Blue */
+    #8a5cf6 24%,        /* Violet */
+    #d946ef 36%,        /* Holographic Purple */
+    rgba(138, 92, 246, 0.1) 45%, /* Smooth transition to baseline */
+    rgba(138, 92, 246, 0.1) 90%, /* Keep faint baseline */
+    #00f2fe 100%        /* Loop back */
   );
   opacity: 1;
-  animation: rotate-conic-glow-slow 5.5s linear infinite; /* Slower luxury rotation speed */
+  animation: rotate-conic-glow-slow 4s linear infinite; /* Elegant smooth wave speed */
   z-index: -2;
   border-radius: 50%;
   transform-origin: center center;
@@ -5331,20 +5338,20 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   background: rgba(10, 8, 22, 0.96);
   border-radius: 100px;
   z-index: -1;
-  box-shadow: inset 0 0 8px rgba(236, 72, 153, 0.12);
+  box-shadow: inset 0 0 10px rgba(138, 92, 246, 0.22);
 }
 
 /* Tight, premium breathing glow pulse animation for Certificates active tab */
 @keyframes cert-tab-pulse {
   0% {
     box-shadow: 
-      0 2px 8px rgba(236, 72, 153, 0.06),
-      inset 0 0 4px rgba(236, 72, 153, 0.08);
+      0 2px 12px rgba(138, 92, 246, 0.1),
+      inset 0 0 6px rgba(138, 92, 246, 0.12);
   }
   100% {
     box-shadow: 
-      0 4px 16px rgba(236, 72, 153, 0.15),
-      inset 0 0 8px rgba(236, 72, 153, 0.2);
+      0 4px 22px rgba(138, 92, 246, 0.2),
+      inset 0 0 12px rgba(138, 92, 246, 0.25);
   }
 }
 
