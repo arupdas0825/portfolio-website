@@ -91,11 +91,67 @@ const STACKS = [
 ];
 
 
+const BRAND_COLORS = {
+  // Languages
+  python: { border: 'rgba(255, 224, 82, 0.45)', glow: 'rgba(59, 130, 246, 0.25)', bg: 'rgba(59, 130, 246, 0.05)' },
+  javascript: { border: 'rgba(247, 223, 30, 0.5)', glow: 'rgba(247, 223, 30, 0.25)', bg: 'rgba(247, 223, 30, 0.05)' },
+  typescript: { border: 'rgba(49, 120, 198, 0.5)', glow: 'rgba(49, 120, 198, 0.3)', bg: 'rgba(49, 120, 198, 0.06)' },
+  java: { border: 'rgba(224, 111, 36, 0.5)', glow: 'rgba(224, 111, 36, 0.25)', bg: 'rgba(224, 111, 36, 0.05)' },
+  c: { border: 'rgba(168, 191, 224, 0.5)', glow: 'rgba(168, 191, 224, 0.25)', bg: 'rgba(168, 191, 224, 0.05)' },
+  'c++': { border: 'rgba(0, 134, 212, 0.5)', glow: 'rgba(0, 89, 156, 0.3)', bg: 'rgba(0, 89, 156, 0.06)' },
+  html5: { border: 'rgba(227, 79, 38, 0.5)', glow: 'rgba(227, 79, 38, 0.25)', bg: 'rgba(227, 79, 38, 0.05)' },
+  css3: { border: 'rgba(21, 114, 182, 0.5)', glow: 'rgba(21, 114, 182, 0.3)', bg: 'rgba(21, 114, 182, 0.06)' },
+  kotlin: { border: 'rgba(127, 82, 255, 0.5)', glow: 'rgba(241, 142, 60, 0.25)', bg: 'rgba(127, 82, 255, 0.05)' },
+
+  // Frameworks & Libraries
+  react: { border: 'rgba(97, 218, 251, 0.5)', glow: 'rgba(97, 218, 251, 0.3)', bg: 'rgba(97, 218, 251, 0.06)' },
+  'next.js': { border: 'rgba(255, 255, 255, 0.4)', glow: 'rgba(255, 255, 255, 0.2)', bg: 'rgba(255, 255, 255, 0.05)' },
+  'node.js': { border: 'rgba(67, 133, 61, 0.5)', glow: 'rgba(67, 133, 61, 0.25)', bg: 'rgba(67, 133, 61, 0.05)' },
+  fastapi: { border: 'rgba(5, 153, 137, 0.5)', glow: 'rgba(5, 153, 137, 0.25)', bg: 'rgba(5, 153, 137, 0.05)' },
+  flutter: { border: 'rgba(2, 86, 155, 0.5)', glow: 'rgba(64, 196, 255, 0.25)', bg: 'rgba(64, 196, 255, 0.05)' },
+  tailwind: { border: 'rgba(56, 189, 248, 0.5)', glow: 'rgba(56, 189, 248, 0.3)', bg: 'rgba(56, 189, 248, 0.06)' },
+  vite: { border: 'rgba(189, 52, 254, 0.5)', glow: 'rgba(255, 217, 36, 0.25)', bg: 'rgba(189, 52, 254, 0.05)' },
+  firebase: { border: 'rgba(255, 202, 40, 0.5)', glow: 'rgba(245, 127, 23, 0.3)', bg: 'rgba(245, 127, 23, 0.06)' },
+
+  // Databases
+  mongodb: { border: 'rgba(71, 162, 72, 0.5)', glow: 'rgba(71, 162, 72, 0.25)', bg: 'rgba(71, 162, 72, 0.05)' },
+  mysql: { border: 'rgba(0, 117, 143, 0.5)', glow: 'rgba(242, 145, 17, 0.25)', bg: 'rgba(0, 117, 143, 0.05)' },
+  sqlite: { border: 'rgba(15, 128, 204, 0.5)', glow: 'rgba(15, 128, 204, 0.25)', bg: 'rgba(15, 128, 204, 0.05)' },
+  supabase: { border: 'rgba(62, 207, 142, 0.5)', glow: 'rgba(62, 207, 142, 0.25)', bg: 'rgba(62, 207, 142, 0.05)' },
+
+  // Cloud & DevOps
+  aws: { border: 'rgba(255, 153, 0, 0.5)', glow: 'rgba(255, 153, 0, 0.25)', bg: 'rgba(255, 153, 0, 0.05)' },
+  'google cloud': { border: 'rgba(66, 133, 244, 0.5)', glow: 'rgba(234, 67, 53, 0.25)', bg: 'rgba(66, 133, 244, 0.05)' },
+  git: { border: 'rgba(240, 80, 50, 0.5)', glow: 'rgba(240, 80, 50, 0.25)', bg: 'rgba(240, 80, 50, 0.05)' },
+  github: { border: 'rgba(255, 255, 255, 0.4)', glow: 'rgba(255, 255, 255, 0.2)', bg: 'rgba(255, 255, 255, 0.05)' },
+  figma: { border: 'rgba(242, 78, 30, 0.5)', glow: 'rgba(162, 89, 255, 0.25)', bg: 'rgba(242, 78, 30, 0.05)' },
+  blender: { border: 'rgba(232, 118, 0, 0.5)', glow: 'rgba(232, 118, 0, 0.25)', bg: 'rgba(232, 118, 0, 0.05)' },
+  vercel: { border: 'rgba(255, 255, 255, 0.4)', glow: 'rgba(255, 255, 255, 0.2)', bg: 'rgba(255, 255, 255, 0.05)' },
+  netlify: { border: 'rgba(0, 190, 187, 0.5)', glow: 'rgba(0, 190, 187, 0.25)', bg: 'rgba(0, 190, 187, 0.05)' },
+
+  // AI Tools
+  codex: { border: 'rgba(16, 163, 127, 0.5)', glow: 'rgba(16, 163, 127, 0.25)', bg: 'rgba(16, 163, 127, 0.05)' },
+  emergent: { border: 'rgba(139, 92, 246, 0.5)', glow: 'rgba(236, 72, 153, 0.25)', bg: 'rgba(139, 92, 246, 0.05)' },
+  antigravity: { border: 'rgba(0, 242, 254, 0.5)', glow: 'rgba(138, 92, 246, 0.25)', bg: 'rgba(0, 242, 254, 0.05)' },
+  claude: { border: 'rgba(217, 119, 6, 0.5)', glow: 'rgba(217, 119, 6, 0.25)', bg: 'rgba(217, 119, 6, 0.05)' },
+  manus: { border: 'rgba(59, 130, 246, 0.5)', glow: 'rgba(16, 185, 129, 0.25)', bg: 'rgba(59, 130, 246, 0.05)' },
+  'github copilot': { border: 'rgba(138, 92, 246, 0.5)', glow: 'rgba(0, 242, 254, 0.25)', bg: 'rgba(138, 92, 246, 0.05)' },
+  cursor: { border: 'rgba(255, 255, 255, 0.4)', glow: 'rgba(138, 92, 246, 0.25)', bg: 'rgba(255, 255, 255, 0.05)' },
+  deepseek: { border: 'rgba(59, 130, 246, 0.5)', glow: 'rgba(59, 130, 246, 0.25)', bg: 'rgba(59, 130, 246, 0.05)' }
+};
+
 const TechIcon = ({ src, name }) => {
   // Only invert icons that are known to be dark by default (Devicon originals)
   // SimpleIcons are already requested as /white
   const isSimpleIcon = src.includes('simpleicons.org');
   const isDarkDevicon = !isSimpleIcon && (name.toLowerCase() === 'next.js' || name.toLowerCase() === 'vercel' || name.toLowerCase() === 'github');
+
+  const key = name.toLowerCase();
+  const colors = BRAND_COLORS[key] || {
+    border: 'rgba(138, 92, 246, 0.4)',
+    glow: 'rgba(138, 92, 246, 0.15)',
+    bg: 'rgba(138, 92, 246, 0.03)'
+  };
 
   return (
     <motion.div
@@ -109,7 +165,11 @@ const TechIcon = ({ src, name }) => {
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: 14,
         cursor: 'pointer',
-        position: 'relative'
+        position: 'relative',
+        transition: 'background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
+        '--brand-hover-border': colors.border,
+        '--brand-hover-glow': colors.glow,
+        '--brand-hover-bg': colors.bg
       }}
     >
       <img
@@ -120,9 +180,20 @@ const TechIcon = ({ src, name }) => {
           width: '100%',
           height: '100%',
           objectFit: 'contain',
-          filter: isDarkDevicon ? 'brightness(0) invert(1)' : 'none'
+          filter: isDarkDevicon ? 'brightness(0) invert(1)' : 'none',
+          transition: 'filter 0.3s ease'
         }}
       />
+      {/* Specular premium glass reflection light catch */}
+      <div className="tech-icon-shimmer" />
+
+      {/* Floating dynamic particles shimmer */}
+      <div className="tech-particles">
+        <span className="tech-p tech-p1" />
+        <span className="tech-p tech-p2" />
+        <span className="tech-p tech-p3" />
+      </div>
+
       <div className="tech-tooltip">{name}</div>
     </motion.div>
   );
@@ -248,26 +319,118 @@ export default function TechStack() {
       <style dangerouslySetInnerHTML={{
         __html: `
         .tech-icon-box:hover {
-          background: rgba(255,255,255,0.08) !important;
-          border-color: rgba(138,92,246,0.4) !important;
-          box-shadow: 0 0 20px rgba(138,92,246,0.15);
+          background: var(--brand-hover-bg, rgba(255, 255, 255, 0.08)) !important;
+          border-color: var(--brand-hover-border, rgba(138, 92, 246, 0.4)) !important;
+          box-shadow: 
+            0 0 22px var(--brand-hover-glow, rgba(138, 92, 246, 0.15)),
+            0 8px 30px rgba(0, 0, 0, 0.5),
+            inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
+
+        /* 3D Acrylic Specular glass shimmers */
+        .tech-icon-shimmer {
+          position: absolute;
+          inset: 0;
+          border-radius: 12px;
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 60%, rgba(255, 255, 255, 0.01) 100%);
+          pointer-events: none;
+          z-index: 1;
+          opacity: 0.5;
+          transition: opacity 0.3s ease;
+        }
+
+        .tech-icon-box:hover .tech-icon-shimmer {
+          opacity: 1;
+        }
+
+        /* Expanding Liquid Brand Aura backing glows */
+        .tech-icon-box::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 100%;
+          height: 100%;
+          border-radius: 12px;
+          pointer-events: none;
+          z-index: 0;
+          opacity: 0;
+          background: radial-gradient(circle, var(--brand-hover-glow) 0%, transparent 70%);
+          transform: translate(-50%, -50%) scale(0.8);
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .tech-icon-box:hover::after {
+          opacity: 0.45;
+          transform: translate(-50%, -50%) scale(1.4);
+        }
+
+        /* Hardware-Accelerated Floating Particles Container */
+        .tech-particles {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          overflow: hidden;
+          border-radius: 12px;
+          z-index: 1;
+        }
+
+        .tech-p {
+          position: absolute;
+          width: 3px;
+          height: 3px;
+          background: var(--brand-hover-border, #fff);
+          border-radius: 50%;
+          opacity: 0;
+          pointer-events: none;
+        }
+
+        .tech-p1 { bottom: 10%; left: 20%; }
+        .tech-p2 { bottom: 12%; left: 50%; }
+        .tech-p3 { bottom: 8%; left: 80%; }
+
+        .tech-icon-box:hover .tech-p1 {
+          opacity: 0.8;
+          transform: translateY(-24px) scale(1.4);
+          transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .tech-icon-box:hover .tech-p2 {
+          opacity: 0.8;
+          transform: translateY(-32px) scale(1.2);
+          transition: opacity 0.4s ease 0.08s, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.08s;
+        }
+
+        .tech-icon-box:hover .tech-p3 {
+          opacity: 0.8;
+          transform: translateY(-20px) scale(1.4);
+          transition: opacity 0.4s ease 0.04s, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.04s;
+        }
+
+        /* Legible dynamic floating Tooltip */
         .tech-tooltip {
           position: absolute;
           bottom: -30px;
           left: 50%;
           transform: translateX(-50%);
-          background: #1e1b4b;
+          background: rgba(15, 12, 30, 0.95);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          border: 1px solid var(--brand-hover-border, rgba(255, 255, 255, 0.1));
           color: #fff;
           padding: 4px 8px;
-          border-radius: 4px;
+          border-radius: 6px;
           font-size: 11px;
+          font-weight: 700;
+          font-family: 'DM Sans', sans-serif;
           opacity: 0;
           pointer-events: none;
-          transition: 0.2s;
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
           white-space: nowrap;
           z-index: 10;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
+
         .tech-icon-box:hover .tech-tooltip {
           opacity: 1;
           bottom: -25px;
