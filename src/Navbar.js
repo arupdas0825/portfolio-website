@@ -207,27 +207,37 @@ export default function Navbar() {
 
   // ── DESKTOP NAV (scroll-based blur) ──
   return (
-    <nav
-      className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}
-      style={{ '--nav-blur': `${navBlur}px`, backdropFilter: `blur(${navBlur}px)`, WebkitBackdropFilter: `blur(${navBlur}px)` }}
-    >
-      <div className="nav-logo-container" onClick={() => window.location.reload()} title="Refresh Page">
-        <svg className="nav-logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <header className="desktop-header-wrap">
+      <div className="brand-dock" onClick={() => window.location.reload()} title="Refresh Page">
+        <svg className="brand-logo-icon" viewBox="0 0 24 24" fill="none" stroke="url(#cyan-blue-logo-grad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <defs>
+            <linearGradient id="cyan-blue-logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#00f2fe" />
+              <stop offset="100%" stopColor="#0066ff" />
+            </linearGradient>
+          </defs>
           <polygon points="12 2 2 7 12 12 22 7 12 2" />
           <polyline points="2 17 12 22 22 17" />
           <polyline points="2 12 12 17 22 12" />
         </svg>
-        <span className="nav-logo-text">arup.dev</span>
+        <span className="brand-logo-text">arup.dev</span>
+        <span className="brand-accent-dot" />
       </div>
-      {navLinks.map(({ id, label }) => (
-        <button
-          key={id}
-          className={`nav-item ${active === id ? 'active' : ''}`}
-          onClick={() => scrollTo(id)}
-        >
-          {label}
-        </button>
-      ))}
-    </nav>
+
+      <nav
+        className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}
+        style={{ '--nav-blur': `${navBlur}px`, backdropFilter: `blur(${navBlur}px)`, WebkitBackdropFilter: `blur(${navBlur}px)` }}
+      >
+        {navLinks.map(({ id, label }) => (
+          <button
+            key={id}
+            className={`nav-item ${active === id ? 'active' : ''}`}
+            onClick={() => scrollTo(id)}
+          >
+            {label}
+          </button>
+        ))}
+      </nav>
+    </header>
   );
 }
