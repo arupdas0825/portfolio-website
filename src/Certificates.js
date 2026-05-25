@@ -143,14 +143,14 @@ export default function Certificates({ featuredOnly = true }) {
         </p>
 
         {/* Dynamic Category Tabs */}
-        <div className="work-category-tabs-container">
-          <div className="work-category-tabs">
+        <div className="cert-category-tabs-container">
+          <div className="cert-category-tabs">
             {categories.map(cat => {
               const count = ALL_CERTIFICATES.filter(c => (c.category || "Industry Certifications") === cat).length;
               return (
                 <button
                   key={cat}
-                  className={`work-category-tab ${activeTab === cat ? 'active' : ''}`}
+                  className={`cert-category-tab ${activeTab === cat ? 'active' : ''}`}
                   onClick={() => setActiveTab(cat)}
                 >
                   {cat} <span style={{ marginLeft: '6px', fontSize: '0.75rem', opacity: 0.6 }}>({count})</span>

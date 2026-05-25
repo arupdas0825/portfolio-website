@@ -139,14 +139,14 @@ export default function CertificatesPage() {
       </div>
 
       {/* Category Navigation Tabs */}
-      <div className="work-category-tabs-container" style={{ maxWidth: '1200px', margin: '0 auto 12px' }}>
-        <div className="work-category-tabs" style={{ margin: '0 auto' }}>
+      <div className="cert-category-tabs-container" style={{ maxWidth: '1200px', margin: '0 auto 12px' }}>
+        <div className="cert-category-tabs" style={{ margin: '0 auto' }}>
           {categories.map(cat => {
             const count = ALL_CERTIFICATES.filter(c => (c.category || "Industry Certifications") === cat).length;
             return (
               <button
                 key={cat}
-                className={`work-category-tab ${activeTab === cat ? 'active' : ''}`}
+                className={`cert-category-tab ${activeTab === cat ? 'active' : ''}`}
                 onClick={() => setActiveTab(cat)}
               >
                 {cat} <span style={{ marginLeft: '6px', fontSize: '0.75rem', opacity: 0.6 }}>({count})</span>
