@@ -12,5 +12,33 @@
     "verifyLink": "https://github.com/arupdas0825",
     "color": "#8a5cf6",
     "priority": 1
+  },
+  {
+    "id": 2,
+    "title": "Google Ads Creative Certification",
+    "issuer": "Google",
+    "date": "2026",
+    "image": "/google ads creative certificate.png",
+    "description": "Certified by Google for expertise in designing, implementing, and optimizing creative assets across Google Ads campaigns. Covers best practices for storytelling, mobile-first design, and interactive campaign creatives to maximize audience engagement and return on investment.",
+    "tags": ["Google Ads", "Creative Design", "Digital Marketing", "Campaign Optimization"],
+    "category": "Professional Experience",
+    "credentialLink": "https://skillshop.exceedlms.com",
+    "verifyLink": "https://github.com/arupdas0825",
+    "color": "#4285f4",
+    "priority": 1
+  },
+  {
+    "id": 3,
+    "title": "Google Analytics Certification",
+    "issuer": "Google",
+    "date": "2026",
+    "image": "/google analytics certificate.png",
+    "description": "Certified by Google for comprehensive proficiency in Google Analytics 4 (GA4). Validates advanced skills in tracking user engagement, setting up conversion events, building reports, and translating behavioral data into actionable marketing insights.",
+    "tags": ["Google Analytics", "GA4", "Data Analytics", "Performance Measurement"],
+    "category": "Professional Experience",
+    "credentialLink": "https://skillshop.exceedlms.com",
+    "verifyLink": "https://github.com/arupdas0825",
+    "color": "#e37400",
+    "priority": 2
   }
 ]
