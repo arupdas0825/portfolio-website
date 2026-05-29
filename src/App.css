@@ -3237,7 +3237,7 @@ body {
 }
 @media (min-width: 1200px) {
   .cert-grid-compact {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 @media (max-width: 900px) {
@@ -5630,8 +5630,10 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
 /* ===== PREMIUM CATEGORIZED CERTIFICATE CARDS ===== */
 .cert-card-compact {
   background: rgba(15, 10, 28, 0.6) !important;
-  border-radius: 18px !important;
-  padding: 14px !important;
+  border-radius: 20px !important;
+  padding: 18px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
   transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.4s ease, box-shadow 0.4s ease !important;
   display: flex;
   flex-direction: column;
@@ -5639,20 +5641,21 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
 }
 
 .cert-card-compact:hover {
-  transform: translateY(-6px) scale(1.01) !important;
-  border-color: rgba(138, 92, 246, 0.4) !important;
+  transform: translateY(-5px) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
 }
 
 .cert-compact-img-wrap {
-  border-radius: 10px !important;
+  border-radius: 12px !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  aspect-ratio: 1.75 / 1 !important;
-  margin-bottom: 10px !important;
+  aspect-ratio: 1.6 / 1 !important;
+  margin-bottom: 12px !important;
   transition: border-color 0.3s ease !important;
 }
 
 .cert-card-compact:hover .cert-compact-img-wrap {
-  border-color: rgba(0, 242, 254, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
 /* Cinematic overlay zoom hint icon */
@@ -5669,6 +5672,26 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
 
 .cert-compact-img-wrap:hover .cert-preview-overlay {
   opacity: 1 !important;
+}
+
+/* Show More / Show Less button styling */
+.cert-show-more-btn {
+  background: none !important;
+  border: none !important;
+  color: #a78bfa !important;
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 0.76rem !important;
+  font-weight: 700 !important;
+  padding: 0 !important;
+  margin-left: 6px !important;
+  cursor: pointer !important;
+  text-decoration: underline !important;
+  transition: color 0.2s ease !important;
+  display: inline-block !important;
+}
+
+.cert-show-more-btn:hover {
+  color: #fff !important;
 }
 
 /* Dual button styling */
@@ -5693,12 +5716,16 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
 
 .cert-card-actions .cert-compact-btn.verify {
   border-color: rgba(255, 255, 255, 0.08) !important;
+  cursor: default !important;
+  pointer-events: none !important;
 }
 
 .cert-card-actions .cert-compact-btn.verify:hover {
-  border-color: rgba(255, 255, 255, 0.25) !important;
-  background: rgba(255, 255, 255, 0.04) !important;
-  color: #fff !important;
+  transform: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: var(--text-muted) !important;
 }
 
 /* ===== PREMIUM CATEGORIZED CERTIFICATES - EMPTY STATE PLACEHOLDERS ===== */

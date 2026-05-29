@@ -75,6 +75,31 @@ function CertificatesEmptyState({ category }) {
   );
 }
 
+// Expandable description component with Show More / Show Less functionality
+function ExpandableDescription({ text, limit = 110 }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  if (text.length <= limit) {
+    return <p className="cert-compact-description">{text}</p>;
+  }
+
+  return (
+    <p className="cert-compact-description">
+      {isExpanded ? text : `${text.substring(0, limit)}...`}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          setIsExpanded(!isExpanded);
+        }}
+        className="cert-show-more-btn"
+      >
+        {isExpanded ? 'Show Less' : 'Show More'}
+      </button>
+    </p>
+  );
+}
+
 export default function CertificatesPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Academic Certifications');
@@ -217,38 +242,42 @@ export default function CertificatesPage() {
                       ))}
                     </div>
                     
-                    <p className="cert-compact-description">{cert.description}</p>
+                    <ExpandableDescription text={cert.description} limit={110} />
                     
                     {/* Dual Action Buttons */}
                     <div className="cert-card-actions" style={{ display: 'flex', gap: '8px', marginTop: 'auto', paddingTop: '12px' }}>
-                      <a 
-                        href={cert.credentialLink} 
-                        target="_blank" 
-                        rel="noreferrer" 
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          if (IS_TOUCH) {
+                            setSelectedCert(cert);
+                          } else {
+                            window.open(cert.image, "_blank");
+                          }
+                        }}
                         className="cert-compact-btn flex-1" 
                         style={{ 
-                          textDecoration: 'none',
                           background: `${cert.color}15`,
                           borderColor: `${cert.color}44`,
                           color: '#fff'
                         }}
                       >
                         <LucideExternalLink size={12} style={{ marginRight: '4px' }} /> View
-                      </a>
-                      <a 
-                        href={cert.verifyLink || cert.credentialLink} 
-                        target="_blank" 
-                        rel="noreferrer" 
+                      </button>
+                      <div 
                         className="cert-compact-btn verify flex-1" 
                         style={{ 
                           textDecoration: 'none', 
                           background: 'transparent', 
-                          borderColor: 'rgba(255, 255, 255, 0.15)',
-                          color: 'var(--text-muted)'
+                          borderColor: 'rgba(255, 255, 255, 0.08)',
+                          color: 'var(--text-muted)',
+                          cursor: 'default',
+                          pointerEvents: 'none'
                         }}
                       >
                         <LucideCheckCircle size={12} style={{ marginRight: '4px' }} /> Verify
-                      </a>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
