@@ -40,5 +40,19 @@
     "verifyLink": "https://github.com/arupdas0825",
     "color": "#e37400",
     "priority": 2
+  },
+  {
+    "id": 4,
+    "title": "Class Representative Certificate",
+    "issuer": "Brainware University",
+    "date": "2025",
+    "image": "/CR Certificate.jpeg",
+    "description": "Selected and recognized as the Class Representative (CR) at Brainware University. Awarded for demonstrating outstanding leadership, student advocacy, conflict resolution, and facilitating effective communication between faculty and student body.",
+    "tags": ["Leadership", "Administration", "Coordination", "Communication"],
+    "category": "Academic Certifications",
+    "credentialLink": "https://github.com/arupdas0825",
+    "verifyLink": "https://github.com/arupdas0825",
+    "color": "#3b82f6",
+    "priority": 2
   }
 ]
