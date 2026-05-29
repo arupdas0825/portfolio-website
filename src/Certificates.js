@@ -198,15 +198,16 @@ export default function Certificates({ featuredOnly = true }) {
           >
             {displayCerts.length > 0 ? (
               displayCerts.map((cert, idx) => (
-                <motion.div
+                 <motion.div
                   key={cert.id}
                   className="cert-card-compact"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-40px' }}
                   transition={{ duration: 0.5, delay: idx * 0.08, ease: 'easeOut' }}
-                  whileHover={{ y: -6 }}
                   style={{ 
+                    '--cert-color-22': `${cert.color}22`,
+                    '--cert-color-aa': `${cert.color}aa`,
                     border: `1.5px solid ${cert.color}22`,
                     boxShadow: `0 8px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05)`,
                     background: 'rgba(15, 10, 28, 0.75)',

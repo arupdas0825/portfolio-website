@@ -195,14 +195,15 @@ export default function CertificatesPage() {
           >
             {processedCerts.length > 0 ? (
               processedCerts.map((cert, idx) => (
-                <motion.div
+                 <motion.div
                   key={cert.id}
                   className="cert-card-compact"
                   initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05, type: 'spring', stiffness: 240, damping: 22 }}
-                  whileHover={{ y: -6 }}
                   style={{ 
+                    '--cert-color-22': `${cert.color}22`,
+                    '--cert-color-aa': `${cert.color}aa`,
                     border: `1.5px solid ${cert.color}22`,
                     boxShadow: `0 8px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05)`,
                     background: 'rgba(15, 10, 28, 0.75)',
