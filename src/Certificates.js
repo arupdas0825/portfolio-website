@@ -79,7 +79,7 @@ function CertificatesEmptyState({ category }) {
 }
 
 // Expandable description component with Show More / Show Less functionality
-function ExpandableDescription({ text, limit = 110 }) {
+function ExpandableDescription({ text, limit = 160 }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   if (text.length <= limit) {
@@ -223,7 +223,7 @@ export default function Certificates({ featuredOnly = true }) {
                   </div>
 
                   {/* Card Info Content */}
-                  <div className="cert-compact-info" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <div className="cert-compact-info" style={{ height: 'auto', display: 'flex', flexDirection: 'column' }}>
                     <div className="cert-compact-header">
                       <h3 className="cert-compact-title">{cert.title}</h3>
                       <span className="cert-compact-date">{cert.date}</span>
@@ -249,10 +249,10 @@ export default function Certificates({ featuredOnly = true }) {
                       ))}
                     </div>
                     
-                    <ExpandableDescription text={cert.description} limit={110} />
+                    <ExpandableDescription text={cert.description} limit={160} />
                     
                     {/* Dual Action Buttons */}
-                    <div className="cert-card-actions" style={{ display: 'flex', gap: '8px', marginTop: 'auto', paddingTop: '12px' }}>
+                    <div className="cert-card-actions" style={{ display: 'flex', gap: '8px', marginTop: '4px', paddingTop: '4px' }}>
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();

@@ -5630,32 +5630,32 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
 /* ===== PREMIUM CATEGORIZED CERTIFICATE CARDS ===== */
 .cert-card-compact {
   background: rgba(15, 10, 28, 0.6) !important;
-  border-radius: 20px !important;
-  padding: 18px !important;
+  border-radius: 16px !important;
+  padding: 14px !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
   transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.4s ease, box-shadow 0.4s ease !important;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: auto !important; /* Dynamically compute compact height */
 }
 
 .cert-card-compact:hover {
-  transform: translateY(-5px) !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  transform: translateY(-4px) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
 }
 
 .cert-compact-img-wrap {
-  border-radius: 12px !important;
+  border-radius: 10px !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   aspect-ratio: 1.6 / 1 !important;
-  margin-bottom: 12px !important;
+  margin-bottom: 10px !important;
   transition: border-color 0.3s ease !important;
 }
 
 .cert-card-compact:hover .cert-compact-img-wrap {
-  border-color: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
 }
 
 /* Cinematic overlay zoom hint icon */
@@ -5672,6 +5672,33 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
 
 .cert-compact-img-wrap:hover .cert-preview-overlay {
   opacity: 1 !important;
+}
+
+/* Compressed info list with exact gaps */
+.cert-compact-info {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  height: auto !important; /* Remove height: 100% stretch constraint */
+}
+
+.cert-compact-header {
+  margin-bottom: 0 !important;
+}
+
+.cert-compact-issuer {
+  margin-bottom: 0 !important;
+}
+
+.cert-compact-tags {
+  margin-bottom: 0 !important;
+  gap: 6px !important;
+}
+
+.cert-compact-description {
+  margin-bottom: 0 !important;
+  font-size: 0.76rem !important;
+  line-height: 1.5 !important;
 }
 
 /* Show More / Show Less button styling */
@@ -5694,13 +5721,18 @@ a.contact-detail-val-v2:hover { color: var(--purple-light); }
   color: #fff !important;
 }
 
-/* Dual button styling */
+/* Dual action buttons directly beneath descriptions */
+.cert-card-actions {
+  margin-top: 4px !important; /* Remove auto push, position directly below content */
+  padding-top: 4px !important;
+}
+
 .cert-card-actions .cert-compact-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 8px 12px !important;
-  border-radius: 10px !important;
+  border-radius: 8px !important;
   border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
   font-family: 'Syne', sans-serif !important;
   font-size: 0.74rem !important;
