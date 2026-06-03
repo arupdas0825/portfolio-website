@@ -1,5 +1,19 @@
 [
   {
+    "id": 6,
+    "title": "Responsive Web Design",
+    "issuer": "freeCodeCamp",
+    "date": "2025",
+    "image": "/Responsive Web Design Certificate.png",
+    "description": "Certified for completing the Responsive Web Design developer certification, representing 300 hours of coursework in HTML5, CSS3, responsive layout design, CSS Grid, Flexbox, and visual design principles.",
+    "tags": ["Responsive Design", "HTML5", "CSS3", "CSS Grid", "Flexbox"],
+    "category": "Professional Experience",
+    "credentialLink": "https://freecodecamp.org/certification/arupdas0825/responsive-web-design",
+    "verifyLink": "https://freecodecamp.org/certification/arupdas0825/responsive-web-design",
+    "color": "#198754",
+    "priority": 1
+  },
+  {
     "id": 1,
     "title": "“The Prompters” at TEXIBITION 2K26",
     "issuer": "Brainware University Tech Club",
@@ -25,7 +39,7 @@
     "credentialLink": "https://skillshop.exceedlms.com",
     "verifyLink": "https://github.com/arupdas0825",
     "color": "#4285f4",
-    "priority": 1
+    "priority": 2
   },
   {
     "id": 3,
@@ -39,7 +53,7 @@
     "credentialLink": "https://skillshop.exceedlms.com",
     "verifyLink": "https://github.com/arupdas0825",
     "color": "#e37400",
-    "priority": 2
+    "priority": 3
   },
   {
     "id": 4,
@@ -67,6 +81,6 @@
     "credentialLink": "https://skillshop.exceedlms.com",
     "verifyLink": "https://github.com/arupdas0825",
     "color": "#34a853",
-    "priority": 3
+    "priority": 4
   }
 ]
