@@ -38,7 +38,7 @@ export default function CV() {
     setTimeout(() => setZoom(1), 300); // Reset zoom after animation
   };
 
-  const description = "Comprehensive resume showcasing academic background, AI/ML specialization, software engineering projects, certifications, technical skills, leadership experience, and professional achievements.";
+  const description = "Comprehensive AI/ML-focused resume highlighting academic achievements, software engineering projects, technical expertise, certifications, leadership experience, and professional accomplishments. Designed to showcase both technical depth and problem-solving capabilities for modern software and AI-driven roles.";
   const isLongDesc = description.length > 80;
 
   return (
@@ -79,9 +79,9 @@ export default function CV() {
             whileHover={{ y: -4 }}
             transition={{ type: 'spring', stiffness: 220, damping: 20 }}
             className={`premium-project-card ${isExpanded ? 'expanded' : ''} ${isMobile ? 'mobile-card' : ''}`}
-            style={{ width: '100%', maxWidth: '460px', cursor: 'default' }}
+            style={{ width: '100%', maxWidth: '520px', cursor: 'default' }}
           >
-            <div className="premium-media-section" style={{ height: '300px' }}>
+            <div className="premium-media-section" style={{ height: '260px' }}>
               <div className="premium-media-container">
                 <div 
                   className="premium-image" 
@@ -103,8 +103,7 @@ export default function CV() {
             <div className="premium-info-section">
               <div className="premium-info-header">
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <h3 className="premium-title" style={{ fontSize: '1.4rem', marginBottom: '4px' }}>Curriculum Vitae</h3>
-                  <span style={{ fontSize: '0.8rem', color: '#8a5cf6', fontFamily: 'Syne, sans-serif', fontWeight: 700, letterSpacing: '0.5px' }}>Professional Resume • AI/ML Developer</span>
+                  <h3 className="premium-title" style={{ fontSize: '1.3rem', marginBottom: '8px', color: 'var(--text-primary)' }}>Professional AI/ML Resume</h3>
                 </div>
               </div>
               
