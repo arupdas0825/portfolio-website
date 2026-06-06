@@ -38,7 +38,7 @@ export default function CV() {
     setTimeout(() => setZoom(1), 300); // Reset zoom after animation
   };
 
-  const description = "Comprehensive AI/ML-focused resume highlighting academic achievements, software engineering projects, technical expertise, certifications, leadership experience, and professional accomplishments. Designed to showcase both technical depth and problem-solving capabilities for modern software and AI-driven roles.";
+  const description = "Comprehensive curriculum vitae highlighting academic achievements, software engineering projects, technical expertise, certifications, leadership experience, and professional accomplishments. Designed to present a complete overview of my educational background, practical experience, and professional development.";
   const isLongDesc = description.length > 80;
 
   return (
@@ -101,9 +101,10 @@ export default function CV() {
             <div className="premium-section-divider"><div className="divider-glow-line" /></div>
             
             <div className="premium-info-section">
-              <div className="premium-info-header">
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <h3 className="premium-title" style={{ fontSize: '1.3rem', marginBottom: '8px', color: 'var(--text-primary)' }}>Professional AI/ML Resume</h3>
+              <div className="premium-info-header" style={{ paddingBottom: '0' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <span style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 600 }}>Brainware University</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>AI/ML Specialization • 2028 Graduate</span>
                 </div>
               </div>
               
