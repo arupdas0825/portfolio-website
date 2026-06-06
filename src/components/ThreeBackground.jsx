@@ -21,9 +21,9 @@ const IS_TOUCH = typeof window !== 'undefined' &&
 function StarField() {
   const ref = useRef();
 
-  // 1200 stars scattered in a 20-unit cube — generated once
+  // Desktop optimization: 30 stars scattered in a 20-unit cube
   const [sphere] = useState(() => {
-    const count = 1200;
+    const count = 30;
     const positions = new Float32Array(count * 3);
     for (let i = 0; i < count * 3; i++) {
       positions[i] = (Math.random() - 0.5) * 20;

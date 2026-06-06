@@ -826,7 +826,7 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
   );
 };
 
-export default function GithubStats() {
+const GithubStats = React.memo(function GithubStats() {
   const sectionRef = useRef(null);
   const [data, setData] = useState({
     stars:0, forks:0, repos:0, followers:0, following:0,
@@ -1264,4 +1264,6 @@ export default function GithubStats() {
       </div>
     </section>
   );
-}
+});
+
+export default GithubStats;

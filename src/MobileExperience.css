@@ -44,7 +44,7 @@
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
-  mix-blend-mode: screen;
+  
   will-change: transform;
 }
 
@@ -97,8 +97,8 @@
 @media (max-width: 768px) {
   /* Ensure cards feel rich on mobile */
   .premium-project-card, .timeline-card, .academic-card, .cert-card-compact {
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
     border-color: rgba(255, 255, 255, 0.12) !important;
   }
 }

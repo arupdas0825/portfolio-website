@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ZoomIn, ZoomOut, Download, X, Eye } from 'lucide-react';
 
-export default function CV() {
+const CV = React.memo(function CV() {
   const fadeRefs = useRef([]);
   const addRef = (el) => { if (el && !fadeRefs.current.includes(el)) fadeRefs.current.push(el); };
 
@@ -195,4 +195,6 @@ export default function CV() {
       </AnimatePresence>
     </section>
   );
-}
+});
+
+export default CV;

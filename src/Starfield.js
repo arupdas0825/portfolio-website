@@ -21,7 +21,7 @@ export default function Starfield() {
   // Generate particles based on device performance rules
   const { farStars, midStars, nearStars } = useMemo(() => {
     // We only use this component on mobile, but just in case:
-    const count = isMobile ? 35 : 35; 
+    const count = isMobile ? 15 : 15; 
     
     const generateLayer = (num, sizeRange, opacityRange) => {
       return Array.from({ length: num }, (_, i) => ({
