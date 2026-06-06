@@ -1518,17 +1518,25 @@ export default function GithubStats() {
           ))}
         </div>
 
-        {/* ── Main row ── */}
+        {/* ── Main row (Profile Card) ── */}
         <div className="fade-in" style={{ 
-          display:'grid', 
-          gridTemplateColumns: isMobile ? '1fr' : '1.6fr 1fr', 
-          gap: 14, 
-          marginBottom: 14 
+          display:'flex', 
+          justifyContent:'center',
+          marginBottom: 40 
         }}>
 
-          {/* Left — profile + metrics + ring */}
-          <Panel hover={false} style={{ padding: isMobile ? 20 : 30 }}>
-            <div style={{ display:'flex', gap:24, alignItems:'flex-start', flexDirection: isMobile ? 'column' : 'row' }}>
+          {/* Profile Insight Card */}
+          <Panel hover={false} style={{ 
+            padding: isMobile ? 24 : 40, 
+            width: '100%', 
+            maxWidth: 900,
+            background: 'rgba(255,255,255,0.04)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            boxShadow: '0 24px 64px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)'
+          }}>
+            <div style={{ display:'flex', gap: isMobile ? 30 : 50, alignItems:'center', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between' }}>
               <div style={{ flex:1 }}>
                 {/* Profile */}
                 <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:26 }}>
@@ -1621,66 +1629,16 @@ export default function GithubStats() {
               </div>
             </div>
           </Panel>
-
-          {/* Right — language breakdown */}
-          <Panel hover={false} style={{ padding:'26px 22px' }}>
-            <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:20 }}>
-              <Code2 size={16} style={{ color:'#c084fc' }}/>
-              <span style={{ fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:14, color:'#fff' }}>Language Breakdown</span>
-            </div>
-            <div style={{ display:'flex', flexDirection:'column' }}>
-              {langs.map((l, idx) => (
-                <div 
-                  key={l.name}
-                  onMouseEnter={() => !isMobile && setHoveredIdx(idx)}
-                  onMouseLeave={() => !isMobile && setHoveredIdx(null)}
-                  onClick={() => isMobile && setHoveredIdx(hoveredIdx === idx ? null : idx)}
-                  style={{
-                    cursor: 'pointer',
-                    opacity: hoveredIdx !== null ? (hoveredIdx === idx ? 1 : 0.4) : 1,
-                    transform: hoveredIdx === idx ? 'translateX(4px)' : 'translateX(0)',
-                    transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'
-                  }}
-                >
-                  <Bar label={l.name} pct={l.pct} color={l.color} bytes={l.bytes||null}/>
-                </div>
-              ))}
-            </div>
-          </Panel>
-        </div>
-
-        {/* ── Streak row ── */}
-        <div className="fade-in" style={{ 
-          display:'grid', 
-          gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', 
-          gap: 14 
-        }}>
-          {streakCards.map(({ icon:Icon, label, val, color, pct, suffix })=>(
-            <Panel key={label} accent style={{ padding:'22px 26px' }}>
-              <div style={{ display:'flex', alignItems:'center', gap:18 }}>
-                <Ring pct={pct} color={color} size={72} stroke={5}>
-                  <Icon size={16} style={{ color }}/>
-                </Ring>
-                <div>
-                  <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize: isMobile ? 24 : 28, color:'#fff', lineHeight:1 }}>
-                    <CountUp value={val}/>
-                    {suffix && <span style={{ fontSize:13, color:'rgba(255,255,255,0.35)', marginLeft:4 }}>{suffix}</span>}
-                  </div>
-                  <div style={{ fontSize:10, color:'rgba(255,255,255,0.3)', fontFamily:'Syne,sans-serif', fontWeight:700, letterSpacing:'1px', textTransform:'uppercase', marginTop:6 }}>
-                    {label}
-                  </div>
-                </div>
-              </div>
-            </Panel>
-          ))}
         </div>
 
         {/* ── Contribution Section ── */}
         <div className="fade-in" style={{ 
-          display: 'grid', 
-          gridTemplateColumns: isMobile ? '1fr' : '1fr auto', 
+          display: 'flex', 
+          flexDirection: isMobile ? 'column' : 'row',
           gap: isMobile ? 20 : 30,
-          alignItems: 'start'
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%'
         }}>
           {/* Left — Heatmap */}
           <div style={{ flex: 1, overflow: 'hidden' }}>
