@@ -26,13 +26,13 @@ export default function CV() {
           </p>
 
           <div className="cv-actions">
-            <a className="btn-primary" href="/CV.pdf" target="_blank" rel="noreferrer">
+            <a className="btn-primary" href="/ARUP%20DAS%20CV.pdf" target="_blank" rel="noreferrer">
               <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
               </svg>
               View CV
             </a>
-            <a className="btn-secondary" href="/CV.pdf" download>
+            <a className="btn-secondary" href="/ARUP%20DAS%20CV.pdf" download>
               <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
               </svg>
@@ -47,7 +47,7 @@ export default function CV() {
             <div className="cv-preview-dots">
               <span /><span /><span />
             </div>
-            <span className="cv-preview-title">Arup_Das_CV.pdf</span>
+            <span className="cv-preview-title">ARUP DAS CV.pdf</span>
           </div>
           <div className="cv-preview-body">
             <div className="cv-preview-name">Arup Das</div>
