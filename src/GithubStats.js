@@ -247,11 +247,11 @@ const COMMITS_BY_PROJECT = {
 /* ─── Contribution Heatmap ─── */
 const getColor = (count) => {
   if (count === null) return 'rgba(255,255,255,0.02)'; // Future
-  if (count === 0) return 'rgba(255,255,255,0.04)';
-  if (count < 3) return '#0e4429';
-  if (count < 6) return '#006d32';
-  if (count < 9) return '#26a641';
-  return '#39d353';
+  if (count === 0) return '#161B22';
+  if (count < 3) return '#0E4429';
+  if (count < 6) return '#006D32';
+  if (count < 9) return '#26A641';
+  return '#39D353';
 };
 
 const getContributionDetails = (dateStr, count) => {
@@ -306,79 +306,60 @@ const getContributionDetails = (dateStr, count) => {
 };
 
 /* ─── HeatmapGrid Component (Memoized for peak 120 FPS performance) ─── */
-const HeatmapGrid = React.memo(({ weeks, isInView, isMobile, handleCellEnter, handleCellLeave, handleCellClick }) => {
+const HeatmapGrid = React.memo(({ weeks, isMobile, handleCellEnter, handleCellLeave, handleCellClick }) => {
   return (
-    <div className="heatmap-grid" style={{ display: 'flex', gap: 3 }}>
-      {weeks.map((week, wi) => (
-        <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          {week.map((day, di) => {
-            // Render a completely empty, inert element for empty grid padding slots
-            if (!day) {
+    <>
+      <style>{`
+        .gh-cell {
+          transition: transform 0.15s ease;
+          border: 1px solid rgba(255,255,255,0.02);
+        }
+        @media (hover: hover) {
+          .gh-cell:hover {
+            transform: translateY(-1px);
+          }
+        }
+      `}</style>
+      <div className="heatmap-grid" style={{ display: 'flex', gap: 4 }}>
+        {weeks.map((week, wi) => (
+          <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {week.map((day, di) => {
+              if (!day) {
+                return (
+                  <div 
+                    key={di} 
+                    style={{ 
+                      width: 12, 
+                      height: 12, 
+                      borderRadius: 4, 
+                      background: 'transparent', 
+                      pointerEvents: 'none' 
+                    }} 
+                  />
+                );
+              }
+
               return (
-                <div 
-                  key={di} 
-                  style={{ 
-                    width: 10, 
-                    height: 10, 
-                    borderRadius: 2, 
-                    background: 'rgba(255, 255, 255, 0.01)', 
-                    pointerEvents: 'none' 
-                  }} 
+                <div
+                  key={di}
+                  className="gh-cell"
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: 4,
+                    background: getColor(day.count),
+                    cursor: day.count !== null ? 'pointer' : 'default',
+                  }}
+                  onMouseEnter={isMobile ? undefined : (e) => handleCellEnter(day, e)}
+                  onMouseLeave={isMobile ? undefined : handleCellLeave}
+                  onClick={(e) => handleCellClick(day, e)}
                 />
               );
-            }
-
-            const delay = (wi * 0.012) + (di * 0.004);
-            const breathDur = 3.0 + ((wi + di) % 7) * 0.4;
-            const cellColor = getColor(day.count);
-            
-            let glowColor = 'transparent';
-            let glowRadius = '0px';
-            if (day.count !== null) {
-              if (day.count === 0) {
-                glowColor = 'rgba(138, 92, 246, 0.25)';
-                glowRadius = '4px';
-              } else if (day.count < 3) {
-                glowColor = 'rgba(14, 68, 41, 0.6)';
-                glowRadius = '5px';
-              } else if (day.count < 6) {
-                glowColor = 'rgba(0, 109, 50, 0.6)';
-                glowRadius = '7px';
-              } else if (day.count < 9) {
-                glowColor = 'rgba(38, 166, 65, 0.7)';
-                glowRadius = '9px';
-              } else {
-                glowColor = 'rgba(57, 211, 83, 0.85)';
-                glowRadius = '12px';
-              }
-            }
-
-            const isFuture = day.count === null;
-
-            return (
-              <div
-                key={di}
-                className={`contribution-cell ${isInView ? 'cell-animate' : 'cell-initial'} ${isFuture ? 'future-cell' : 'active-cell'}`}
-                style={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: 2,
-                  background: cellColor,
-                  cursor: day.count !== null ? 'pointer' : 'default',
-                  '--delay': `${delay}s`,
-                  '--breath-dur': `${breathDur}s`,
-                  '--glow-color': glowColor,
-                  '--glow-radius': glowRadius,
-                }}
-                onMouseEnter={isMobile ? undefined : (e) => handleCellEnter(day, e)}
-                onMouseLeave={isMobile ? undefined : handleCellLeave}
-                onClick={(e) => handleCellClick(day, e)}
-              />
-            );
-          })}
-        </div>
-      ))}
-    </div>
+            })}
+          </div>
+        ))}
+      </div>
+    </>
   );
 });
 
@@ -567,64 +548,48 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
 
   const activeDetails = hoveredCell ? getContributionDetails(hoveredCell.date, hoveredCell.count) : null;
 
-  const activeGlowColor = hoveredCell && hoveredCell.count !== null
-    ? (hoveredCell.count === 0 ? 'rgba(138, 92, 246, 0.25)' : (hoveredCell.count < 3 ? 'rgba(14, 68, 41, 0.4)' : (hoveredCell.count < 6 ? 'rgba(0, 109, 50, 0.5)' : (hoveredCell.count < 9 ? 'rgba(38, 166, 65, 0.6)' : 'rgba(57, 211, 83, 0.75)'))))
-    : 'transparent';
-
-  const activeNeonColor = hoveredCell && hoveredCell.count !== null
-    ? (hoveredCell.count === 0 ? '#8a5cf6' : (hoveredCell.count < 3 ? '#39d353' : (hoveredCell.count < 6 ? '#26a641' : (hoveredCell.count < 9 ? '#006d32' : '#39d353'))))
-    : 'transparent';
-
-  // Customized tier-based neon borders matching cell values
-  const getNeonBorder = (count) => {
-    if (count === 0) return 'rgba(138, 92, 246, 0.35)'; // soft purple glow
-    if (count < 3) return 'rgba(14, 68, 41, 0.4)';      // deep green
-    if (count < 6) return 'rgba(0, 109, 50, 0.5)';      // medium green
-    if (count < 9) return 'rgba(38, 166, 65, 0.7)';      // bright green
-    return 'rgba(57, 211, 83, 0.85)';                    // neon green
-  };
+  const activeGlowColor = 'transparent';
+  const activeNeonColor = '#fff';
+  const getNeonBorder = () => 'rgba(255, 255, 255, 0.1)';
 
   return (
-    <div ref={containerRef} style={{ marginTop: 30, marginBottom: 40 }}>
+    <div ref={containerRef} style={{ marginTop: 0, marginBottom: 0, width: '100%' }}>
       <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
-        alignItems: 'center', 
+        alignItems: 'baseline', 
         marginBottom: 12,
-        padding: isMobile ? '0 4px' : '0'
+        padding: isMobile ? '0 4px' : '0 10px'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 12, height: 12, borderRadius: 2, background: '#39d353' }} />
-          <span style={{ fontSize: 13, fontFamily: 'Syne, sans-serif', fontWeight: 700, color: '#fff' }}>
-            Contribution Activity
-          </span>
+        <div style={{ fontSize: 16, fontFamily: 'Syne, sans-serif', fontWeight: 700, color: '#fff' }}>
+          Contribution Activity
         </div>
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'Syne, sans-serif' }}>
-          Last 365 Days
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontFamily: 'Syne, sans-serif' }}>
+          Last 12 Months
         </div>
       </div>
 
       <div 
         ref={scrollContainerRef}
         style={{ 
-          background: 'rgba(255,255,255,0.02)', 
+          background: 'rgba(255,255,255,0.01)', 
           border: '1px solid rgba(255,255,255,0.06)', 
-          borderRadius: 16, 
-          padding: isMobile ? '12px 8px' : '18px 14px',
+          borderRadius: 8, 
+          padding: isMobile ? '12px' : '16px 20px',
           overflowX: 'auto',
           position: 'relative'
         }} 
         className="hide-scrollbar"
       >
-        <div style={{ minWidth: isMobile ? 750 : 'auto', display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <div style={{ minWidth: isMobile ? 750 : 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
           {/* Month labels */}
-          <div style={{ display: 'flex', height: 18, position: 'relative', marginBottom: 2 }}>
+          <div style={{ display: 'flex', height: 16, position: 'relative', marginBottom: 2 }}>
             {monthLabels.map((m, i) => (
               <span key={i} style={{ 
                 position: 'absolute', 
-                left: m.index * 13 + 28, 
-                fontSize: 9, 
-                color: 'rgba(255,255,255,0.3)',
+                left: m.index * 16 + 32, 
+                fontSize: 10, 
+                color: 'rgba(255,255,255,0.4)',
                 fontFamily: 'Syne, sans-serif'
               }}>
                 {m.name}
@@ -632,15 +597,15 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
             ))}
           </div>
 
-          <div style={{ display: 'flex', gap: 3 }}>
+          <div style={{ display: 'flex', gap: 4 }}>
             {/* Day labels */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginRight: 6, marginTop: 2 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginRight: 8, marginTop: 2 }}>
               {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => (
                 <span key={d} style={{ 
-                  fontSize: 9, 
-                  color: 'rgba(255,255,255,0.2)', 
-                  height: 10, 
-                  lineHeight: '10px',
+                  fontSize: 10, 
+                  color: 'rgba(255,255,255,0.3)', 
+                  height: 12, 
+                  lineHeight: '12px',
                   fontFamily: 'Syne, sans-serif'
                 }}>
                   {d}
@@ -651,7 +616,6 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
             {/* Grid */}
             <HeatmapGrid 
               weeks={weeks}
-              isInView={isInView}
               isMobile={isMobile}
               handleCellEnter={handleCellEnter}
               handleCellLeave={handleCellLeave}
@@ -661,11 +625,11 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
 
           {/* Legend */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end', marginTop: 12 }}>
-            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>Less</span>
+            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)' }}>Less</span>
             {[0, 2, 5, 8, 12].map(c => (
-              <div key={c} style={{ width: 9, height: 9, borderRadius: 2, background: getColor(c) }} />
+              <div key={c} style={{ width: 10, height: 10, borderRadius: 3, background: getColor(c), border: '1px solid rgba(255,255,255,0.02)' }} />
             ))}
-            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>More</span>
+            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)' }}>More</span>
           </div>
         </div>
       </div>
