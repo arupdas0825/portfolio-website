@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
-import { ZoomIn, ZoomOut, Download, Maximize, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ZoomIn, ZoomOut, Download, X, Eye } from 'lucide-react';
 
 export default function CV() {
   const fadeRefs = useRef([]);
@@ -9,6 +9,7 @@ export default function CV() {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -25,25 +26,8 @@ export default function CV() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // 3D Card effect
-  const cardX = useMotionValue(0);
-  const cardY = useMotionValue(0);
-  const rotateX = useTransform(cardY, [-150, 150], [10, -10]);
-  const rotateY = useTransform(cardX, [-150, 150], [-10, 10]);
-
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    cardX.set(e.clientX - rect.left - rect.width / 2);
-    cardY.set(e.clientY - rect.top - rect.height / 2);
-  };
-
-  const handleMouseLeave = () => {
-    cardX.set(0);
-    cardY.set(0);
-  };
-
   const toggleViewer = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setIsViewerOpen(true);
     document.body.style.overflow = 'hidden';
   };
@@ -54,10 +38,15 @@ export default function CV() {
     setTimeout(() => setZoom(1), 300); // Reset zoom after animation
   };
 
+  const description = "Comprehensive resume showcasing academic background, AI/ML specialization, software engineering projects, certifications, technical skills, leadership experience, and professional achievements.";
+  const isLongDesc = description.length > 80;
+
   return (
     <section className="page-section cv-section">
-      <div className="section-inner cv-inner">
-        <div className="fade-in" ref={addRef}>
+      <div className="section-inner cv-inner" style={{ alignItems: 'center' }}>
+        
+        {/* LEFT SIDE: Heading & Stats */}
+        <div className="fade-in" ref={addRef} style={{ flex: 1, paddingRight: isMobile ? 0 : '40px' }}>
           <span className="section-label">✦ PROFESSIONAL PROFILE ✦</span>
           <h2 className="section-title">Curriculum <span>Vitae</span></h2>
           <div className="section-line" />
@@ -78,98 +67,106 @@ export default function CV() {
             View or download my latest CV to explore my academic background,
             technical expertise, and project experience.
           </p>
-
-          <div className="cv-actions centered-actions">
-            <button className="btn-primary liquid-btn" onClick={toggleViewer}>
-              <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-              </svg>
-              View CV
-            </button>
-            <a className="btn-secondary liquid-btn" href="/ARUP%20DAS%20CV.pdf" download>
-              <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
-              </svg>
-              Download CV
-            </a>
-          </div>
         </div>
 
-        {/* 3D Premium Card */}
-        <div className="cv-preview-container fade-in" ref={addRef} style={{ animationDelay: '0.15s' }}>
-          <motion.div 
-            className="cv-3d-card"
-            style={{ rotateX, rotateY, z: 100 }}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            whileHover={{ scale: 1.02, boxShadow: '0 30px 60px rgba(0,0,0,0.5)' }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        {/* RIGHT SIDE: Premium Project-Style CV Card */}
+        <div className="cv-preview-container fade-in" ref={addRef} style={{ animationDelay: '0.15s', flex: 1, display: 'flex', justifyContent: isMobile ? 'center' : 'flex-end' }}>
+          
+          <motion.div
+            layout
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -4 }}
+            transition={{ type: 'spring', stiffness: 220, damping: 20 }}
+            className={`premium-project-card ${isExpanded ? 'expanded' : ''} ${isMobile ? 'mobile-card' : ''}`}
+            style={{ width: '100%', maxWidth: '460px', cursor: 'default' }}
           >
-            <div className="card-glass-overlay"></div>
-            <div className="cv-preview-header">
-              <div className="cv-preview-dots">
-                <span className="dot red"/><span className="dot yellow"/><span className="dot green"/>
+            <div className="premium-media-section" style={{ height: '300px' }}>
+              <div className="premium-media-container">
+                <div 
+                  className="premium-image" 
+                  style={{ 
+                    background: `url('/cv image.png') center/cover no-repeat`,
+                    height: '100%',
+                    width: '100%'
+                  }} 
+                />
               </div>
-              <span className="cv-preview-title">ARUP_DAS_CV.pdf</span>
+              <div className="premium-media-gradient-overlay" />
+              <div className="premium-meta-badges">
+                <div className="premium-meta-badge" style={{ background: 'rgba(255,255,255,0.1)' }}>UPDATED</div>
+              </div>
             </div>
             
-            <div className="cv-actual-content">
-              <div className="cv-profile-header">
-                <h3>ARUP DAS</h3>
-                <p>AI/ML Developer</p>
-              </div>
-              <div className="cv-divider" />
-              <div className="cv-details-grid">
-                <div className="cv-detail-group">
-                  <h4>University</h4>
-                  <p>Brainware University, Kolkata</p>
-                </div>
-                <div className="cv-detail-group">
-                  <h4>Core Skills</h4>
-                  <div className="skill-tags">
-                    <span>Python</span><span>React</span><span>Java</span><span>Firebase</span>
-                  </div>
-                </div>
-                <div className="cv-detail-group">
-                  <h4>Key Projects</h4>
-                  <ul className="project-list-cv">
-                    <li>EverBond Wealth</li>
-                    <li>HireSight AI</li>
-                    <li>StudyTra</li>
-                  </ul>
+            <div className="premium-section-divider"><div className="divider-glow-line" /></div>
+            
+            <div className="premium-info-section">
+              <div className="premium-info-header">
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <h3 className="premium-title" style={{ fontSize: '1.4rem', marginBottom: '4px' }}>Curriculum Vitae</h3>
+                  <span style={{ fontSize: '0.8rem', color: '#8a5cf6', fontFamily: 'Syne, sans-serif', fontWeight: 700, letterSpacing: '0.5px' }}>Professional Resume • AI/ML Developer</span>
                 </div>
               </div>
-              <div className="cv-watermark">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--purple-dim)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-file-text"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg>
+              
+              <div className="premium-desc-wrapper">
+                <motion.div layout="position" animate={{ height: isExpanded ? 'auto' : '42px' }} className="premium-desc-anim-container">
+                  <p className={`premium-desc-text ${isExpanded ? 'expanded' : 'collapsed'}`}>{description}</p>
+                </motion.div>
+                {isLongDesc && (
+                  <button onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }} className="premium-showmore-btn">
+                    {isExpanded ? 'SHOW LESS' : 'SHOW MORE'}
+                  </button>
+                )}
+              </div>
+              
+              <div className="premium-actions-footer" onClick={e => e.stopPropagation()}>
+                <button onClick={toggleViewer} className="premium-action-link github" style={{ border: 'none', cursor: 'pointer', flex: isMobile ? '1' : 'initial', justifyContent: 'center' }}>
+                  <Eye size={13} /> VIEW CV
+                </button>
+                <a href="/ARUP%20DAS%20CV.pdf" download className="premium-action-link demo" style={{ flex: isMobile ? '1' : 'initial', justifyContent: 'center' }}>
+                  <Download size={13} /> DOWNLOAD
+                </a>
               </div>
             </div>
+            
+            <div className="premium-card-ambient-glow" />
           </motion.div>
         </div>
       </div>
 
-      {/* Embedded PDF Viewer Modal */}
+      {/* Embedded PDF Viewer Modal (Premium Liquid Glass) */}
       <AnimatePresence>
         {isViewerOpen && (
           <motion.div 
             className="pdf-viewer-overlay frosted-blur"
+            style={{ 
+              background: 'rgba(5, 5, 8, 0.85)', 
+              backdropFilter: 'blur(24px)', 
+              WebkitBackdropFilter: 'blur(24px)' 
+            }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
             onClick={closeViewer}
           >
             <motion.div 
               className={`pdf-liquid-panel ${isMobile ? 'mobile-bottom-sheet' : 'desktop-glass-panel'}`}
-              initial={isMobile ? { y: '100%' } : { scale: 0.9, opacity: 0, y: 20 }}
-              animate={isMobile ? { y: 0 } : { scale: 1, opacity: 1, y: 0 }}
-              exit={isMobile ? { y: '100%' } : { scale: 0.9, opacity: 0, y: 20 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              initial={{ scale: 0.98, opacity: 0, y: isMobile ? '100%' : 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.98, opacity: 0, y: isMobile ? '100%' : 20 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              style={{
+                boxShadow: '0 24px 60px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.08)'
+              }}
               onClick={(e) => e.stopPropagation()}
             >
               {isMobile && <div className="sheet-handle" onClick={closeViewer} />}
               
-              <div className="pdf-toolbar glass-toolbar">
+              <div className="pdf-toolbar glass-toolbar" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                 <div className="toolbar-left">
-                  <span className="toolbar-title">ARUP DAS CV.pdf</span>
+                  <span className="toolbar-title" style={{ color: '#fff', fontWeight: 600 }}>ARUP_DAS_CV.pdf</span>
                 </div>
                 <div className="toolbar-center">
                   <button onClick={() => setZoom(z => Math.max(0.5, z - 0.2))}><ZoomOut size={16} /></button>
@@ -182,12 +179,13 @@ export default function CV() {
                 </div>
               </div>
               
-              <div className="pdf-content-wrapper">
+              <div className="pdf-content-wrapper" style={{ background: 'rgba(0,0,0,0.2)' }}>
                 <div className="pdf-scale-container" style={{ transform: `scale(${zoom})`, transformOrigin: 'top center' }}>
                   <iframe 
                     src="/ARUP%20DAS%20CV.pdf#toolbar=0&navpanes=0&scrollbar=0" 
                     title="CV PDF"
                     className="pdf-iframe"
+                    style={{ background: 'transparent' }}
                   />
                 </div>
               </div>
