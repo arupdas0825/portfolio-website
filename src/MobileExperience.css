@@ -1,0 +1,104 @@
+/* ============================================================
+   MOBILE EXPERIENCE UPGRADE (3D Immersive Parallax & Lighting)
+   ============================================================ */
+
+/* Pure CSS Starfield (GPU Accelerated) */
+.starfield {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.parallax-layer {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+/* Depth Layers Z-Index for Ambient Light interactions */
+.layer-far { z-index: 1; }
+.layer-mid { z-index: 2; }
+.layer-near { z-index: 3; }
+
+.star {
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+  will-change: opacity, transform;
+  /* Use translate3d for hardware acceleration */
+  transform: translate3d(0, 0, 0);
+  /* Continuous slow floating animation */
+  animation: star-float linear infinite alternate;
+}
+
+@keyframes star-float {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(5px, -15px, 0); }
+}
+
+/* Ambient Lighting Layers (Subtle, No expensive blur) */
+.ambient-light {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+.ambient-blue {
+  width: 80vw;
+  height: 80vw;
+  background: radial-gradient(circle, rgba(0, 150, 255, 0.06) 0%, transparent 70%);
+  top: -10%;
+  left: -20%;
+  animation: ambient-drift 15s ease-in-out infinite alternate;
+}
+
+.ambient-cyan {
+  width: 90vw;
+  height: 90vw;
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.04) 0%, transparent 70%);
+  bottom: -20%;
+  right: -10%;
+  animation: ambient-drift 20s ease-in-out infinite alternate-reverse;
+}
+
+.ambient-purple {
+  width: 70vw;
+  height: 70vw;
+  background: radial-gradient(circle, rgba(138, 92, 246, 0.05) 0%, transparent 70%);
+  top: 40%;
+  left: 20%;
+  animation: ambient-drift 18s ease-in-out infinite alternate;
+}
+
+@keyframes ambient-drift {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(5%, 5%, 0); }
+}
+
+/* Section Reveal Animation (Fade + Rise) overrides */
+.fade-in {
+  opacity: 0;
+  transform: translate3d(0, 30px, 0);
+  transition: opacity 0.7s cubic-bezier(0.25, 1, 0.5, 1), transform 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: opacity, transform;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Mobile Glassmorphism Enhancement */
+@media (max-width: 768px) {
+  /* Ensure cards feel rich on mobile */
+  .premium-project-card, .timeline-card, .academic-card, .cert-card-compact {
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+  }
+}

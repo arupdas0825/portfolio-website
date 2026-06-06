@@ -25,9 +25,11 @@ const PublicationsPage = lazy(() => import('./PublicationsPage'));
 const AIPlaybackAssistant = lazy(() => import('./ai-playback/AIPlaybackAssistant'));
 
 import ThreeBackground from './components/ThreeBackground';
+import Starfield       from './Starfield';
 import WelcomeScreen   from './WelcomeScreen';
 import usePlaybackStore from './ai-playback/usePlaybackStore';
 import './App.css';
+import './MobileExperience.css';
 
 
 const IS_TOUCH = typeof window !== 'undefined' &&
@@ -131,6 +133,7 @@ export default function App() {
           paddingBottom: IS_TOUCH ? '100px' : '0px'
         }}>
           <ThreeBackground />
+          {IS_TOUCH && <Starfield />}
           <div className="blob blob-1" />
           <div className="blob blob-2" />
           <div className="blob blob-3" />
