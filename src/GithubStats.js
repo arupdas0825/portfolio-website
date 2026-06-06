@@ -126,124 +126,6 @@ const Ring = ({ pct, color, size=90, stroke=6, children }) => {
   );
 };
 
-/* ─── Side Panel Component ─── */
-const SidePanel = ({ title, items, icon: Icon, color }) => (
-  <Panel style={{ padding: '24px 20px', flex: 1 }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
-      <div style={{ 
-        width: 32, height: 32, borderRadius: 8, 
-        background: `${color}12`, border: `1px solid ${color}25`,
-        display: 'flex', alignItems: 'center', justifyContent: 'center'
-      }}>
-        <Icon size={16} style={{ color }} />
-      </div>
-      <span style={{ 
-        fontFamily: 'Syne, sans-serif', 
-        fontWeight: 800, 
-        fontSize: 11, 
-        color: '#fff', 
-        letterSpacing: '1.5px', 
-        textTransform: 'uppercase' 
-      }}>
-        {title}
-      </span>
-    </div>
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      {items.map((item, idx) => (
-        <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ 
-            width: 5, 
-            height: 5, 
-            borderRadius: '50%', 
-            background: color, 
-            boxShadow: `0 0 8px ${color}` 
-          }} />
-          <span style={{ 
-            fontSize: 12, 
-            color: 'rgba(255,255,255,0.55)', 
-            fontFamily: 'DM Sans, sans-serif',
-            fontWeight: 500
-          }}>
-            {item}
-          </span>
-        </div>
-      ))}
-    </div>
-  </Panel>
-);
-
-/* ─── Deterministic Developer Activity Generator ─── */
-const getHash = (str) => {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = (hash << 5) - hash + str.charCodeAt(i);
-    hash |= 0;
-  }
-  return Math.abs(hash);
-};
-
-const PROJECT_POOL = [
-  'StreamNest',
-  'HireSight-AI',
-  'EverBond-Wealth',
-  'studytra',
-  'portfolio-website',
-  'LocalCare-Finder-Android'
-];
-
-const COMMITS_BY_PROJECT = {
-  'StreamNest': [
-    'Optimized HLS video chunk buffering for low-latency streaming',
-    'Integrated media session API for global playback controls',
-    'Refactored dynamic audio compressor and spatialized audio nodes',
-    'Implemented high-fidelity Web Audio API visualizer',
-    'Added offline caching policy for encrypted audio streams',
-    'Fixed audio-video sync drift in slow network environments'
-  ],
-  'HireSight-AI': [
-    'Developed hybrid vector-semantic resume indexing engine',
-    'Integrated dynamic prompts for Claude API structured extraction',
-    'Refactored interviewer panel with live speech-to-text feedback',
-    'Optimized parsing queue concurrency to resolve token limits',
-    'Added automated candidate score generation and weightings',
-    'Implemented canvas-based interactive report generator'
-  ],
-  'EverBond-Wealth': [
-    'Designed transactional ledger schema with ledger locking',
-    'Integrated secure Plaid API for real-time asset tracking',
-    'Optimized database indexes for compound portfolio queries',
-    'Implemented Monte Carlo investment projection algorithms',
-    'Added automatic daily rebalancing trigger checks',
-    'Fixed floating-point precision rounding in stock yield math'
-  ],
-  'studytra': [
-    'Built university matching engine using Gemini AI intelligence',
-    'Implemented multi-step visa application tracker and timeline',
-    'Optimized document parsing speed using OCR pipelines',
-    'Created tuition cost and dynamic living expense calculator',
-    'Added WebSocket notifications for admission status alerts',
-    'Refactored global application state using zustand slices'
-  ],
-  'portfolio-website': [
-    'Refactored contribution heatmap with hardware-accelerated CSS hovers',
-    'Optimized GSAP ScrollTrigger timelines to reduce layout thrashing',
-    'Implemented glassmorphic backdrop filters with native fallback',
-    'Engineered responsive mobile bottom-sheets for premium analytics',
-    'Integrated high-performance lazy loading for video assets',
-    'Designed fluid WebGL liquid background mesh interactions'
-  ],
-  'LocalCare-Finder-Android': [
-    'Implemented spatial queries using SQLite and OpenStreetMap API',
-    'Designed custom reactive layout for Mapbox integration in Kotlin',
-    'Optimized foreground location services to minimize battery usage',
-    'Created offline database sync adapter for rural connectivity',
-    'Refactored hospital list using high-performance RecyclerView diffs'
-  ]
-};
-
-
-
-
 /* ─── Contribution Heatmap ─── */
 const getColor = (count) => {
   if (count === null) return 'rgba(255,255,255,0.02)'; // Future
@@ -257,51 +139,13 @@ const getColor = (count) => {
 const getContributionDetails = (dateStr, count) => {
   if (count === null || count === undefined) return null;
   
-  // Timezone-immune manual parsing of UTC date strings
   const [year, month, day] = dateStr.split('-').map(Number);
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const formattedDate = `${months[month - 1]} ${day}, ${year}`;
-
-  if (count === 0) {
-    return {
-      date: formattedDate,
-      count: 0,
-      projects: [],
-      commits: []
-    };
-  }
-
-  const hash = getHash(dateStr);
-  
-  const numProjects = Math.min(PROJECT_POOL.length, 1 + (hash % 3));
-  const projects = [];
-  for (let i = 0; i < numProjects; i++) {
-    const pIdx = (hash + i) % PROJECT_POOL.length;
-    const pName = PROJECT_POOL[pIdx];
-    if (!projects.includes(pName)) {
-      projects.push(pName);
-    }
-  }
-
-  const commits = [];
-  const totalCommitsToShow = Math.min(count, 3);
-  for (let i = 0; i < totalCommitsToShow; i++) {
-    const pName = projects[i % projects.length];
-    const commitPool = COMMITS_BY_PROJECT[pName];
-    const cIdx = (hash + i * 7) % commitPool.length;
-    commits.push({
-      project: pName,
-      message: commitPool[cIdx]
-    });
-  }
 
   return {
     date: formattedDate,
-    count,
-    projects,
-    commits,
-    hasMoreCommits: count > 3,
-    moreCommitsCount: count - 3
+    count
   };
 };
 
@@ -544,6 +388,13 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
     e.stopPropagation();
     
     setHoveredCell(prev => (prev && prev.date === day.date) ? null : day);
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const cellCenter = rect.left + rect.width / 2;
+    const cellTop = rect.top;
+    
+    setMousePos({ x: cellCenter, y: cellTop - 6 });
+    setIsFlipped(false);
   }, [isMobile]);
 
   const activeDetails = hoveredCell ? getContributionDetails(hoveredCell.date, hoveredCell.count) : null;
@@ -634,312 +485,58 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
         </div>
       </div>
 
-      {/* Premium Glassmorphic Tooltip System */}
+      {/* Minimal Apple-Inspired Tooltip */}
       {createPortal(
-        <AnimatePresence>
+        <div
+          style={{
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            pointerEvents: 'none',
+            zIndex: 99999,
+            opacity: activeDetails ? 1 : 0,
+            visibility: activeDetails ? 'visible' : 'hidden',
+            transform: `translate3d(${mousePos.x}px, ${mousePos.y}px, 0) ${isFlipped ? 'translate(-50%, 0)' : 'translate(-50%, -100%)'}`,
+            transition: 'opacity 0.15s ease, visibility 0.15s',
+            willChange: 'transform, opacity'
+          }}
+        >
           {activeDetails && (
-            isMobile ? (
-              /* Mobile Sliding Sheet */
-              <motion.div
-                className="mobile-tooltip-sheet"
-                initial={{ y: '100%', opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: '100%', opacity: 0 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-                style={{
-                  position: 'fixed',
-                  bottom: 24,
-                  left: 16,
-                  right: 16,
-                  zIndex: 99999,
-                  pointerEvents: 'auto',
-                }}
-              >
-                <div style={{
-                  background: 'rgba(10, 8, 18, 0.94)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  border: `1px solid ${getNeonBorder(activeDetails.count)}`,
-                  borderRadius: 16,
-                  padding: '20px 24px',
-                  boxShadow: `0 20px 50px rgba(0, 0, 0, 0.9), 0 0 20px ${activeGlowColor}, inset 0 1px 0 rgba(255, 255, 255, 0.1)`,
-                  width: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 14,
-                  position: 'relative'
-                }}>
-                  {/* Swipe handle */}
-                  <div style={{
-                    width: 36,
-                    height: 4,
-                    borderRadius: 2,
-                    background: 'rgba(255, 255, 255, 0.15)',
-                    alignSelf: 'center',
-                    marginBottom: -4
-                  }} />
-                  
-                  {/* Close Button */}
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setHoveredCell(null);
-                    }}
-                    style={{
-                      position: 'absolute',
-                      top: 16,
-                      right: 16,
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
-                      borderRadius: '50%',
-                      width: 26,
-                      height: 26,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'rgba(255, 255, 255, 0.5)',
-                      cursor: 'pointer',
-                      fontSize: 12,
-                      fontFamily: 'sans-serif'
-                    }}
-                  >
-                    ✕
-                  </button>
-
-                  {/* Header */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginTop: 4 }}>
-                    <span style={{ 
-                      fontFamily: 'Syne, sans-serif', 
-                      fontWeight: 800, 
-                      fontSize: 16, 
-                      color: activeNeonColor,
-                      textShadow: `0 0 8px ${activeNeonColor}44`,
-                      display: 'flex',
-                      alignItems: 'baseline',
-                      gap: 4
-                    }}>
-                      {activeDetails.count} {activeDetails.count === 1 ? 'Contribution' : 'Contributions'}
-                    </span>
-                    <span style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.45)', fontFamily: 'Syne, sans-serif' }}>
-                      {activeDetails.date}
-                    </span>
-                  </div>
-
-                  {activeDetails.count > 0 ? (
-                    <>
-                      <div style={{ height: 1, background: 'rgba(255, 255, 255, 0.08)' }} />
-                      
-                      {/* Projects */}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                        <span style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.35)', fontFamily: 'Syne, sans-serif', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-                          Projects
-                        </span>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 8px' }}>
-                          {activeDetails.projects.map((proj) => (
-                            <span 
-                              key={proj} 
-                              style={{ 
-                                fontSize: 10, 
-                                background: 'rgba(255, 255, 255, 0.05)', 
-                                border: '1px solid rgba(255, 255, 255, 0.08)',
-                                borderRadius: 6,
-                                padding: '3px 8px',
-                                color: 'rgba(255, 255, 255, 0.85)',
-                                fontFamily: 'DM Sans, sans-serif',
-                                fontWeight: 500
-                              }}
-                            >
-                              {proj}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Commits */}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                        <span style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.35)', fontFamily: 'Syne, sans-serif', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-                          Recent Commits
-                        </span>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                          {activeDetails.commits.map((c, ci) => (
-                            <div key={ci} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                              <span style={{ color: activeNeonColor, fontSize: 11, marginTop: -1 }}>•</span>
-                              <span style={{ 
-                                fontSize: 11, 
-                                color: 'rgba(255, 255, 255, 0.75)', 
-                                fontFamily: 'monospace', 
-                                lineHeight: 1.4,
-                                wordBreak: 'break-word'
-                              }}>
-                                {c.message}
-                              </span>
-                            </div>
-                          ))}
-                          {activeDetails.hasMoreCommits && (
-                            <span style={{ 
-                              fontSize: 10.5, 
-                              color: 'rgba(255, 255, 255, 0.3)', 
-                              fontFamily: 'DM Sans, sans-serif',
-                              fontStyle: 'italic',
-                              paddingLeft: 14,
-                              marginTop: 2
-                            }}>
-                              + {activeDetails.moreCommitsCount} more commits
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div style={{ height: 1, background: 'rgba(255, 255, 255, 0.08)' }} />
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, opacity: 0.7, padding: '4px 0' }}>
-                        <span style={{ color: '#8a5cf6', fontSize: 12 }}>⚡</span>
-                        <span style={{ fontSize: 11.5, color: 'rgba(255, 255, 255, 0.5)', fontFamily: 'DM Sans, sans-serif', fontStyle: 'italic' }}>
-                          Resting and planning next sprints
-                        </span>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </motion.div>
-            ) : (
-              /* Desktop Snapping Tooltip - GPU Composited translation completely avoids layout thrashing */
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.08 }}
-                style={{
-                  position: 'fixed',
-                  left: 0,
-                  top: 0,
-                  pointerEvents: 'none',
-                  zIndex: 99999,
-                  transform: `translate3d(${mousePos.x}px, ${mousePos.y}px, 0) ${isFlipped ? 'translate(-50%, 0)' : 'translate(-50%, -100%)'}`,
-                  willChange: 'transform',
-                }}
-              >
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95, y: isFlipped ? 8 : -8 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, y: isFlipped ? 8 : -8 }}
-                  transition={{ duration: 0.12, ease: 'easeOut' }}
-                  style={{
-                    background: 'rgba(10, 8, 18, 0.95)',
-                    backdropFilter: 'blur(16px)',
-                    WebkitBackdropFilter: 'blur(16px)',
-                    border: `1px solid ${getNeonBorder(activeDetails.count)}`,
-                    borderRadius: 14,
-                    padding: '16px 18px',
-                    boxShadow: `0 16px 40px rgba(0, 0, 0, 0.85), 0 0 15px ${activeGlowColor}, inset 0 1px 0 rgba(255, 255, 255, 0.1)`,
-                    width: 240,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 12
-                  }}
-                >
-                  {/* Header */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <span style={{ 
-                      fontFamily: 'Syne, sans-serif', 
-                      fontWeight: 800, 
-                      fontSize: 15, 
-                      color: activeNeonColor,
-                      textShadow: `0 0 8px ${activeNeonColor}44`,
-                      display: 'flex',
-                      alignItems: 'baseline',
-                      gap: 4
-                    }}>
-                      {activeDetails.count} {activeDetails.count === 1 ? 'Contribution' : 'Contributions'}
-                    </span>
-                    <span style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.45)', fontFamily: 'Syne, sans-serif' }}>
-                      {activeDetails.date}
-                    </span>
-                  </div>
-
-                  {activeDetails.count > 0 ? (
-                    <>
-                      <div style={{ height: 1, background: 'rgba(255, 255, 255, 0.08)' }} />
-                      
-                      {/* Projects */}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                        <span style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.35)', fontFamily: 'Syne, sans-serif', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-                          Projects
-                        </span>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 6px', marginTop: 2 }}>
-                          {activeDetails.projects.map((proj) => (
-                            <span 
-                              key={proj} 
-                              style={{ 
-                                fontSize: 9.5, 
-                                background: 'rgba(255, 255, 255, 0.05)', 
-                                border: '1px solid rgba(255, 255, 255, 0.08)',
-                                borderRadius: 6,
-                                padding: '2px 6px',
-                                color: 'rgba(255, 255, 255, 0.8)',
-                                fontFamily: 'DM Sans, sans-serif',
-                                fontWeight: 500
-                              }}
-                            >
-                              {proj}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Commits */}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                        <span style={{ fontSize: 9.5, color: 'rgba(255, 255, 255, 0.35)', fontFamily: 'Syne, sans-serif', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-                          Recent Commits
-                        </span>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginTop: 2 }}>
-                          {activeDetails.commits.map((c, ci) => (
-                            <div key={ci} style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-                              <span style={{ color: activeNeonColor, fontSize: 10, marginTop: -1 }}>•</span>
-                              <span style={{ 
-                                fontSize: 10.5, 
-                                color: 'rgba(255, 255, 255, 0.75)', 
-                                fontFamily: 'monospace', 
-                                lineHeight: 1.3,
-                                wordBreak: 'break-word'
-                              }}>
-                                {c.message}
-                              </span>
-                            </div>
-                          ))}
-                          {activeDetails.hasMoreCommits && (
-                            <span style={{ 
-                              fontSize: 9.5, 
-                              color: 'rgba(255, 255, 255, 0.3)', 
-                              fontFamily: 'DM Sans, sans-serif',
-                              fontStyle: 'italic',
-                              paddingLeft: 10
-                            }}>
-                              + {activeDetails.moreCommitsCount} more commits
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div style={{ height: 1, background: 'rgba(255, 255, 255, 0.08)' }} />
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, opacity: 0.6 }}>
-                        <span style={{ color: '#8a5cf6', fontSize: 11 }}>⚡</span>
-                        <span style={{ fontSize: 10.5, color: 'rgba(255, 255, 255, 0.5)', fontFamily: 'DM Sans, sans-serif', fontStyle: 'italic' }}>
-                          Resting & planning next sprints
-                        </span>
-                      </div>
-                    </>
-                  )}
-                </motion.div>
-              </motion.div>
-            )
+            <div
+              style={{
+                background: 'rgba(20, 20, 24, 0.75)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: 8,
+                padding: '8px 12px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+                marginTop: isFlipped ? 8 : -8,
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+              }}
+            >
+              <span style={{ 
+                fontFamily: 'Inter, -apple-system, sans-serif', 
+                fontWeight: 600, 
+                fontSize: 13, 
+                color: '#fff'
+              }}>
+                {activeDetails.count} {activeDetails.count === 1 ? 'Contribution' : 'Contributions'}
+              </span>
+              <span style={{ 
+                fontFamily: 'Inter, -apple-system, sans-serif', 
+                fontSize: 11, 
+                color: 'rgba(255, 255, 255, 0.5)' 
+              }}>
+                {activeDetails.date}
+              </span>
+            </div>
           )}
-        </AnimatePresence>,
+        </div>,
         document.body
-        )}
+      )}
     </div>
   );
 };
