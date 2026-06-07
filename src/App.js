@@ -45,12 +45,17 @@ function MobileHeader() {
       <div className="mobile-header-glass">
         {/* Logo Section */}
         <div className="mobile-logo-wrap" onClick={() => window.location.reload()}>
-          <svg className="mobile-logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="12 2 2 7 12 12 22 7 12 2" />
-            <polyline points="2 17 12 22 22 17" />
-            <polyline points="2 12 12 17 22 12" />
-          </svg>
+          <img 
+            src="/ad logo.jpeg" 
+            alt="AD Logo" 
+            width={22} 
+            height={22} 
+            decoding="async" 
+            loading="eager"
+            className="mobile-logo-img" 
+          />
           <span className="mobile-logo-text">arup.dev</span>
+          <span className="brand-accent-dot" />
         </div>
 
         {/* Separator */}
