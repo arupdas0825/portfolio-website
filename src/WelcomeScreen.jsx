@@ -75,18 +75,12 @@ export default function WelcomeScreen({ onEnter }) {
                 transform: 'translateZ(0)'
               }}
             >
-              <svg className="ws-logo-icon" viewBox="0 0 24 24" fill="none" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <defs>
-                  <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#ffffff" />
-                    <stop offset="50%" stopColor="#a78bfa" />
-                    <stop offset="100%" stopColor="#22d3ee" />
-                  </linearGradient>
-                </defs>
-                <polygon points="12 2 2 7 12 12 22 7 12 2" stroke="url(#logo-grad)" />
-                <polyline points="2 17 12 22 22 17" stroke="url(#logo-grad)" />
-                <polyline points="2 12 12 17 22 12" stroke="url(#logo-grad)" />
-              </svg>
+              <img 
+                src="/ad logo.jpeg" 
+                alt="AD Logo" 
+                className="ws-logo-icon" 
+                style={{ borderRadius: '50%', objectFit: 'contain' }} 
+              />
             </motion.div>
 
             {/* 2. ELEGANT HEADLINE */}
