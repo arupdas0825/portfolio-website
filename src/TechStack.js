@@ -93,51 +93,39 @@ const STACKS = [
 
 const BRAND_COLORS = {
   // Languages
-  python: { border: 'rgba(255, 224, 82, 0.45)', glow: 'rgba(59, 130, 246, 0.25)', bg: 'rgba(59, 130, 246, 0.05)' },
-  javascript: { border: 'rgba(247, 223, 30, 0.5)', glow: 'rgba(247, 223, 30, 0.25)', bg: 'rgba(247, 223, 30, 0.05)' },
-  typescript: { border: 'rgba(49, 120, 198, 0.5)', glow: 'rgba(49, 120, 198, 0.3)', bg: 'rgba(49, 120, 198, 0.06)' },
-  java: { border: 'rgba(224, 111, 36, 0.5)', glow: 'rgba(224, 111, 36, 0.25)', bg: 'rgba(224, 111, 36, 0.05)' },
-  c: { border: 'rgba(168, 191, 224, 0.5)', glow: 'rgba(168, 191, 224, 0.25)', bg: 'rgba(168, 191, 224, 0.05)' },
-  'c++': { border: 'rgba(0, 134, 212, 0.5)', glow: 'rgba(0, 89, 156, 0.3)', bg: 'rgba(0, 89, 156, 0.06)' },
-  html5: { border: 'rgba(227, 79, 38, 0.5)', glow: 'rgba(227, 79, 38, 0.25)', bg: 'rgba(227, 79, 38, 0.05)' },
-  css3: { border: 'rgba(21, 114, 182, 0.5)', glow: 'rgba(21, 114, 182, 0.3)', bg: 'rgba(21, 114, 182, 0.06)' },
-  kotlin: { border: 'rgba(127, 82, 255, 0.5)', glow: 'rgba(241, 142, 60, 0.25)', bg: 'rgba(127, 82, 255, 0.05)' },
+  python: { border: '#3776AB', glow: 'rgba(255, 212, 59, 0.35)', bg: 'rgba(255, 212, 59, 0.05)' }, // #FFD43B glow
+  javascript: { border: '#F7DF1E', glow: 'rgba(247, 223, 30, 0.35)', bg: 'rgba(247, 223, 30, 0.05)' },
+  typescript: { border: '#3178C6', glow: 'rgba(49, 120, 198, 0.35)', bg: 'rgba(49, 120, 198, 0.05)' },
+  java: { border: '#ED8B00', glow: 'rgba(237, 139, 0, 0.35)', bg: 'rgba(237, 139, 0, 0.05)' },
+  c: { border: '#A8B9CC', glow: 'rgba(168, 185, 204, 0.35)', bg: 'rgba(168, 185, 204, 0.05)' },
+  'c++': { border: '#00599C', glow: 'rgba(0, 89, 156, 0.35)', bg: 'rgba(0, 89, 156, 0.05)' },
+  html5: { border: '#E34F26', glow: 'rgba(227, 79, 38, 0.35)', bg: 'rgba(227, 79, 38, 0.05)' },
+  css3: { border: '#1572B6', glow: 'rgba(21, 114, 182, 0.35)', bg: 'rgba(21, 114, 182, 0.05)' },
+  kotlin: { border: '#7F52FF', glow: 'rgba(127, 82, 255, 0.35)', bg: 'rgba(127, 82, 255, 0.05)' },
 
   // Frameworks & Libraries
-  react: { border: 'rgba(97, 218, 251, 0.5)', glow: 'rgba(97, 218, 251, 0.3)', bg: 'rgba(97, 218, 251, 0.06)' },
-  'next.js': { border: 'rgba(255, 255, 255, 0.4)', glow: 'rgba(255, 255, 255, 0.2)', bg: 'rgba(255, 255, 255, 0.05)' },
-  'node.js': { border: 'rgba(67, 133, 61, 0.5)', glow: 'rgba(67, 133, 61, 0.25)', bg: 'rgba(67, 133, 61, 0.05)' },
-  fastapi: { border: 'rgba(5, 153, 137, 0.5)', glow: 'rgba(5, 153, 137, 0.25)', bg: 'rgba(5, 153, 137, 0.05)' },
-  flutter: { border: 'rgba(2, 86, 155, 0.5)', glow: 'rgba(64, 196, 255, 0.25)', bg: 'rgba(64, 196, 255, 0.05)' },
-  tailwind: { border: 'rgba(56, 189, 248, 0.5)', glow: 'rgba(56, 189, 248, 0.3)', bg: 'rgba(56, 189, 248, 0.06)' },
-  vite: { border: 'rgba(189, 52, 254, 0.5)', glow: 'rgba(255, 217, 36, 0.25)', bg: 'rgba(189, 52, 254, 0.05)' },
-  firebase: { border: 'rgba(255, 202, 40, 0.5)', glow: 'rgba(245, 127, 23, 0.3)', bg: 'rgba(245, 127, 23, 0.06)' },
+  react: { border: '#61DAFB', glow: 'rgba(97, 218, 251, 0.35)', bg: 'rgba(97, 218, 251, 0.05)' },
+  'next.js': { border: '#FFFFFF', glow: 'rgba(255, 255, 255, 0.15)', bg: 'rgba(255, 255, 255, 0.03)' },
+  'node.js': { border: '#339933', glow: 'rgba(51, 153, 51, 0.35)', bg: 'rgba(51, 153, 51, 0.05)' },
+  fastapi: { border: '#059989', glow: 'rgba(5, 153, 137, 0.35)', bg: 'rgba(5, 153, 137, 0.05)' },
+  flutter: { border: '#54C5F8', glow: 'rgba(84, 197, 248, 0.35)', bg: 'rgba(84, 197, 248, 0.05)' },
+  tailwind: { border: '#38BDF8', glow: 'rgba(56, 189, 248, 0.35)', bg: 'rgba(56, 189, 248, 0.05)' },
+  vite: { border: '#646CFF', glow: 'rgba(100, 108, 255, 0.35)', bg: 'rgba(100, 108, 255, 0.05)' },
+  firebase: { border: '#FFCA28', glow: 'rgba(255, 202, 40, 0.35)', bg: 'rgba(255, 202, 40, 0.05)' },
 
-  // Databases
-  mongodb: { border: 'rgba(71, 162, 72, 0.5)', glow: 'rgba(71, 162, 72, 0.25)', bg: 'rgba(71, 162, 72, 0.05)' },
-  mysql: { border: 'rgba(0, 117, 143, 0.5)', glow: 'rgba(242, 145, 17, 0.25)', bg: 'rgba(0, 117, 143, 0.05)' },
-  sqlite: { border: 'rgba(15, 128, 204, 0.5)', glow: 'rgba(15, 128, 204, 0.25)', bg: 'rgba(15, 128, 204, 0.05)' },
-  supabase: { border: 'rgba(62, 207, 142, 0.5)', glow: 'rgba(62, 207, 142, 0.25)', bg: 'rgba(62, 207, 142, 0.05)' },
-
-  // Cloud & DevOps
-  aws: { border: 'rgba(255, 153, 0, 0.5)', glow: 'rgba(255, 153, 0, 0.25)', bg: 'rgba(255, 153, 0, 0.05)' },
-  'google cloud': { border: 'rgba(66, 133, 244, 0.5)', glow: 'rgba(234, 67, 53, 0.25)', bg: 'rgba(66, 133, 244, 0.05)' },
-  git: { border: 'rgba(240, 80, 50, 0.5)', glow: 'rgba(240, 80, 50, 0.25)', bg: 'rgba(240, 80, 50, 0.05)' },
-  github: { border: 'rgba(255, 255, 255, 0.4)', glow: 'rgba(255, 255, 255, 0.2)', bg: 'rgba(255, 255, 255, 0.05)' },
-  figma: { border: 'rgba(242, 78, 30, 0.5)', glow: 'rgba(162, 89, 255, 0.25)', bg: 'rgba(242, 78, 30, 0.05)' },
-  blender: { border: 'rgba(232, 118, 0, 0.5)', glow: 'rgba(232, 118, 0, 0.25)', bg: 'rgba(232, 118, 0, 0.05)' },
-  vercel: { border: 'rgba(255, 255, 255, 0.4)', glow: 'rgba(255, 255, 255, 0.2)', bg: 'rgba(255, 255, 255, 0.05)' },
-  netlify: { border: 'rgba(0, 190, 187, 0.5)', glow: 'rgba(0, 190, 187, 0.25)', bg: 'rgba(0, 190, 187, 0.05)' },
-
-  // AI Tools
-  codex: { border: 'rgba(16, 163, 127, 0.5)', glow: 'rgba(16, 163, 127, 0.25)', bg: 'rgba(16, 163, 127, 0.05)' },
-  emergent: { border: 'rgba(139, 92, 246, 0.5)', glow: 'rgba(236, 72, 153, 0.25)', bg: 'rgba(139, 92, 246, 0.05)' },
-  antigravity: { border: 'rgba(0, 242, 254, 0.5)', glow: 'rgba(138, 92, 246, 0.25)', bg: 'rgba(0, 242, 254, 0.05)' },
-  claude: { border: 'rgba(217, 119, 6, 0.5)', glow: 'rgba(217, 119, 6, 0.25)', bg: 'rgba(217, 119, 6, 0.05)' },
-  manus: { border: 'rgba(59, 130, 246, 0.5)', glow: 'rgba(16, 185, 129, 0.25)', bg: 'rgba(59, 130, 246, 0.05)' },
-  'github copilot': { border: 'rgba(138, 92, 246, 0.5)', glow: 'rgba(0, 242, 254, 0.25)', bg: 'rgba(138, 92, 246, 0.05)' },
-  cursor: { border: 'rgba(255, 255, 255, 0.4)', glow: 'rgba(138, 92, 246, 0.25)', bg: 'rgba(255, 255, 255, 0.05)' },
-  deepseek: { border: 'rgba(59, 130, 246, 0.5)', glow: 'rgba(59, 130, 246, 0.25)', bg: 'rgba(59, 130, 246, 0.05)' }
+  // Databases & Cloud
+  mongodb: { border: '#47A248', glow: 'rgba(71, 162, 72, 0.35)', bg: 'rgba(71, 162, 72, 0.05)' },
+  mysql: { border: '#00758F', glow: 'rgba(242, 145, 17, 0.35)', bg: 'rgba(0, 117, 143, 0.05)' },
+  sqlite: { border: '#0F80CC', glow: 'rgba(15, 128, 204, 0.35)', bg: 'rgba(15, 128, 204, 0.05)' },
+  supabase: { border: '#3ECF8E', glow: 'rgba(62, 207, 142, 0.35)', bg: 'rgba(62, 207, 142, 0.05)' },
+  aws: { border: '#FF9900', glow: 'rgba(255, 153, 0, 0.35)', bg: 'rgba(255, 153, 0, 0.05)' },
+  'google cloud': { border: '#4285F4', glow: 'rgba(66, 133, 244, 0.35)', bg: 'rgba(66, 133, 244, 0.05)' },
+  git: { border: '#F05032', glow: 'rgba(240, 80, 50, 0.35)', bg: 'rgba(240, 80, 50, 0.05)' },
+  github: { border: '#FFFFFF', glow: 'rgba(255, 255, 255, 0.15)', bg: 'rgba(255, 255, 255, 0.03)' },
+  figma: { border: '#F24E1E', glow: 'rgba(242, 78, 30, 0.35)', bg: 'rgba(242, 78, 30, 0.05)' },
+  blender: { border: '#E87600', glow: 'rgba(232, 118, 0, 0.35)', bg: 'rgba(232, 118, 0, 0.05)' },
+  vercel: { border: '#FFFFFF', glow: 'rgba(255, 255, 255, 0.15)', bg: 'rgba(255, 255, 255, 0.03)' },
+  netlify: { border: '#00BEBB', glow: 'rgba(0, 190, 187, 0.35)', bg: 'rgba(0, 190, 187, 0.05)' }
 };
 
 const TechIcon = ({ src, name }) => {
@@ -154,8 +142,7 @@ const TechIcon = ({ src, name }) => {
   };
 
   return (
-    <motion.div
-      whileHover={{ scale: 1.1, y: -5 }}
+    <div
       className="tech-icon-box"
       style={{
         width: 64, height: 64,
@@ -166,36 +153,28 @@ const TechIcon = ({ src, name }) => {
         padding: 14,
         cursor: 'pointer',
         position: 'relative',
-        transition: 'background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
         '--brand-hover-border': colors.border,
         '--brand-hover-glow': colors.glow,
-        '--brand-hover-bg': colors.bg
       }}
     >
-      <img
-        src={src}
-        alt={name}
-        title={name}
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'contain',
-          filter: isDarkDevicon ? 'brightness(0) invert(1)' : 'none',
-          transition: 'filter 0.3s ease'
-        }}
-      />
-      {/* Specular premium glass reflection light catch */}
-      <div className="tech-icon-shimmer" />
-
-      {/* Floating dynamic particles shimmer */}
-      <div className="tech-particles">
-        <span className="tech-p tech-p1" />
-        <span className="tech-p tech-p2" />
-        <span className="tech-p tech-p3" />
+      <div className="tech-img-wrap" style={{ width: '100%', height: '100%', perspective: '1000px' }}>
+        <img
+          src={src}
+          alt={name}
+          title={name}
+          className="tech-img"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+            filter: isDarkDevicon ? 'brightness(0) invert(1)' : 'none',
+          }}
+        />
       </div>
-
+      
+      {/* Legible dynamic floating Tooltip */}
       <div className="tech-tooltip">{name}</div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -318,93 +297,49 @@ export default function TechStack() {
 
       <style dangerouslySetInnerHTML={{
         __html: `
-        .tech-icon-box:hover {
-          background: var(--brand-hover-bg, rgba(255, 255, 255, 0.08)) !important;
-          border-color: var(--brand-hover-border, rgba(138, 92, 246, 0.4)) !important;
-          box-shadow: 
-            0 0 22px var(--brand-hover-glow, rgba(138, 92, 246, 0.15)),
-            0 8px 30px rgba(0, 0, 0, 0.5),
-            inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        .tech-icon-box {
+          will-change: transform;
+          transform: translateZ(0); /* GPU Acceleration */
+          transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1), 
+                      background 600ms cubic-bezier(0.22, 1, 0.36, 1), 
+                      border-color 600ms cubic-bezier(0.22, 1, 0.36, 1), 
+                      box-shadow 600ms cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        /* 3D Acrylic Specular glass shimmers */
-        .tech-icon-shimmer {
-          position: absolute;
-          inset: 0;
-          border-radius: 12px;
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 60%, rgba(255, 255, 255, 0.01) 100%);
-          pointer-events: none;
-          z-index: 1;
-          opacity: 0.5;
-          transition: opacity 0.3s ease;
+        .tech-img {
+          will-change: transform;
+          transform-style: preserve-3d;
+          transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        .tech-icon-box:hover .tech-icon-shimmer {
-          opacity: 1;
+        /* Desktop Hover state */
+        @media (hover: hover) and (pointer: fine) {
+          .tech-icon-box:hover {
+            transform: translateY(-12px) scale(1.08) translateZ(0);
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: var(--brand-hover-border) !important;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            box-shadow: 0 0 20px var(--brand-hover-glow) !important;
+          }
+          .tech-icon-box:hover .tech-img {
+            transform: rotateY(180deg);
+          }
         }
 
-        /* Expanding Liquid Brand Aura backing glows */
-        .tech-icon-box::after {
-          content: '';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 100%;
-          height: 100%;
-          border-radius: 12px;
-          pointer-events: none;
-          z-index: 0;
-          opacity: 0;
-          background: radial-gradient(circle, var(--brand-hover-glow) 0%, transparent 70%);
-          transform: translate(-50%, -50%) scale(0.8);
-          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .tech-icon-box:hover::after {
-          opacity: 0.45;
-          transform: translate(-50%, -50%) scale(1.4);
-        }
-
-        /* Hardware-Accelerated Floating Particles Container */
-        .tech-particles {
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          overflow: hidden;
-          border-radius: 12px;
-          z-index: 1;
-        }
-
-        .tech-p {
-          position: absolute;
-          width: 3px;
-          height: 3px;
-          background: var(--brand-hover-border, #fff);
-          border-radius: 50%;
-          opacity: 0;
-          pointer-events: none;
-        }
-
-        .tech-p1 { bottom: 10%; left: 20%; }
-        .tech-p2 { bottom: 12%; left: 50%; }
-        .tech-p3 { bottom: 8%; left: 80%; }
-
-        .tech-icon-box:hover .tech-p1 {
-          opacity: 0.8;
-          transform: translateY(-24px) scale(1.4);
-          transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .tech-icon-box:hover .tech-p2 {
-          opacity: 0.8;
-          transform: translateY(-32px) scale(1.2);
-          transition: opacity 0.4s ease 0.08s, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.08s;
-        }
-
-        .tech-icon-box:hover .tech-p3 {
-          opacity: 0.8;
-          transform: translateY(-20px) scale(1.4);
-          transition: opacity 0.4s ease 0.04s, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.04s;
+        /* Mobile Tap state */
+        @media (hover: none) and (pointer: coarse) {
+          .tech-icon-box:active {
+            transform: translateY(-12px) scale(1.08) translateZ(0);
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: var(--brand-hover-border) !important;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            box-shadow: 0 0 20px var(--brand-hover-glow) !important;
+          }
+          .tech-icon-box:active .tech-img {
+            transform: rotateY(180deg);
+          }
         }
 
         /* Legible dynamic floating Tooltip */
