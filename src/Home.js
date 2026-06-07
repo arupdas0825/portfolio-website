@@ -24,7 +24,6 @@ const NeuralCoreVisual = () => {
         <div className="nc-ring nc-ring--1" />
         <div className="nc-ring nc-ring--2" />
         <div className="nc-ring nc-ring--3" />
-        <div className="nc-glow" />
       </div>
       
       {/* Abstract floating data fragments */}
@@ -82,8 +81,6 @@ function FuturisticMonitor() {
 
   return (
     <div className="fm-container">
-      {/* Ambient glow behind monitor */}
-      <div className="fm-ambient-glow" />
 
       {/* Floating badge — top left */}
       <div className="fm-badge fm-badge--top">

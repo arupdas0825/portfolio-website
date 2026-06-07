@@ -24,7 +24,6 @@ const PhotographyGallery = lazy(() => import('./PhotographyGallery'));
 const PublicationsPage = lazy(() => import('./PublicationsPage'));
 const AIPlaybackAssistant = lazy(() => import('./ai-playback/AIPlaybackAssistant'));
 
-import ThreeBackground from './components/ThreeBackground';
 import Starfield       from './Starfield';
 import WelcomeScreen   from './WelcomeScreen';
 import usePlaybackStore from './ai-playback/usePlaybackStore';
@@ -132,11 +131,10 @@ export default function App() {
           transition: 'opacity 0.8s ease-in-out',
           paddingBottom: IS_TOUCH ? '100px' : '0px'
         }}>
-          <ThreeBackground />
-          {IS_TOUCH && <Starfield />}
-          <div className="blob blob-1" />
-          <div className="blob blob-2" />
-          <div className="blob blob-3" />
+          <Starfield />
+          <div className="ambient-blob ambient-blob-1" />
+          <div className="ambient-blob ambient-blob-2" />
+          <div className="ambient-blob ambient-blob-3" />
           {!IS_TOUCH && <CustomCursor />}
           
           {/* ── Mobile Header (Logo + AI) ── */}

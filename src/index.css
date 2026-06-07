@@ -3,20 +3,36 @@
 
 
 :root {
-  --bg: #0a0812;
-  --bg2: #0f0c1a;
+  --bg: #030108;
+  --bg2: #080614;
   --bg3: #13102000;
-  --card: rgba(30, 22, 55, 0.85);
+  --card: rgba(15, 10, 25, 0.85);
   --card-border: rgba(138, 92, 246, 0.25);
-  --purple: #8a5cf6;
-  --purple-light: #a78bfa;
-  --purple-dim: rgba(138, 92, 246, 0.15);
-  --accent: #c084fc;
-  --glow: rgba(138, 92, 246, 0.4);
+  
+  --theme-primary: #8B5CF6;
+  --theme-light: #6E5BFF;
+  --theme-dim: rgba(110, 91, 255, 0.15);
+  --theme-accent: #00D4FF;
+  --theme-glow: rgba(110, 91, 255, 0.4);
+  --theme-border: rgba(110, 91, 255, 0.25);
+
   --text: #e2d9f3;
   --text-muted: #9d8ec4;
   --white: #ffffff;
-  --gradient: linear-gradient(135deg, #8a5cf6, #c084fc);
+  --gradient: linear-gradient(135deg, var(--theme-primary), var(--theme-accent));
+}
+
+@media (max-width: 768px) {
+  :root {
+    --theme-primary: #4F8CFF;
+    --theme-light: #3BB8FF;
+    --theme-dim: rgba(59, 184, 255, 0.15);
+    --theme-accent: #00D4FF;
+    --theme-glow: rgba(0, 212, 255, 0.4);
+    --theme-border: rgba(59, 184, 255, 0.25);
+    
+    --card-border: var(--theme-border);
+  }
 }
 
 * {
@@ -43,7 +59,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--purple);
+  background: var(--theme-primary);
   border-radius: 3px;
 }
 

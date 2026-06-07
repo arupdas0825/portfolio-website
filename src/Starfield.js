@@ -1,8 +1,12 @@
-import React, { useMemo, useEffect, useState } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
 
 export default function Starfield() {
-  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
+  const containerRef = useRef(null);
+  const particlesRef = useRef([]);
+  const rafRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' && window.innerWidth < 768
+  );
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -10,73 +14,98 @@ export default function Starfield() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const { scrollY } = useScroll();
+  useEffect(() => {
+    // Generate particles: 120-150 on Desktop, 40-60 on Mobile
+    const count = isMobile ? 50 : 135;
+    const particles = [];
+    const container = containerRef.current;
+    if (!container) return;
 
-  // Create smooth parallax layers based on absolute scroll position
-  // Far layer moves slowest, near layer moves fastest
-  const yFar = useTransform(scrollY, [0, 5000], [0, -150]);
-  const yMid = useTransform(scrollY, [0, 5000], [0, -300]);
-  const yNear = useTransform(scrollY, [0, 5000], [0, -600]);
+    // Clear existing
+    container.innerHTML = '';
 
-  // Generate particles based on device performance rules
-  const { farStars, midStars, nearStars } = useMemo(() => {
-    // We only use this component on mobile, but just in case:
-    const count = isMobile ? 15 : 15; 
-    
-    const generateLayer = (num, sizeRange, opacityRange) => {
-      return Array.from({ length: num }, (_, i) => ({
-        id: Math.random().toString(36).substr(2, 9),
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        size: Math.random() * sizeRange[0] + sizeRange[1],
-        opacity: Math.random() * opacityRange[0] + opacityRange[1],
-        delay: Math.random() * 5,
-        duration: Math.random() * 4 + 3,
-      }));
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement('div');
+      
+      const layer = i < count * 0.5 ? 0 : i < count * 0.8 ? 1 : 2;
+      
+      const size = layer === 0 ? Math.random() * 1.5 + 0.5
+                 : layer === 1 ? Math.random() * 2.0 + 1.5
+                 : Math.random() * 3.0 + 3.0;
+
+      const opacity = layer === 0 ? Math.random() * 0.15 + 0.1
+                    : layer === 1 ? Math.random() * 0.25 + 0.15
+                    : Math.random() * 0.35 + 0.2;
+
+      // Vertical drift speed
+      const speed = layer === 0 ? Math.random() * 0.4 + 0.2
+                  : layer === 1 ? Math.random() * 0.8 + 0.5
+                  : Math.random() * 1.5 + 1.0;
+
+      const x = Math.random() * 100; // vw
+      const startY = Math.random() * 100; // vh
+
+      el.style.position = 'absolute';
+      el.style.left = `${x}vw`;
+      el.style.top = '0px';
+      el.style.width = `${size}px`;
+      el.style.height = `${size}px`;
+      el.style.backgroundColor = 'var(--theme-primary)';
+      el.style.borderRadius = '50%';
+      el.style.opacity = opacity;
+      el.style.willChange = 'transform';
+      
+      // Initial transform
+      el.style.transform = `translate3d(0, ${startY}vh, 0)`;
+
+      container.appendChild(el);
+
+      particles.push({
+        el,
+        y: startY,
+        speed,
+      });
+    }
+
+    particlesRef.current = particles;
+
+    let lastTime = performance.now();
+
+    const animate = (time) => {
+      // Calculate delta to maintain speed across different refresh rates
+      const delta = (time - lastTime) / 16.66;
+      lastTime = time;
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.y -= p.speed * 0.05 * delta; 
+        
+        // Wrap around when floating past top
+        if (p.y < -10) {
+          p.y = 110;
+        }
+        p.el.style.transform = `translate3d(0, ${p.y}vh, 0)`;
+      }
+      rafRef.current = requestAnimationFrame(animate);
     };
 
-    // Distribute counts: more distant stars, fewer near stars
-    return {
-      farStars: generateLayer(Math.floor(count * 0.5), [1.5, 0.5], [0.15, 0.05]),
-      midStars: generateLayer(Math.floor(count * 0.35), [2.5, 1], [0.3, 0.1]),
-      nearStars: generateLayer(Math.floor(count * 0.15), [4, 2], [0.5, 0.2]),
+    rafRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, [isMobile]);
 
-  const renderLayer = (stars, yTransform, layerClass) => (
-    <motion.div 
-      className={`parallax-layer ${layerClass}`} 
-      style={{ y: yTransform }}
-    >
-      {stars.map((s) => (
-        <div
-          key={s.id}
-          className="star"
-          style={{
-            left: `${s.x}%`,
-            top: `${s.y}%`,
-            width: `${s.size}px`,
-            height: `${s.size}px`,
-            opacity: s.opacity,
-            animationDelay: `${s.delay}s`,
-            animationDuration: `${s.duration}s`,
-          }}
-        />
-      ))}
-    </motion.div>
-  );
-
   return (
-    <div className="starfield">
-      {/* Cinematic Ambient Lighting (GPU friendly, no blurs) */}
-      <div className="ambient-light ambient-blue" />
-      <div className="ambient-light ambient-cyan" />
-      <div className="ambient-light ambient-purple" />
-      
-      {/* 3D Depth Layers */}
-      {renderLayer(farStars, yFar, 'layer-far')}
-      {renderLayer(midStars, yMid, 'layer-mid')}
-      {renderLayer(nearStars, yNear, 'layer-near')}
-    </div>
+    <div 
+      ref={containerRef}
+      style={{
+        position: 'fixed',
+        inset: '-10vh -10vw',
+        zIndex: 0,
+        pointerEvents: 'none',
+        overflow: 'hidden'
+      }} 
+    />
   );
 }
