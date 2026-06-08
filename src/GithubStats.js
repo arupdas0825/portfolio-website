@@ -166,7 +166,7 @@ const HeatmapGrid = React.memo(({ weeks, isMobile, handleCellEnter, handleCellLe
       `}</style>
       <div className="heatmap-grid" style={{ display: 'flex', gap: 4 }}>
         {weeks.map((week, wi) => (
-          <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: 4, flexShrink: 0 }}>
             {week.map((day, di) => {
               if (!day) {
                 return (
@@ -434,7 +434,7 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
         }} 
         className="hide-scrollbar"
       >
-        <div style={{ minWidth: isMobile ? 750 : 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div style={{ minWidth: 'max-content', display: 'flex', flexDirection: 'column', gap: 4 }}>
           {/* Month labels */}
           <div style={{ display: 'flex', height: 16, position: 'relative', marginBottom: 2 }}>
             {monthLabels.map((m, i) => (
