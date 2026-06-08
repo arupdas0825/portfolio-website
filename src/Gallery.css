@@ -92,14 +92,17 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
 }
 
 .hm-hero-meta span {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 /* ── Section 2: Category Chips ── */
@@ -199,20 +202,23 @@
 }
 
 .hm-slide-title {
-  font-size: 1.8rem;
+  font-size: 2.2rem;
   font-weight: 800;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   color: #fff;
   text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  letter-spacing: -0.01em;
 }
 
 .hm-slide-meta {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.8);
-  font-weight: 600;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.7);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
 }
 
 .hm-carousel-slide.center {
@@ -420,10 +426,10 @@
 }
 
 .hm-lightbox-title {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 800;
   color: #fff;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   letter-spacing: 0.5px;
 }
 
@@ -432,9 +438,11 @@
   align-items: center;
   justify-content: center;
   gap: 16px;
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 600;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 

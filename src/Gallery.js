@@ -162,15 +162,22 @@ export default function Gallery() {
       
       {/* ── SECTION 1: Featured Photo Hero ── */}
       <div className="hm-hero-wrapper">
-        <div className="section-header" style={{ marginBottom: '30px' }}>
-          <h2 className="section-title fade-in">
-            Visual <span>Stories</span>
+        <motion.div 
+          className="section-header" 
+          style={{ marginBottom: '30px' }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="section-title">
+            Cinematic <span>Photography</span>
           </h2>
-          <div className="section-line fade-in" />
-          <p className="section-sub fade-in">
+          <div className="section-line" />
+          <p className="section-sub">
             A curated selection of moments frozen in time.
           </p>
-        </div>
+        </motion.div>
 
         <motion.div 
           className="hm-hero"
@@ -191,8 +198,6 @@ export default function Gallery() {
             <div className="hm-hero-badge">Featured Capture</div>
             <h3 className="hm-hero-title">{featuredPhoto.title}</h3>
             <div className="hm-hero-meta">
-              <span><LucideMapPin size={18}/> {featuredPhoto.location}</span>
-              <span>•</span>
               <span><LucideCamera size={18}/> {featuredPhoto.category}</span>
             </div>
           </div>
@@ -267,8 +272,6 @@ export default function Gallery() {
                     <h4 className="hm-slide-title">{photo.title}</h4>
                     <div className="hm-slide-meta">
                       <span>{photo.category}</span>
-                      <span>•</span>
-                      <span>{photo.location}</span>
                     </div>
                   </div>
 
@@ -350,8 +353,6 @@ export default function Gallery() {
               <h2 className="hm-lightbox-title">{lightboxPhoto.title}</h2>
               <div className="hm-lightbox-meta">
                 <span>{lightboxPhoto.category}</span>
-                <span>•</span>
-                <span>{lightboxPhoto.location}</span>
               </div>
             </div>
 
