@@ -162,7 +162,6 @@ const CoverflowCard = React.memo(({ repo, position, onClick, isMobile }) => {
 /* ── Coverflow Carousel ── */
 const CoverflowCarousel = ({ repos, onCardClick }) => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
   const containerRef = useRef(null);
@@ -182,18 +181,14 @@ const CoverflowCarousel = ({ repos, onCardClick }) => {
   const wrap = useCallback((idx) => ((idx % total) + total) % total, [total]);
 
   const goNext = useCallback(() => {
-    if (isTransitioning || total <= 1) return;
-    setIsTransitioning(true);
+    if (total <= 1) return;
     setActiveIndex(prev => wrap(prev + 1));
-    setTimeout(() => setIsTransitioning(false), 800);
-  }, [isTransitioning, total, wrap]);
+  }, [total, wrap]);
 
   const goPrev = useCallback(() => {
-    if (isTransitioning || total <= 1) return;
-    setIsTransitioning(true);
+    if (total <= 1) return;
     setActiveIndex(prev => wrap(prev - 1));
-    setTimeout(() => setIsTransitioning(false), 800);
-  }, [isTransitioning, total, wrap]);
+  }, [total, wrap]);
 
   // Autoplay
   useEffect(() => {
@@ -320,11 +315,7 @@ const CoverflowCarousel = ({ repos, onCardClick }) => {
               key={i}
               className={`cf-dot ${i === activeIndex ? 'cf-dot--active' : ''}`}
               onClick={() => {
-                if (!isTransitioning) {
-                  setIsTransitioning(true);
-                  setActiveIndex(i);
-                  setTimeout(() => setIsTransitioning(false), 800);
-                }
+                setActiveIndex(i);
               }}
               aria-label={`Go to project ${i + 1}`}
             />

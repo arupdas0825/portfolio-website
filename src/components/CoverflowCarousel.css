@@ -44,20 +44,30 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 
-  /* PERFORMANCE: only animate transform + opacity */
-  transition: transform 800ms cubic-bezier(0.22, 1, 0.36, 1),
-              opacity 800ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform, opacity;
+  /* PERFORMANCE: only animate transform + opacity + filter */
+  transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 650ms cubic-bezier(0.22, 1, 0.36, 1),
+              filter 650ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity, filter;
   transform-style: preserve-3d;
+  backface-visibility: hidden;
 }
+
+/* ── Motion Blur while moving ── */
+/* By default, add a tiny blur to all non-center elements to simulate motion blur. Center is sharp. */
+.cf-card {
+  filter: blur(1px);
+}
+
 
 /* ── Position States ── */
 
 /* CENTER (Active) */
 .cf-card--center {
   z-index: 10;
-  transform: translateX(-50%) translateY(0) rotateY(0deg) scale(1);
+  transform: translate3d(-50%, 0px, 0) rotateY(0deg) scale(1);
   opacity: 1;
+  filter: blur(0px);
   left: 50%;
   border-color: rgba(138, 92, 246, 0.18);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
@@ -70,7 +80,7 @@
 .cf-card--left {
   z-index: 5;
   left: 50%;
-  transform: translateX(calc(-50% - 340px)) translateY(20px) rotateY(18deg) scale(0.82);
+  transform: translate3d(calc(-50% - 340px), 20px, -50px) rotateY(18deg) scale(0.88);
   opacity: 0.65;
 }
 
@@ -78,7 +88,7 @@
 .cf-card--right {
   z-index: 5;
   left: 50%;
-  transform: translateX(calc(-50% + 340px)) translateY(20px) rotateY(-18deg) scale(0.82);
+  transform: translate3d(calc(-50% + 340px), 20px, -50px) rotateY(-18deg) scale(0.88);
   opacity: 0.65;
 }
 
@@ -86,8 +96,8 @@
 .cf-card--far-left {
   z-index: 2;
   left: 50%;
-  transform: translateX(calc(-50% - 600px)) translateY(35px) rotateY(28deg) scale(0.65);
-  opacity: 0.25;
+  transform: translate3d(calc(-50% - 600px), 35px, -100px) rotateY(28deg) scale(0.78);
+  opacity: 0.35;
   pointer-events: none;
 }
 
@@ -95,14 +105,14 @@
 .cf-card--far-right {
   z-index: 2;
   left: 50%;
-  transform: translateX(calc(-50% + 600px)) translateY(35px) rotateY(-28deg) scale(0.65);
-  opacity: 0.25;
+  transform: translate3d(calc(-50% + 600px), 35px, -100px) rotateY(-28deg) scale(0.78);
+  opacity: 0.35;
   pointer-events: none;
 }
 
 /* ── Center Card Hover ── */
 .cf-card--center:hover {
-  transform: translateX(-50%) translateY(-8px) rotateY(0deg) scale(1.03);
+  transform: translate3d(-50%, -8px, 0) rotateY(0deg) scale(1.03);
   border-color: rgba(138, 92, 246, 0.32);
   box-shadow: 0 28px 70px rgba(0, 0, 0, 0.5),
               0 0 80px rgba(138, 92, 246, 0.15),
@@ -496,19 +506,19 @@
   }
 
   .cf-card--left {
-    transform: translateX(calc(-50% - 290px)) translateY(18px) rotateY(18deg) scale(0.8);
+    transform: translate3d(calc(-50% - 290px), 18px, -50px) rotateY(18deg) scale(0.85);
   }
 
   .cf-card--right {
-    transform: translateX(calc(-50% + 290px)) translateY(18px) rotateY(-18deg) scale(0.8);
+    transform: translate3d(calc(-50% + 290px), 18px, -50px) rotateY(-18deg) scale(0.85);
   }
 
   .cf-card--far-left {
-    transform: translateX(calc(-50% - 500px)) translateY(30px) rotateY(25deg) scale(0.62);
+    transform: translate3d(calc(-50% - 500px), 30px, -100px) rotateY(25deg) scale(0.75);
   }
 
   .cf-card--far-right {
-    transform: translateX(calc(-50% + 500px)) translateY(30px) rotateY(-25deg) scale(0.62);
+    transform: translate3d(calc(-50% + 500px), 30px, -100px) rotateY(-25deg) scale(0.75);
   }
 }
 
@@ -518,11 +528,11 @@
   }
 
   .cf-card--left {
-    transform: translateX(calc(-50% - 260px)) translateY(16px) rotateY(16deg) scale(0.78);
+    transform: translate3d(calc(-50% - 260px), 16px, -50px) rotateY(16deg) scale(0.85);
   }
 
   .cf-card--right {
-    transform: translateX(calc(-50% + 260px)) translateY(16px) rotateY(-16deg) scale(0.78);
+    transform: translate3d(calc(-50% + 260px), 16px, -50px) rotateY(-16deg) scale(0.85);
   }
 
   .cf-card--far-left,
@@ -559,21 +569,21 @@
   }
 
   .cf-card--center {
-    transform: translateX(-50%) translateY(0) rotateY(0deg) scale(1);
+    transform: translate3d(-50%, 0px, 0) rotateY(0deg) scale(1);
   }
 
   .cf-card--center:hover {
-    transform: translateX(-50%) translateY(-6px) rotateY(0deg) scale(1.02);
+    transform: translate3d(-50%, -6px, 0) rotateY(0deg) scale(1.02);
   }
 
   .cf-card--left {
-    transform: translateX(calc(-50% - 200px)) translateY(14px) rotateY(14deg) scale(0.85);
-    opacity: 0.5;
+    transform: translate3d(calc(-50% - 200px), 14px, -50px) rotateY(14deg) scale(0.88);
+    opacity: 0.65;
   }
 
   .cf-card--right {
-    transform: translateX(calc(-50% + 200px)) translateY(14px) rotateY(-14deg) scale(0.85);
-    opacity: 0.5;
+    transform: translate3d(calc(-50% + 200px), 14px, -50px) rotateY(-14deg) scale(0.88);
+    opacity: 0.65;
   }
 
   .cf-card--far-left,
@@ -641,13 +651,13 @@
   }
 
   .cf-card--left {
-    transform: translateX(calc(-50% - 160px)) translateY(12px) rotateY(12deg) scale(0.85);
-    opacity: 0.4;
+    transform: translate3d(calc(-50% - 160px), 12px, -50px) rotateY(12deg) scale(0.88);
+    opacity: 0.65;
   }
 
   .cf-card--right {
-    transform: translateX(calc(-50% + 160px)) translateY(12px) rotateY(-12deg) scale(0.85);
-    opacity: 0.4;
+    transform: translate3d(calc(-50% + 160px), 12px, -50px) rotateY(-12deg) scale(0.88);
+    opacity: 0.65;
   }
 
   .cf-nav {
