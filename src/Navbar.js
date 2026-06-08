@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Home, Briefcase, Camera, Award, FileText, Mail } from 'lucide-react';
 
 const navLinks = [
   { id:'home',      label:'Home',        icon:'🏠' },
@@ -57,152 +58,120 @@ export default function Navbar() {
     setMenuOpen(false);
   };
 
-  // ── MOBILE NAV (Apple Floating Dock Redesign) ──
+  // ── MOBILE NAV (Premium SaaS Redesign) ──
   if (isMobile) return (
-    <>
-      <div className="apple-dock-border-wrap">
-        <nav className="apple-dock-container">
-          {/* Quick Links for Dock */}
-          {[
-            { id:'home',      icon:'🏠' },
-            { id:'work',      icon:'💼' },
-            { id:'gallery',   icon:'📷' },
-            { id:'contact',   icon:'📬' },
-          ].map(link => {
-            const isActive = active === link.id;
-            return (
-              <motion.button
-                key={link.id}
-                onClick={() => scrollTo(link.id)}
-                className={`apple-dock-btn ${isActive ? 'active' : ''}`}
-                whileTap={{ scale: 0.92, y: -2 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                aria-label={`Navigate to ${link.id}`}
-              >
-                <span>{link.icon}</span>
-                {isActive && (
-                  <motion.div 
-                    className="apple-dock-dot"
-                    layoutId="activeDockIndicatorDot"
-                    transition={{ type: 'spring', stiffness: 380, damping: 25 }}
-                  />
-                )}
-              </motion.button>
-            );
-          })}
-
-          {/* Divider */}
-          <div className="apple-dock-divider" />
-
-          {/* More/Menu Toggle */}
+    <div style={{
+      position: 'fixed',
+      bottom: '24px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: 'calc(100% - 20px)', 
+      maxWidth: '480px',
+      height: '62px',
+      background: 'rgba(12, 12, 25, 0.65)',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      border: '1px solid rgba(120, 180, 255, 0.18)',
+      borderRadius: '24px',
+      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(120, 180, 255, 0.15)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '0 6px',
+      zIndex: 9999,
+      paddingBottom: 'env(safe-area-inset-bottom, 0)',
+    }}>
+      {[
+        { id: 'home', label: 'Home', Icon: Home },
+        { id: 'work', label: 'Work', Icon: Briefcase },
+        { id: 'gallery', label: 'Photography', Icon: Camera },
+        { id: 'certificates', label: 'Certificates', Icon: Award },
+        { id: 'cv', label: 'CV', Icon: FileText },
+        { id: 'contact', label: 'Contact', Icon: Mail },
+      ].map(link => {
+        const isActive = active === link.id;
+        return (
           <motion.button
-            onClick={() => setMenuOpen(o => !o)}
-            className={`apple-dock-more-btn ${menuOpen ? 'open' : ''}`}
-            whileTap={{ scale: 0.92, y: -2 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-            aria-label="Toggle full menu navigation"
+            key={link.id}
+            onClick={() => scrollTo(link.id)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 1.05 }}
+            transition={{ type: 'tween', duration: 0.25, ease: 'easeInOut' }}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flex: 1,
+              height: '52px',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              position: 'relative',
+              WebkitTapHighlightColor: 'transparent',
+              padding: '0 2px',
+            }}
+            aria-label={`Navigate to ${link.label}`}
           >
-            {[0, 1, 2].map(i => (
-              <span key={i} style={{
-                display: 'block',
-                width: menuOpen ? (i === 1 ? 0 : 20) : 20,
-                height: 2,
-                background: menuOpen ? '#a78bfa' : 'rgba(255,255,255,0.75)',
-                borderRadius: 2,
-                transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
-                transform: menuOpen
-                  ? i === 0 ? 'rotate(45deg) translate(4px,4px)'
-                  : i === 2 ? 'rotate(-45deg) translate(4px,-4px)'
-                  : 'scaleX(0)'
-                  : 'none',
-              }}/>
-            ))}
-          </motion.button>
-        </nav>
-      </div>
-
-      {/* Drawer (Bottom Sheet Style) */}
-      <div style={{
-        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-        zIndex: 190,
-        pointerEvents: menuOpen ? 'all' : 'none',
-        display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
-      }}>
-        {/* Backdrop */}
-        <div
-          onClick={() => setMenuOpen(false)}
-          style={{
-            position: 'absolute', inset: 0,
-            background: 'rgba(0,0,0,0.6)',
-            backdropFilter: 'blur(4px)',
-            opacity: menuOpen ? 1 : 0,
-            transition: 'opacity 0.4s ease',
-          }}
-        />
-
-        {/* Menu panel (Bottom Sheet) */}
-        <div style={{
-          position: 'relative',
-          width: '100%',
-          background: 'rgba(15, 12, 26, 0.95)',
-          backdropFilter: 'blur(30px)',
-          borderTop: '1px solid rgba(138, 92, 246, 0.3)',
-          borderTopLeftRadius: 32,
-          borderTopRightRadius: 32,
-          boxShadow: '0 -10px 40px rgba(0,0,0,0.5)',
-          transform: menuOpen ? 'translateY(0)' : 'translateY(100%)',
-          transition: 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)',
-          display: 'flex', flexDirection: 'column',
-          padding: '24px 20px 100px', // Extra bottom padding for dock
-          gap: 10,
-          maxHeight: '80vh',
-          overflowY: 'auto',
-        }}>
-          {/* Handle */}
-          <div style={{
-            width: 40, height: 4, background: 'rgba(255,255,255,0.2)',
-            borderRadius: 2, margin: '0 auto 20px',
-          }} />
-
-          <div style={{ fontFamily:"'Syne',sans-serif", fontSize:11, fontWeight:700, letterSpacing:'2px', color:'rgba(255,255,255,0.3)', marginBottom:8, textAlign:'center' }}>
-            FULL NAVIGATION
-          </div>
-
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:10 }}>
-            {navLinks.map((link, i) => (
-              <button
-                key={link.id}
-                onClick={() => scrollTo(link.id)}
+            {isActive && (
+              <>
+                <motion.div
+                  layoutId="activePremiumIndicator"
+                  style={{
+                    position: 'absolute',
+                    inset: '2px',
+                    background: 'linear-gradient(180deg, rgba(120, 180, 255, 0.12) 0%, rgba(120, 180, 255, 0.02) 100%)',
+                    borderRadius: '16px',
+                    zIndex: 0,
+                  }}
+                  transition={{ type: 'tween', duration: 0.25, ease: 'easeInOut' }}
+                />
+                <motion.div
+                  animate={{
+                    boxShadow: ['0 0 4px rgba(120, 180, 255, 0.2)', '0 0 12px rgba(120, 180, 255, 0.4)', '0 0 4px rgba(120, 180, 255, 0.2)']
+                  }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                  style={{
+                    position: 'absolute',
+                    inset: '2px',
+                    borderRadius: '16px',
+                    zIndex: 0,
+                    pointerEvents: 'none'
+                  }}
+                />
+              </>
+            )}
+            
+            <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+              <link.Icon 
+                size={19} 
+                strokeWidth={isActive ? 2.5 : 1.5} 
+                color={isActive ? '#78b4ff' : 'rgba(255, 255, 255, 0.5)'} 
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 12,
-                  padding: '16px', borderRadius: 16,
-                  background: active === link.id ? 'rgba(138,92,246,0.15)' : 'rgba(255,255,255,0.03)',
-                  border: active === link.id ? '1px solid rgba(138,92,246,0.3)' : '1px solid rgba(255,255,255,0.06)',
-                  color: active === link.id ? '#a78bfa' : 'rgba(255,255,255,0.65)',
-                  fontSize: 14, fontWeight: 600,
-                  fontFamily: "'Syne',sans-serif",
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  opacity: menuOpen ? 1 : 0,
-                  transform: menuOpen ? 'translateY(0)' : 'translateY(20px)',
-                  transitionDelay: menuOpen ? `${i * 0.03}s` : '0s',
+                  transition: 'all 0.25s ease',
+                  filter: isActive ? 'drop-shadow(0 0 6px rgba(120, 180, 255, 0.5))' : 'none',
                 }}
-              >
-                <span style={{ fontSize: 18 }}>{link.icon}</span>
+              />
+              <span style={{
+                fontFamily: "'Inter', -apple-system, sans-serif",
+                fontSize: '11px',
+                fontWeight: 500,
+                color: isActive ? '#78b4ff' : 'rgba(255, 255, 255, 0.5)',
+                transition: 'all 0.25s ease',
+                letterSpacing: '-0.3px',
+                textShadow: isActive ? '0 0 8px rgba(120, 180, 255, 0.4)' : 'none',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                maxWidth: '100%',
+              }}>
                 {link.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Bottom */}
-          <div style={{ marginTop:20, paddingTop:20, borderTop:'1px solid rgba(255,255,255,0.06)', textAlign:'center' }}>
-            <div style={{ fontSize:11, color:'rgba(255,255,255,0.25)', fontFamily:"'Syne',sans-serif" }}>
-              Arup Das · Portfolio v3.0
+              </span>
             </div>
-          </div>
-        </div>
-      </div>
-    </>
+          </motion.button>
+        );
+      })}
+    </div>
   );
 
   // ── DESKTOP NAV (scroll-based blur) ──
