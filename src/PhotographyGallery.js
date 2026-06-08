@@ -96,6 +96,14 @@ const photos = [
     location: "Kolkata, India",
     camera: "Fujifilm X-T4", lens: "XF 18-55mm F2.8-4", iso: "3200", shutterSpeed: "1/15s", aperture: "f/2.8"
   },
+  { 
+    id: 11, src: "/photos/11.jpg", 
+    title: "Last Light Over the Ganges", 
+    desc: "A mesmerizing view of the sacred Ganges river bathed in the fading light of dusk, capturing the timeless essence of life along its banks.", 
+    category: "Landscape Photography",
+    location: "Varanasi, India",
+    camera: "Unknown", lens: "Unknown", iso: "Auto", shutterSpeed: "Auto", aperture: "Auto"
+  },
 ];
 
 const featuredPhoto = photos[0];

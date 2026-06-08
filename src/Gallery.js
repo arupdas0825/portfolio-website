@@ -71,6 +71,12 @@ const photosData = [
     category: "Night Photography",
     location: "Kolkata, India"
   },
+  { 
+    id: 11, src: "/photos/11.jpg", 
+    title: "Last Light Over the Ganges", 
+    category: "Landscape Photography",
+    location: "Varanasi, India"
+  },
 ];
 
 export default function Gallery() {
