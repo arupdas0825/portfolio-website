@@ -19,14 +19,7 @@ export default function Navbar() {
   const [scrolled, setScrolled]   = useState(false);
   const [active, setActive]       = useState('home');
   const [menuOpen, setMenuOpen]   = useState(false);
-  const [isMobile, setIsMobile]   = useState(window.innerWidth < 768);
   const [navBlur, setNavBlur]     = useState(8);
-
-  useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,10 +51,21 @@ export default function Navbar() {
     setMenuOpen(false);
   };
 
-  // ── MOBILE NAV (Premium SaaS Redesign) ──
-  if (isMobile) return (
-    <div style={{
-      position: 'fixed',
+  return (
+    <>
+      <style>{`
+        @media (max-width: 1023px) {
+          .desktop-nav-wrapper { display: none !important; }
+        }
+        @media (min-width: 1024px) {
+          .mobile-nav-wrapper { display: none !important; }
+        }
+      `}</style>
+
+      {/* ── MOBILE NAV (Premium SaaS Redesign) ── */}
+      <div className="mobile-nav-wrapper">
+        <div style={{
+          position: 'fixed',
       bottom: '24px',
       left: '50%',
       transform: 'translateX(-50%)',
@@ -171,13 +175,12 @@ export default function Navbar() {
           </motion.button>
         );
       })}
-    </div>
-  );
+        </div>
+      </div>
 
-  // ── DESKTOP NAV (scroll-based blur) ──
-  return (
-    <>
-      <div className="brand-dock" onClick={() => window.location.reload()} title="Refresh Page">
+      {/* ── DESKTOP NAV (scroll-based blur) ── */}
+      <div className="desktop-nav-wrapper">
+        <div className="brand-dock" onClick={() => window.location.reload()} title="Refresh Page">
         <img 
           src="/ad logo.jpeg" 
           alt="AD Logo" 
@@ -205,6 +208,7 @@ export default function Navbar() {
           </button>
         ))}
       </nav>
+      </div>
     </>
   );
 }
