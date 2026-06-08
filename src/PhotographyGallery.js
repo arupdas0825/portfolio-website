@@ -39,6 +39,7 @@ export default function PhotographyGallery() {
   const handlePrev = useCallback((e) => {
     e?.stopPropagation();
     setSelected(prev => {
+      if (!prev) return null;
       const idx = photos.findIndex(p => p.id === prev.id);
       return photos[(idx - 1 + photos.length) % photos.length];
     });
@@ -47,6 +48,7 @@ export default function PhotographyGallery() {
   const handleNext = useCallback((e) => {
     e?.stopPropagation();
     setSelected(prev => {
+      if (!prev) return null;
       const idx = photos.findIndex(p => p.id === prev.id);
       return photos[(idx + 1) % photos.length];
     });

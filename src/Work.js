@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import ProjectDetails from './components/ProjectDetails';
+import CoverflowCarousel from './components/CoverflowCarousel';
 import projectsConfig from './content/projects/projects-config.json';
 
 const isMobileDevice = () => typeof window !== 'undefined' && window.innerWidth < 768;
@@ -707,36 +708,14 @@ const Work = () => {
                 transition={{ duration: 0.25, ease: 'easeInOut' }}
                 style={{ width: '100%' }}
               >
-                {/* Category 1: Major Projects */}
+                {/* Category 1: Major Projects — Coverflow Carousel */}
                 {activeCategory === 'Major' && (
                   <div className="work-category-section">
                     {categorized.major.length > 0 ? (
-                      <>
-                        <div className="projects-grid">
-                          {(isMobile ? categorized.major.slice(0, 3) : categorized.major).map((repo, idx) => (
-                            <MajorProjectCard
-                              key={repo.id}
-                              repo={repo}
-                              idx={idx}
-                              isMobile={isMobile}
-                              onClick={() => setSelected(repo)}
-                            />
-                          ))}
-                        </div>
-                        {isMobile && categorized.major.length > 3 && (
-                          <div className="work-explore-more-btn-container">
-                            <motion.button
-                              className="work-explore-more-btn"
-                              onClick={() => navigate('/work/major-projects')}
-                              whileHover={{ scale: 1.03 }}
-                              whileTap={{ scale: 0.97 }}
-                            >
-                              Explore More Major Projects
-                              <LucideArrowRight size={16} />
-                            </motion.button>
-                          </div>
-                        )}
-                      </>
+                      <CoverflowCarousel
+                        repos={categorized.major}
+                        onCardClick={(repo) => setSelected(repo)}
+                      />
                     ) : (
                       <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '48px 0' }}>
                         No Major projects found for the selected language.
@@ -745,35 +724,14 @@ const Work = () => {
                   </div>
                 )}
 
-                {/* Category 2: Secondary Projects */}
+                {/* Category 2: Secondary Projects — Coverflow Carousel */}
                 {activeCategory === 'Secondary' && (
                   <div className="work-category-section">
                     {categorized.secondary.length > 0 ? (
-                      <>
-                        <div className="secondary-projects-grid">
-                          {(isMobile ? categorized.secondary.slice(0, 3) : categorized.secondary).map((repo, idx) => (
-                            <SecondaryProjectCard
-                              key={repo.id}
-                              repo={repo}
-                              idx={idx}
-                              onClick={() => setSelected(repo)}
-                            />
-                          ))}
-                        </div>
-                        {isMobile && categorized.secondary.length > 3 && (
-                          <div className="work-explore-more-btn-container">
-                            <motion.button
-                              className="work-explore-more-btn"
-                              onClick={() => navigate('/work/secondary-projects')}
-                              whileHover={{ scale: 1.03 }}
-                              whileTap={{ scale: 0.97 }}
-                            >
-                              Explore More Secondary Projects
-                              <LucideArrowRight size={16} />
-                            </motion.button>
-                          </div>
-                        )}
-                      </>
+                      <CoverflowCarousel
+                        repos={categorized.secondary}
+                        onCardClick={(repo) => setSelected(repo)}
+                      />
                     ) : (
                       <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '48px 0' }}>
                         No Secondary projects found for the selected language.
@@ -782,35 +740,14 @@ const Work = () => {
                   </div>
                 )}
 
-                {/* Category 3: Academic Projects */}
+                {/* Category 3: Academic Projects — Coverflow Carousel */}
                 {activeCategory === 'Academic' && (
                   <div className="work-category-section">
                     {categorized.college.length > 0 ? (
-                      <>
-                        <div className="college-projects-grid">
-                          {(isMobile ? categorized.college.slice(0, 3) : categorized.college).map((repo, idx) => (
-                            <CollegeProjectCard
-                              key={repo.id}
-                              repo={repo}
-                              idx={idx}
-                              onClick={() => setSelected(repo)}
-                            />
-                          ))}
-                        </div>
-                        {isMobile && categorized.college.length > 3 && (
-                          <div className="work-explore-more-btn-container">
-                            <motion.button
-                              className="work-explore-more-btn"
-                              onClick={() => navigate('/work/academic-projects')}
-                              whileHover={{ scale: 1.03 }}
-                              whileTap={{ scale: 0.97 }}
-                            >
-                              Explore More Academic Projects
-                              <LucideArrowRight size={16} />
-                            </motion.button>
-                          </div>
-                        )}
-                      </>
+                      <CoverflowCarousel
+                        repos={categorized.college}
+                        onCardClick={(repo) => setSelected(repo)}
+                      />
                     ) : (
                       <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '48px 0' }}>
                         No Academic projects found for the selected language.
