@@ -428,6 +428,8 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
           borderRadius: 8, 
           padding: isMobile ? '12px' : '16px 20px',
           overflowX: 'auto',
+          WebkitOverflowScrolling: 'touch',
+          width: '100%',
           position: 'relative'
         }} 
         className="hide-scrollbar"
