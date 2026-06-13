@@ -118,6 +118,21 @@ export default function Certificates() {
     );
   }, []);
 
+  // Scroll Lock when modal is active
+  useEffect(() => {
+    if (selectedCert) {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, [selectedCert]);
+
   // Reset overlay zoom when selected cert changes
   useEffect(() => {
     setIsZoomed(false);
@@ -390,6 +405,7 @@ export default function Certificates() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
             onClick={() => setSelectedCert(null)}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
@@ -397,9 +413,10 @@ export default function Certificates() {
           >
             <motion.div
               className="cert-fullscreen-content"
-              initial={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.96, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              exit={{ scale: 0.96, opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="cert-fullscreen-header">
@@ -413,13 +430,17 @@ export default function Certificates() {
               </div>
               <div 
                 className="cert-fullscreen-image-wrap"
+                onClick={() => setSelectedCert(null)}
                 style={{ overflow: isZoomed ? 'auto' : 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
               >
                 <img 
                   src={selectedCert.image} 
                   alt={selectedCert.title} 
                   className={`cert-fullscreen-image ${isZoomed ? 'zoomed' : ''}`} 
-                  onClick={() => setIsZoomed(!isZoomed)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsZoomed(!isZoomed);
+                  }}
                   style={{
                     cursor: isZoomed ? 'zoom-out' : 'zoom-in',
                     maxWidth: isZoomed ? '140%' : '90%',

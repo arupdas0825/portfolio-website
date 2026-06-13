@@ -2377,28 +2377,35 @@ body {
 .cert-fullscreen-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.95);
-  z-index: 2000;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.92) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  z-index: 99999 !important;
   display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
-  justify-content: center;
-  padding: 40px;
-  backdrop-filter: blur(10px);
+  padding: 90px 40px 40px !important;
+  overflow: hidden;
 }
 
 .cert-fullscreen-content {
   width: 100%;
   max-width: 1200px;
-  max-height: 90vh;
+  max-height: calc(100vh - 120px);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
+  height: 100%;
 }
 
 .cert-fullscreen-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 }
 
 .cert-fullscreen-info h3 {
@@ -2443,11 +2450,11 @@ body {
   overflow: hidden;
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  background: #000;
+  background: rgba(10, 5, 20, 0.5);
 }
 
 .cert-fullscreen-image {
-  max-width: 90%;
+  max-width: 1100px;
   max-height: 80vh;
   object-fit: contain;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -2459,10 +2466,12 @@ body {
 
 @media (max-width: 768px) {
   .cert-grid { grid-template-columns: 1fr; }
-  .cert-fullscreen-overlay { padding: 20px; }
+  .cert-fullscreen-overlay { padding: 70px 20px 20px !important; }
+  .cert-fullscreen-content { max-height: calc(100vh - 90px); }
   .cert-fullscreen-info h3 { font-size: 1.25rem; }
   .cert-fullscreen-info p { font-size: 0.85rem; }
   .cert-back-btn { padding: 8px 16px; font-size: 0.85rem; }
+  .cert-fullscreen-image { max-width: 95vw; max-height: 75vh; }
 }
 
 /* ============================================================
