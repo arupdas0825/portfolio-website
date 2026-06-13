@@ -8,11 +8,6 @@ import ALL_CERTIFICATES from './data/certificates.json';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const IS_TOUCH = typeof window !== 'undefined' &&
-  (window.matchMedia('(pointer: coarse)').matches ||
-   'ontouchstart' in window ||
-   navigator.maxTouchPoints > 0);
-
 // Cyber-holographic empty state component for incoming certifications
 function CertificatesEmptyState({ category }) {
   const isProfessional = category === 'Professional Experience';
@@ -78,37 +73,29 @@ function CertificatesEmptyState({ category }) {
   );
 }
 
-// Expandable description component with Show More / Show Less functionality
-function ExpandableDescription({ text, limit = 160 }) {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  if (text.length <= limit) {
-    return <p className="cert-compact-description">{text}</p>;
-  }
-
-  return (
-    <p className="cert-compact-description">
-      {isExpanded ? text : `${text.substring(0, limit)}...`}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          setIsExpanded(!isExpanded);
-        }}
-        className="cert-show-more-btn"
-      >
-        {isExpanded ? 'Show Less' : 'Show More'}
-      </button>
-    </p>
-  );
-}
-
-export default function Certificates({ featuredOnly = true }) {
-  const [activeTab, setActiveTab] = useState('Academic Certifications');
+export default function Certificates() {
+  const [activeTab, setActiveTab] = useState('Professional Experience');
   const [selectedCert, setSelectedCert] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false);
+  
+  const touchStartY = useRef(0);
+  const touchEndY = useRef(0);
   const titleRef = useRef(null);
   const navigate = useNavigate();
 
+  // Resize listener to toggle mobile/desktop mode
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Title ScrollTrigger Animation
   useEffect(() => {
     if (!titleRef.current) return;
     gsap.fromTo(titleRef.current,
@@ -116,6 +103,20 @@ export default function Certificates({ featuredOnly = true }) {
       { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out',
         scrollTrigger: { trigger: titleRef.current, start: 'top 85%', once: true } }
     );
+  }, []);
+
+  // Reset overlay zoom when selected cert changes
+  useEffect(() => {
+    setIsZoomed(false);
+  }, [selectedCert]);
+
+  // ESC key to close viewer modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setSelectedCert(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const categories = [
@@ -131,7 +132,6 @@ export default function Certificates({ featuredOnly = true }) {
       return cat === activeTab;
     });
 
-    // Dynamic sorting: priority first (smaller number = higher priority), then descending by date
     return filtered.sort((a, b) => {
       if (a.priority !== undefined && b.priority !== undefined) {
         if (a.priority !== b.priority) {
@@ -146,13 +146,39 @@ export default function Certificates({ featuredOnly = true }) {
 
   const processedCerts = getProcessedCertificates();
   
-  // Limiter for homepage previews (responsive limits)
-  const MOBILE_LIMIT = 2;
-  const DESKTOP_LIMIT = 4;
-  const limit = IS_TOUCH ? MOBILE_LIMIT : DESKTOP_LIMIT;
-  
-  const displayCerts = featuredOnly ? processedCerts.slice(0, limit) : processedCerts;
-  const hasMore = featuredOnly && processedCerts.length > limit;
+  // Decide which certificates to display
+  let displayCerts = [];
+  if (isMobile) {
+    displayCerts = processedCerts.slice(0, 2);
+  } else {
+    displayCerts = isExpanded ? processedCerts : processedCerts.slice(0, 4);
+  }
+
+  const hasMore = isMobile 
+    ? processedCerts.length > 2 
+    : processedCerts.length > 4;
+
+  const handleTabChange = (cat) => {
+    setActiveTab(cat);
+    setIsExpanded(false);
+  };
+
+  // Touch handlers for swipe-to-close
+  const handleTouchStart = (e) => {
+    touchStartY.current = e.targetTouches[0].clientY;
+    touchEndY.current = e.targetTouches[0].clientY;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndY.current = e.targetTouches[0].clientY;
+  };
+
+  const handleTouchEnd = () => {
+    const deltaY = touchStartY.current - touchEndY.current;
+    if (Math.abs(deltaY) > 80) {
+      setSelectedCert(null);
+    }
+  };
 
   return (
     <section id="certificates" className="page-section cert-section">
@@ -176,7 +202,7 @@ export default function Certificates({ featuredOnly = true }) {
                 <button
                   key={cat}
                   className={`cert-category-tab ${activeTab === cat ? 'active' : ''}`}
-                  onClick={() => setActiveTab(cat)}
+                  onClick={() => handleTabChange(cat)}
                 >
                   {cat} <span style={{ marginLeft: '6px', fontSize: '0.75rem', opacity: 0.6 }}>({count})</span>
                 </button>
@@ -186,13 +212,13 @@ export default function Certificates({ featuredOnly = true }) {
         </div>
 
         {/* Certificate Cards Grid */}
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout">
           <motion.div
-            key={activeTab}
+            key={activeTab + (isExpanded ? '-expanded' : '-collapsed')}
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
             className={`cert-grid-compact ${activeTab === 'Professional Experience' ? 'four-cols' : ''}`}
             style={{ marginTop: '28px' }}
           >
@@ -200,11 +226,12 @@ export default function Certificates({ featuredOnly = true }) {
               displayCerts.map((cert, idx) => (
                  <motion.div
                   key={cert.id}
+                  layout
                   className="cert-card-compact"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-40px' }}
-                  transition={{ duration: 0.5, delay: idx * 0.08, ease: 'easeOut' }}
+                  transition={{ duration: 0.5, delay: idx * 0.05, ease: 'easeOut' }}
                   style={{ 
                     '--cert-color-22': `${cert.color}22`,
                     '--cert-color-aa': `${cert.color}aa`,
@@ -215,56 +242,57 @@ export default function Certificates({ featuredOnly = true }) {
                     WebkitBackdropFilter: 'blur(12px)'
                   }}
                 >
-                  {/* Image Section with magnifying zoom hover */}
+                  {/* Image Section */}
                   <div className="cert-compact-img-wrap" onClick={() => setSelectedCert(cert)}>
-                    <img src={cert.image} alt={cert.title} className="cert-compact-img" />
+                    <img 
+                      src={cert.image} 
+                      alt={cert.title} 
+                      className="cert-compact-img" 
+                      loading="lazy" 
+                    />
                     <div className="cert-preview-overlay">
                       <LucideMaximize2 size={18} />
                     </div>
                   </div>
 
                   {/* Card Info Content */}
-                  <div className="cert-compact-info" style={{ height: 'auto', display: 'flex', flexDirection: 'column' }}>
-                    <div className="cert-compact-header">
-                      <h3 className="cert-compact-title">{cert.title}</h3>
-                      <span className="cert-compact-date">{cert.date}</span>
+                  <div className="cert-compact-info" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <div className="cert-compact-header">
+                        <h3 className="cert-compact-title">{cert.title}</h3>
+                        <span className="cert-compact-date">{cert.date}</span>
+                      </div>
+                      <p className="cert-compact-issuer" style={{ color: cert.color }}>{cert.issuer}</p>
+                      
+                      {/* Tags list */}
+                      <div className="cert-compact-tags">
+                        {cert.tags.map(tag => (
+                          <span 
+                            key={tag} 
+                            className="cert-tag" 
+                            style={{ 
+                              color: cert.color, 
+                              borderColor: `${cert.color}33`, 
+                              background: `${cert.color}08`,
+                              fontSize: '0.65rem', 
+                              padding: '2px 8px' 
+                            }}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                    <p className="cert-compact-issuer" style={{ color: cert.color }}>{cert.issuer}</p>
                     
-                    {/* Tags list */}
-                    <div className="cert-compact-tags">
-                      {cert.tags.map(tag => (
-                        <span 
-                          key={tag} 
-                          className="cert-tag" 
-                          style={{ 
-                            color: cert.color, 
-                            borderColor: `${cert.color}33`, 
-                            background: `${cert.color}08`,
-                            fontSize: '0.65rem', 
-                            padding: '2px 8px' 
-                          }}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    
-                    <ExpandableDescription text={cert.description} limit={160} />
-                    
-                    {/* Dual Action Buttons */}
-                    <div className="cert-card-actions" style={{ display: 'flex', gap: '8px', marginTop: '4px', paddingTop: '4px' }}>
+                    {/* Action buttons and badge */}
+                    <div className="cert-card-actions">
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
-                          if (IS_TOUCH) {
-                            setSelectedCert(cert);
-                          } else {
-                            window.open(cert.image, "_blank");
-                          }
+                          setSelectedCert(cert);
                         }}
-                        className="cert-compact-btn flex-1" 
+                        className="cert-compact-btn view flex-1" 
                         style={{ 
                           background: `${cert.color}15`,
                           borderColor: `${cert.color}44`,
@@ -273,19 +301,36 @@ export default function Certificates({ featuredOnly = true }) {
                       >
                         <LucideExternalLink size={12} style={{ marginRight: '4px' }} /> View
                       </button>
-                      <div 
+
+                      {cert.credentialId && (
+                        <div 
+                          className="cert-credential-badge"
+                          style={{ 
+                            borderColor: `${cert.color}44`,
+                            color: cert.color,
+                            boxShadow: `0 0 8px ${cert.color}11`
+                          }}
+                        >
+                          <span className="cert-cred-label">Credential:</span>
+                          <span className="cert-cred-val">{cert.credentialId}</span>
+                        </div>
+                      )}
+
+                      <a 
+                        href={cert.verifyLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="cert-compact-btn verify flex-1" 
                         style={{ 
-                          textDecoration: 'none', 
                           background: 'transparent', 
                           borderColor: 'rgba(255, 255, 255, 0.08)',
                           color: 'var(--text-muted)',
-                          cursor: 'default',
-                          pointerEvents: 'none'
+                          textDecoration: 'none'
                         }}
+                        onClick={(e) => e.stopPropagation()}
                       >
                         <LucideCheckCircle size={12} style={{ marginRight: '4px' }} /> Verify
-                      </div>
+                      </a>
                     </div>
                   </div>
                 </motion.div>
@@ -296,7 +341,7 @@ export default function Certificates({ featuredOnly = true }) {
           </motion.div>
         </AnimatePresence>
 
-        {/* Homepage See More Button */}
+        {/* Homepage Navigation / Expansion System */}
         {hasMore && (
           <motion.div
             className="cert-see-more-wrap"
@@ -305,10 +350,16 @@ export default function Certificates({ featuredOnly = true }) {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <button className="cert-see-more-btn" onClick={() => navigate('/certificates')}>
-              See More Certificates
-              <LucideExternalLink size={14} style={{ marginLeft: 6 }} />
-            </button>
+            {isMobile ? (
+              <button className="cert-see-more-btn" onClick={() => navigate('/certificates')}>
+                View All Certificates
+                <LucideExternalLink size={14} style={{ marginLeft: 6 }} />
+              </button>
+            ) : (
+              <button className="cert-see-more-btn" onClick={() => setIsExpanded(!isExpanded)}>
+                {isExpanded ? 'Show Less' : 'Show More Certificates'}
+              </button>
+            )}
           </motion.div>
         )}
       </div>
@@ -322,6 +373,9 @@ export default function Certificates({ featuredOnly = true }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedCert(null)}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
             <motion.div
               className="cert-fullscreen-content"
@@ -339,8 +393,24 @@ export default function Certificates({ featuredOnly = true }) {
                   <LucideX size={20} />
                 </button>
               </div>
-              <div className="cert-fullscreen-image-wrap">
-                <img src={selectedCert.image} alt={selectedCert.title} className="cert-fullscreen-image" />
+              <div 
+                className="cert-fullscreen-image-wrap"
+                style={{ overflow: isZoomed ? 'auto' : 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+              >
+                <img 
+                  src={selectedCert.image} 
+                  alt={selectedCert.title} 
+                  className={`cert-fullscreen-image ${isZoomed ? 'zoomed' : ''}`} 
+                  onClick={() => setIsZoomed(!isZoomed)}
+                  style={{
+                    cursor: isZoomed ? 'zoom-out' : 'zoom-in',
+                    maxWidth: isZoomed ? '140%' : '90%',
+                    maxHeight: isZoomed ? 'none' : '80vh',
+                    transition: 'all 0.3s ease-out',
+                    display: 'block',
+                    margin: '0 auto'
+                  }}
+                />
               </div>
             </motion.div>
           </motion.div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LucideArrowLeft, LucideExternalLink, LucideCheckCircle, LucideMaximize2, LucideX } from 'lucide-react';
@@ -75,35 +75,14 @@ function CertificatesEmptyState({ category }) {
   );
 }
 
-// Expandable description component with Show More / Show Less functionality
-function ExpandableDescription({ text, limit = 160 }) {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  if (text.length <= limit) {
-    return <p className="cert-compact-description">{text}</p>;
-  }
-
-  return (
-    <p className="cert-compact-description">
-      {isExpanded ? text : `${text.substring(0, limit)}...`}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          setIsExpanded(!isExpanded);
-        }}
-        className="cert-show-more-btn"
-      >
-        {isExpanded ? 'Show Less' : 'Show More'}
-      </button>
-    </p>
-  );
-}
-
 export default function CertificatesPage() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('Academic Certifications');
+  const [activeTab, setActiveTab] = useState('Professional Experience');
   const [selectedCert, setSelectedCert] = useState(null);
+  const [isZoomed, setIsZoomed] = useState(false);
+
+  const touchStartY = useRef(0);
+  const touchEndY = useRef(0);
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -115,6 +94,28 @@ export default function CertificatesPage() {
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
   }, [handleEsc]);
+
+  // Reset zoom on selected cert changes
+  useEffect(() => {
+    setIsZoomed(false);
+  }, [selectedCert]);
+
+  // Touch handlers for swipe-to-close
+  const handleTouchStart = (e) => {
+    touchStartY.current = e.targetTouches[0].clientY;
+    touchEndY.current = e.targetTouches[0].clientY;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndY.current = e.targetTouches[0].clientY;
+  };
+
+  const handleTouchEnd = () => {
+    const deltaY = touchStartY.current - touchEndY.current;
+    if (Math.abs(deltaY) > 80) {
+      setSelectedCert(null);
+    }
+  };
 
   const categories = [
     'Academic Certifications',
@@ -156,10 +157,10 @@ export default function CertificatesPage() {
       {/* Header */}
       <div className="certpage-header" style={{ padding: '40px 16px 20px' }}>
         <span className="section-label">✦ CREDENTIALS ARCHIVE ✦</span>
-        <h1 className="certpage-title">Professional <span>Certifications</span></h1>
+        <h1 className="certpage-title">All <span>Certifications</span></h1>
         <div className="section-line" style={{ margin: '12px auto 0' }} />
         <p className="certpage-sub">
-          A dynamic showcase of globally recognized cloud certs, hackathons, and software engineering training.
+          Professional, Academic and Industry Credentials
         </p>
       </div>
 
@@ -182,7 +183,7 @@ export default function CertificatesPage() {
       </div>
 
       {/* Dynamic Grid */}
-      <div className="certpage-inner" style={{ padding: '0 24px 80px', maxWidth: '1200px', margin: '0 auto' }}>
+      <div className="certpage-inner" style={{ padding: '0 24px 80px', maxWidth: '1440px', margin: '0 auto' }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -190,7 +191,7 @@ export default function CertificatesPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.25 }}
-            className={`cert-grid-compact ${activeTab === 'Professional Experience' ? 'four-cols' : ''}`}
+            className="cert-grid-page"
             style={{ marginTop: '28px' }}
           >
             {processedCerts.length > 0 ? (
@@ -211,53 +212,57 @@ export default function CertificatesPage() {
                     WebkitBackdropFilter: 'blur(12px)'
                   }}
                 >
+                  {/* Image Section */}
                   <div className="cert-compact-img-wrap" onClick={() => setSelectedCert(cert)}>
-                    <img src={cert.image} alt={cert.title} className="cert-compact-img" />
+                    <img 
+                      src={cert.image} 
+                      alt={cert.title} 
+                      className="cert-compact-img" 
+                      loading="lazy" 
+                    />
                     <div className="cert-preview-overlay">
                       <LucideMaximize2 size={18} />
                     </div>
                   </div>
 
-                  <div className="cert-compact-info" style={{ height: 'auto', display: 'flex', flexDirection: 'column' }}>
-                    <div className="cert-compact-header">
-                      <h3 className="cert-compact-title">{cert.title}</h3>
-                      <span className="cert-compact-date">{cert.date}</span>
+                  {/* Card Info Content */}
+                  <div className="cert-compact-info" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <div className="cert-compact-header">
+                        <h3 className="cert-compact-title">{cert.title}</h3>
+                        <span className="cert-compact-date">{cert.date}</span>
+                      </div>
+                      <p className="cert-compact-issuer" style={{ color: cert.color }}>{cert.issuer}</p>
+                      
+                      {/* Tags list */}
+                      <div className="cert-compact-tags">
+                        {cert.tags.map(tag => (
+                          <span 
+                            key={tag} 
+                            className="cert-tag" 
+                            style={{ 
+                              color: cert.color, 
+                              borderColor: `${cert.color}33`, 
+                              background: `${cert.color}08`,
+                              fontSize: '0.65rem', 
+                              padding: '2px 8px' 
+                            }}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                    <p className="cert-compact-issuer" style={{ color: cert.color }}>{cert.issuer}</p>
                     
-                    <div className="cert-compact-tags">
-                      {cert.tags.map(tag => (
-                        <span 
-                          key={tag} 
-                          className="cert-tag" 
-                          style={{ 
-                            color: cert.color, 
-                            borderColor: `${cert.color}33`, 
-                            background: `${cert.color}08`,
-                            fontSize: '0.65rem', 
-                            padding: '2px 8px' 
-                          }}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    
-                    <ExpandableDescription text={cert.description} limit={160} />
-                    
-                    {/* Dual Action Buttons */}
-                    <div className="cert-card-actions" style={{ display: 'flex', gap: '8px', marginTop: '4px', paddingTop: '4px' }}>
+                    {/* Action buttons and badge */}
+                    <div className="cert-card-actions">
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
-                          if (IS_TOUCH) {
-                            setSelectedCert(cert);
-                          } else {
-                            window.open(cert.image, "_blank");
-                          }
+                          setSelectedCert(cert);
                         }}
-                        className="cert-compact-btn flex-1" 
+                        className="cert-compact-btn view flex-1" 
                         style={{ 
                           background: `${cert.color}15`,
                           borderColor: `${cert.color}44`,
@@ -266,19 +271,36 @@ export default function CertificatesPage() {
                       >
                         <LucideExternalLink size={12} style={{ marginRight: '4px' }} /> View
                       </button>
-                      <div 
+
+                      {cert.credentialId && (
+                        <div 
+                          className="cert-credential-badge"
+                          style={{ 
+                            borderColor: `${cert.color}44`,
+                            color: cert.color,
+                            boxShadow: `0 0 8px ${cert.color}11`
+                          }}
+                        >
+                          <span className="cert-cred-label">Credential:</span>
+                          <span className="cert-cred-val">{cert.credentialId}</span>
+                        </div>
+                      )}
+
+                      <a 
+                        href={cert.verifyLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="cert-compact-btn verify flex-1" 
                         style={{ 
-                          textDecoration: 'none', 
                           background: 'transparent', 
                           borderColor: 'rgba(255, 255, 255, 0.08)',
                           color: 'var(--text-muted)',
-                          cursor: 'default',
-                          pointerEvents: 'none'
+                          textDecoration: 'none'
                         }}
+                        onClick={(e) => e.stopPropagation()}
                       >
                         <LucideCheckCircle size={12} style={{ marginRight: '4px' }} /> Verify
-                      </div>
+                      </a>
                     </div>
                   </div>
                 </motion.div>
@@ -297,7 +319,7 @@ export default function CertificatesPage() {
         </div>
       </div>
 
-      {/* Fullscreen Modal zoom */}
+      {/* Fullscreen Zoom overlay */}
       <AnimatePresence>
         {selectedCert && (
           <motion.div
@@ -306,6 +328,9 @@ export default function CertificatesPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedCert(null)}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
             <motion.div
               className="cert-fullscreen-content"
@@ -323,8 +348,24 @@ export default function CertificatesPage() {
                   <LucideX size={20} />
                 </button>
               </div>
-              <div className="cert-fullscreen-image-wrap">
-                <img src={selectedCert.image} alt={selectedCert.title} className="cert-fullscreen-image" />
+              <div 
+                className="cert-fullscreen-image-wrap"
+                style={{ overflow: isZoomed ? 'auto' : 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+              >
+                <img 
+                  src={selectedCert.image} 
+                  alt={selectedCert.title} 
+                  className={`cert-fullscreen-image ${isZoomed ? 'zoomed' : ''}`} 
+                  onClick={() => setIsZoomed(!isZoomed)}
+                  style={{
+                    cursor: isZoomed ? 'zoom-out' : 'zoom-in',
+                    maxWidth: isZoomed ? '140%' : '90%',
+                    maxHeight: isZoomed ? 'none' : '80vh',
+                    transition: 'all 0.3s ease-out',
+                    display: 'block',
+                    margin: '0 auto'
+                  }}
+                />
               </div>
             </motion.div>
           </motion.div>
