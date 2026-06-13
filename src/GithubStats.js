@@ -831,9 +831,9 @@ const AnalyticsDonutChart = ({ langs, hoveredIdx, setHoveredIdx, isMobile }) => 
 const GithubStats = React.memo(function GithubStats() {
   const sectionRef = useRef(null);
   const [data, setData] = useState({
-    stars:0, forks:0, repos:0, followers:0, following:0,
-    commits:0, prs:0, issues:0,
-    contributions:0, currentStreak:0, longestStreak:0,
+    stars: null, forks: null, repos: null, followers: null, following: null,
+    commits: null, prs: null, issues: null,
+    contributions: null, currentStreak: null, longestStreak: null,
     topLang:'JavaScript', topLangPct:67,
     languages:[], avatarUrl:'', name:'Arup Das',
     rawContributions: [],
@@ -851,7 +851,7 @@ const GithubStats = React.memo(function GithubStats() {
   }, []);
 
   const fetchData = useCallback(async () => {
-    const CACHE_KEY = 'gh_stats_' + USERNAME;
+    const CACHE_KEY = 'gh_stats_v2_' + USERNAME;
     const CACHE_TTL = 60 * 60 * 1000;
 
     // Check cache first
@@ -901,6 +901,7 @@ const GithubStats = React.memo(function GithubStats() {
 
       /* 4 — Contributions via jogruber (all years) */
       let contributions=0, currentStreak=0, longestStreak=0, rawContributions=[];
+      let yearlyContributions=0;
       try {
         const cd = await fetch(
           `https://github-contributions-api.jogruber.de/v4/${USERNAME}`
@@ -930,6 +931,17 @@ const GithubStats = React.memo(function GithubStats() {
           
           // Store raw for heatmap
           rawContributions = sorted;
+
+          // Calculate total yearly contributions (past 365 days)
+          const today = new Date();
+          const oneYearAgo = new Date();
+          oneYearAgo.setDate(today.getDate() - 365);
+          const oneYearAgoStr = oneYearAgo.toISOString().split('T')[0];
+          const todayStr = today.toISOString().split('T')[0];
+
+          yearlyContributions = sorted
+            .filter(d => d.date >= oneYearAgoStr && d.date <= todayStr)
+            .reduce((sum, d) => sum + (d.count || 0), 0);
         }
       } catch(e){ console.error('Contrib API error:', e); }
 
@@ -967,20 +979,11 @@ const GithubStats = React.memo(function GithubStats() {
         } catch(e){ console.error('Events API error:', e); }
       }
 
-      /* 5 — Commits */
-      let commits=0;
-      try {
-        const cd2 = await fetch(
-          `https://api.github.com/search/commits?q=author:${USERNAME}&per_page=1`,
-          { headers:{ Accept:'application/vnd.github.cloak-preview' } }
-        ).then(r=>r.json());
-        commits=cd2.total_count||0;
-      } catch(_){}
-
       const freshData = {
         stars:totalStars, forks:totalForks, repos:user.public_repos||0,
         followers:user.followers||0, following:user.following||0,
-        commits, prs:0, issues:0,
+        commits: yearlyContributions || contributions,
+        prs:0, issues:0,
         contributions, currentStreak, longestStreak,
         topLang:sortedLangs[0]?.name||'JavaScript',
         topLangPct:sortedLangs[0]?.pct||67,
@@ -991,7 +994,7 @@ const GithubStats = React.memo(function GithubStats() {
       };
       setData(freshData);
       // Save to cache
-      try { localStorage.setItem('gh_stats_' + USERNAME, JSON.stringify({ data: freshData, ts: Date.now() })); } catch(_){}
+      try { localStorage.setItem('gh_stats_v2_' + USERNAME, JSON.stringify({ data: freshData, ts: Date.now() })); } catch(_){}
     } catch(err){
       console.warn('GitHub Stats API failed:', err.message);
     }
@@ -1068,7 +1071,16 @@ const GithubStats = React.memo(function GithubStats() {
                 <Icon size={18} style={{ color }} />
               </div>
               <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize: 24, color:'#fff', lineHeight:1 }}>
-                <CountUp value={val}/>
+                {val === null || val === undefined ? (
+                  <motion.span
+                    animate={{ opacity: [0.3, 0.7, 0.3] }}
+                    transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+                  >
+                    ...
+                  </motion.span>
+                ) : (
+                  <CountUp value={val}/>
+                )}
               </div>
               <div style={{ fontSize:11, color:'rgba(255,255,255,0.35)', marginTop:6, fontFamily:'Syne,sans-serif', letterSpacing:'0.4px' }}>
                 {label}
