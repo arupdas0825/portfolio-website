@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { LucideExternalLink, LucideMaximize2, LucideX } from 'lucide-react';
+import { LucideExternalLink, LucideMaximize2 } from 'lucide-react';
 import ALL_CERTIFICATES from './data/certificates.json';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -89,26 +88,11 @@ function CertificatesEmptyState({ category }) {
 
 export default function Certificates() {
   const [activeTab, setActiveTab] = useState('Professional Experience');
-  const [selectedCert, setSelectedCert] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isZoomed, setIsZoomed] = useState(false);
   
-  const touchStartY = useRef(0);
-  const touchEndY = useRef(0);
   const titleRef = useRef(null);
   const navigate = useNavigate();
-
-  const openCertificate = (cert) => {
-    setSelectedCert(cert);
-    setIsModalOpen(true);
-  };
-
-  const closeCertificate = () => {
-    setSelectedCert(null);
-    setIsModalOpen(false);
-  };
 
   // Resize listener to toggle mobile/desktop mode
   useEffect(() => {
@@ -128,36 +112,6 @@ export default function Certificates() {
       { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out',
         scrollTrigger: { trigger: titleRef.current, start: 'top 85%', once: true } }
     );
-  }, []);
-
-  // Scroll Lock and Pointer Events Hook
-  useEffect(() => {
-    if (isModalOpen) {
-      document.body.style.overflow = 'hidden';
-      document.body.classList.add('modal-open');
-    } else {
-      document.body.style.overflow = '';
-      document.body.classList.remove('modal-open');
-    }
-
-    return () => {
-      document.body.style.overflow = '';
-      document.body.classList.remove('modal-open');
-    };
-  }, [isModalOpen]);
-
-  // Reset overlay zoom when selected cert changes
-  useEffect(() => {
-    setIsZoomed(false);
-  }, [selectedCert]);
-
-  // ESC key to close viewer modal
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') closeCertificate();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const categories = [
@@ -202,23 +156,6 @@ export default function Certificates() {
   const handleTabChange = (cat) => {
     setActiveTab(cat);
     setIsExpanded(false);
-  };
-
-  // Touch handlers for swipe-to-close
-  const handleTouchStart = (e) => {
-    touchStartY.current = e.targetTouches[0].clientY;
-    touchEndY.current = e.targetTouches[0].clientY;
-  };
-
-  const handleTouchMove = (e) => {
-    touchEndY.current = e.targetTouches[0].clientY;
-  };
-
-  const handleTouchEnd = () => {
-    const deltaY = touchStartY.current - touchEndY.current;
-    if (Math.abs(deltaY) > 80) {
-      closeCertificate();
-    }
   };
 
   return (
@@ -284,7 +221,7 @@ export default function Certificates() {
                   }}
                 >
                   {/* Image Section */}
-                  <div className="cert-compact-img-wrap" onClick={() => openCertificate(cert)}>
+                  <div className="cert-compact-img-wrap" onClick={() => window.open(cert.image, "_blank", "noopener,noreferrer")}>
                     <img 
                       src={cert.image} 
                       alt={cert.title} 
@@ -329,11 +266,7 @@ export default function Certificates() {
                     <div className="cert-card-footer">
                       <div className="cert-actions-row-1">
                         <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            openCertificate(cert);
-                          }}
+                          onClick={() => window.open(cert.image, "_blank", "noopener,noreferrer")}
                           className="cert-compact-btn view flex-1" 
                           style={{ 
                             background: `${cert.color}15`,
@@ -358,7 +291,6 @@ export default function Certificates() {
                             alignItems: 'center',
                             justifyContent: 'center'
                           }}
-                          onClick={(e) => e.stopPropagation()}
                         >
                           <LucideExternalLink size={12} style={{ marginRight: '4px' }} /> Credential Link
                         </a>
@@ -409,66 +341,6 @@ export default function Certificates() {
           </motion.div>
         )}
       </div>
-
-      {/* Fullscreen Zoom overlay via React Portal */}
-      <AnimatePresence>
-        {selectedCert && createPortal(
-          <motion.div
-            className="cert-fullscreen-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
-            onClick={closeCertificate}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-          >
-            <motion.div
-              className="cert-fullscreen-content"
-              initial={{ scale: 0.96, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.96, opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="cert-fullscreen-header">
-                <div className="cert-fullscreen-info">
-                  <h3>{selectedCert.title}</h3>
-                  <p>{selectedCert.issuer} • {selectedCert.date}</p>
-                </div>
-                <button className="cert-back-btn" onClick={closeCertificate}>
-                  <LucideX size={20} />
-                </button>
-              </div>
-              <div 
-                className="cert-fullscreen-image-wrap"
-                onClick={closeCertificate}
-                style={{ overflow: isZoomed ? 'auto' : 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-              >
-                <img 
-                  src={selectedCert.image} 
-                  alt={selectedCert.title} 
-                  className={`cert-fullscreen-image ${isZoomed ? 'zoomed' : ''}`} 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsZoomed(!isZoomed);
-                  }}
-                  style={{
-                    cursor: isZoomed ? 'zoom-out' : 'zoom-in',
-                    maxWidth: isZoomed ? '140%' : '90%',
-                    maxHeight: isZoomed ? 'none' : '80vh',
-                    transition: 'all 0.3s ease-out',
-                    display: 'block',
-                    margin: '0 auto'
-                  }}
-                />
-              </div>
-            </motion.div>
-          </motion.div>,
-          document.body
-        )}
-      </AnimatePresence>
     </section>
   );
 }

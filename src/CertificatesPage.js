@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LucideArrowLeft, LucideExternalLink, LucideMaximize2, LucideX } from 'lucide-react';
+import { LucideArrowLeft, LucideExternalLink, LucideMaximize2 } from 'lucide-react';
 import Navbar from './Navbar';
 import ALL_CERTIFICATES from './data/certificates.json';
 
@@ -92,71 +91,8 @@ function CertificatesEmptyState({ category }) {
 export default function CertificatesPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Professional Experience');
-  const [selectedCert, setSelectedCert] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isZoomed, setIsZoomed] = useState(false);
-
-  const touchStartY = useRef(0);
-  const touchEndY = useRef(0);
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
-
-  const openCertificate = (cert) => {
-    setSelectedCert(cert);
-    setIsModalOpen(true);
-  };
-
-  const closeCertificate = useCallback(() => {
-    setSelectedCert(null);
-    setIsModalOpen(false);
-  }, []);
-
-  const handleEsc = useCallback((e) => {
-    if (e.key === 'Escape') closeCertificate();
-  }, [closeCertificate]);
-  
-  useEffect(() => {
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
-  }, [handleEsc]);
-
-  // Scroll Lock and Pointer Events Hook
-  useEffect(() => {
-    if (isModalOpen) {
-      document.body.style.overflow = 'hidden';
-      document.body.classList.add('modal-open');
-    } else {
-      document.body.style.overflow = '';
-      document.body.classList.remove('modal-open');
-    }
-
-    return () => {
-      document.body.style.overflow = '';
-      document.body.classList.remove('modal-open');
-    };
-  }, [isModalOpen]);
-
-  // Reset zoom on selected cert changes
-  useEffect(() => {
-    setIsZoomed(false);
-  }, [selectedCert]);
-
-  // Touch handlers for swipe-to-close
-  const handleTouchStart = (e) => {
-    touchStartY.current = e.targetTouches[0].clientY;
-    touchEndY.current = e.targetTouches[0].clientY;
-  };
-
-  const handleTouchMove = (e) => {
-    touchEndY.current = e.targetTouches[0].clientY;
-  };
-
-  const handleTouchEnd = () => {
-    const deltaY = touchStartY.current - touchEndY.current;
-    if (Math.abs(deltaY) > 80) {
-      closeCertificate();
-    }
-  };
 
   const categories = [
     'Academic Certifications',
@@ -254,7 +190,7 @@ export default function CertificatesPage() {
                   }}
                 >
                   {/* Image Section */}
-                  <div className="cert-compact-img-wrap" onClick={() => openCertificate(cert)}>
+                  <div className="cert-compact-img-wrap" onClick={() => window.open(cert.image, "_blank", "noopener,noreferrer")}>
                     <img 
                       src={cert.image} 
                       alt={cert.title} 
@@ -302,7 +238,7 @@ export default function CertificatesPage() {
                           onClick={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
-                            openCertificate(cert);
+                            window.open(cert.image, "_blank", "noopener,noreferrer");
                           }}
                           className="cert-compact-btn view flex-1" 
                           style={{ 
@@ -364,66 +300,6 @@ export default function CertificatesPage() {
           </button>
         </div>
       </div>
-
-      {/* Fullscreen Zoom overlay via React Portal */}
-      <AnimatePresence>
-        {selectedCert && createPortal(
-          <motion.div
-            className="cert-fullscreen-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
-            onClick={closeCertificate}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-          >
-            <motion.div
-              className="cert-fullscreen-content"
-              initial={{ scale: 0.96, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.96, opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="cert-fullscreen-header">
-                <div className="cert-fullscreen-info">
-                  <h3>{selectedCert.title}</h3>
-                  <p>{selectedCert.issuer} • {selectedCert.date}</p>
-                </div>
-                <button className="cert-back-btn" onClick={closeCertificate}>
-                  <LucideX size={20} />
-                </button>
-              </div>
-              <div 
-                className="cert-fullscreen-image-wrap"
-                onClick={closeCertificate}
-                style={{ overflow: isZoomed ? 'auto' : 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-              >
-                <img 
-                  src={selectedCert.image} 
-                  alt={selectedCert.title} 
-                  className={`cert-fullscreen-image ${isZoomed ? 'zoomed' : ''}`} 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsZoomed(!isZoomed);
-                  }}
-                  style={{
-                    cursor: isZoomed ? 'zoom-out' : 'zoom-in',
-                    maxWidth: isZoomed ? '140%' : '90%',
-                    maxHeight: isZoomed ? 'none' : '80vh',
-                    transition: 'all 0.3s ease-out',
-                    display: 'block',
-                    margin: '0 auto'
-                  }}
-                />
-              </div>
-            </motion.div>
-          </motion.div>,
-          document.body
-        )}
-      </AnimatePresence>
     </div>
   );
 }
