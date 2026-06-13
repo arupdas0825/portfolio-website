@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LucideArrowLeft, LucideExternalLink, LucideMaximize2, LucideX } from 'lucide-react';
 import Navbar from './Navbar';
@@ -92,6 +93,7 @@ export default function CertificatesPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Professional Experience');
   const [selectedCert, setSelectedCert] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
 
   const touchStartY = useRef(0);
@@ -99,29 +101,40 @@ export default function CertificatesPage() {
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
-  const handleEsc = useCallback((e) => {
-    if (e.key === 'Escape') setSelectedCert(null);
+  const openCertificate = (cert) => {
+    setSelectedCert(cert);
+    setIsModalOpen(true);
+  };
+
+  const closeCertificate = useCallback(() => {
+    setSelectedCert(null);
+    setIsModalOpen(false);
   }, []);
+
+  const handleEsc = useCallback((e) => {
+    if (e.key === 'Escape') closeCertificate();
+  }, [closeCertificate]);
   
   useEffect(() => {
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
   }, [handleEsc]);
 
-  // Scroll Lock when modal is active
+  // Scroll Lock and Pointer Events Hook
   useEffect(() => {
-    if (selectedCert) {
+    if (isModalOpen) {
       document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
+      document.body.classList.add('modal-open');
     } else {
       document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
+      document.body.classList.remove('modal-open');
     }
+
     return () => {
       document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
+      document.body.classList.remove('modal-open');
     };
-  }, [selectedCert]);
+  }, [isModalOpen]);
 
   // Reset zoom on selected cert changes
   useEffect(() => {
@@ -141,7 +154,7 @@ export default function CertificatesPage() {
   const handleTouchEnd = () => {
     const deltaY = touchStartY.current - touchEndY.current;
     if (Math.abs(deltaY) > 80) {
-      setSelectedCert(null);
+      closeCertificate();
     }
   };
 
@@ -241,7 +254,7 @@ export default function CertificatesPage() {
                   }}
                 >
                   {/* Image Section */}
-                  <div className="cert-compact-img-wrap" onClick={() => setSelectedCert(cert)}>
+                  <div className="cert-compact-img-wrap" onClick={() => openCertificate(cert)}>
                     <img 
                       src={cert.image} 
                       alt={cert.title} 
@@ -289,7 +302,7 @@ export default function CertificatesPage() {
                           onClick={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
-                            setSelectedCert(cert);
+                            openCertificate(cert);
                           }}
                           className="cert-compact-btn view flex-1" 
                           style={{ 
@@ -352,16 +365,16 @@ export default function CertificatesPage() {
         </div>
       </div>
 
-      {/* Fullscreen Zoom overlay */}
+      {/* Fullscreen Zoom overlay via React Portal */}
       <AnimatePresence>
-        {selectedCert && (
+        {selectedCert && createPortal(
           <motion.div
             className="cert-fullscreen-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            onClick={() => setSelectedCert(null)}
+            onClick={closeCertificate}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
@@ -379,13 +392,13 @@ export default function CertificatesPage() {
                   <h3>{selectedCert.title}</h3>
                   <p>{selectedCert.issuer} • {selectedCert.date}</p>
                 </div>
-                <button className="cert-back-btn" onClick={() => setSelectedCert(null)}>
+                <button className="cert-back-btn" onClick={closeCertificate}>
                   <LucideX size={20} />
                 </button>
               </div>
               <div 
                 className="cert-fullscreen-image-wrap"
-                onClick={() => setSelectedCert(null)}
+                onClick={closeCertificate}
                 style={{ overflow: isZoomed ? 'auto' : 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
               >
                 <img 
@@ -407,7 +420,8 @@ export default function CertificatesPage() {
                 />
               </div>
             </motion.div>
-          </motion.div>
+          </motion.div>,
+          document.body
         )}
       </AnimatePresence>
     </div>

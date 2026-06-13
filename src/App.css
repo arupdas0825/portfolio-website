@@ -2379,16 +2379,28 @@ body {
   inset: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.92) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  z-index: 99999 !important;
+  height: 100dvh !important;
+  background: rgba(0, 0, 0, 0.96) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  z-index: 999999 !important;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   padding: 90px 40px 40px !important;
   overflow: hidden;
+}
+
+body.modal-open {
+  overflow: hidden !important;
+}
+
+body.modal-open main,
+body.modal-open section,
+body.modal-open nav,
+body.modal-open footer {
+  pointer-events: none !important;
 }
 
 .cert-fullscreen-content {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -89,6 +90,7 @@ function CertificatesEmptyState({ category }) {
 export default function Certificates() {
   const [activeTab, setActiveTab] = useState('Professional Experience');
   const [selectedCert, setSelectedCert] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
@@ -97,6 +99,16 @@ export default function Certificates() {
   const touchEndY = useRef(0);
   const titleRef = useRef(null);
   const navigate = useNavigate();
+
+  const openCertificate = (cert) => {
+    setSelectedCert(cert);
+    setIsModalOpen(true);
+  };
+
+  const closeCertificate = () => {
+    setSelectedCert(null);
+    setIsModalOpen(false);
+  };
 
   // Resize listener to toggle mobile/desktop mode
   useEffect(() => {
@@ -118,20 +130,21 @@ export default function Certificates() {
     );
   }, []);
 
-  // Scroll Lock when modal is active
+  // Scroll Lock and Pointer Events Hook
   useEffect(() => {
-    if (selectedCert) {
+    if (isModalOpen) {
       document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
+      document.body.classList.add('modal-open');
     } else {
       document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
+      document.body.classList.remove('modal-open');
     }
+
     return () => {
       document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
+      document.body.classList.remove('modal-open');
     };
-  }, [selectedCert]);
+  }, [isModalOpen]);
 
   // Reset overlay zoom when selected cert changes
   useEffect(() => {
@@ -141,7 +154,7 @@ export default function Certificates() {
   // ESC key to close viewer modal
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') setSelectedCert(null);
+      if (e.key === 'Escape') closeCertificate();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -204,7 +217,7 @@ export default function Certificates() {
   const handleTouchEnd = () => {
     const deltaY = touchStartY.current - touchEndY.current;
     if (Math.abs(deltaY) > 80) {
-      setSelectedCert(null);
+      closeCertificate();
     }
   };
 
@@ -242,7 +255,7 @@ export default function Certificates() {
         {/* Certificate Cards Grid */}
         <AnimatePresence mode="popLayout">
           <motion.div
-            key={activeTab + (isExpanded ? '-expanded' : '-collapsed')}
+            key={activeTab}
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
@@ -271,7 +284,7 @@ export default function Certificates() {
                   }}
                 >
                   {/* Image Section */}
-                  <div className="cert-compact-img-wrap" onClick={() => setSelectedCert(cert)}>
+                  <div className="cert-compact-img-wrap" onClick={() => openCertificate(cert)}>
                     <img 
                       src={cert.image} 
                       alt={cert.title} 
@@ -319,7 +332,7 @@ export default function Certificates() {
                           onClick={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
-                            setSelectedCert(cert);
+                            openCertificate(cert);
                           }}
                           className="cert-compact-btn view flex-1" 
                           style={{ 
@@ -397,16 +410,16 @@ export default function Certificates() {
         )}
       </div>
 
-      {/* Fullscreen Zoom overlay */}
+      {/* Fullscreen Zoom overlay via React Portal */}
       <AnimatePresence>
-        {selectedCert && (
+        {selectedCert && createPortal(
           <motion.div
             className="cert-fullscreen-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            onClick={() => setSelectedCert(null)}
+            onClick={closeCertificate}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
@@ -424,13 +437,13 @@ export default function Certificates() {
                   <h3>{selectedCert.title}</h3>
                   <p>{selectedCert.issuer} • {selectedCert.date}</p>
                 </div>
-                <button className="cert-back-btn" onClick={() => setSelectedCert(null)}>
+                <button className="cert-back-btn" onClick={closeCertificate}>
                   <LucideX size={20} />
                 </button>
               </div>
               <div 
                 className="cert-fullscreen-image-wrap"
-                onClick={() => setSelectedCert(null)}
+                onClick={closeCertificate}
                 style={{ overflow: isZoomed ? 'auto' : 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
               >
                 <img 
@@ -452,7 +465,8 @@ export default function Certificates() {
                 />
               </div>
             </motion.div>
-          </motion.div>
+          </motion.div>,
+          document.body
         )}
       </AnimatePresence>
     </section>
