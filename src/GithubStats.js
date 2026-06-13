@@ -1011,11 +1011,12 @@ const GithubStats = React.memo(function GithubStats() {
   },[loaded]);
 
   const topCards=[
-    { icon:Star,     label:'Stars Earned',  val:data.stars,     color:'#facc15' },
-    { icon:GitFork,  label:'Total Forks',   val:data.forks,     color:'#60a5fa' },
-    { icon:Package,  label:'Repositories',  val:data.repos,     color:'#c084fc' },
-    { icon:Users,    label:'Followers',     val:data.followers, color:'#4ade80' },
-    { icon:UserPlus, label:'Following',     val:data.following, color:'#f472b6' },
+    { icon:Star,                label:'Stars Earned',  val:data.stars,     color:'#facc15' },
+    { icon:GitCommitHorizontal, label:'Total Commits',  val:data.commits,   color:'#a78bfa' },
+    { icon:GitFork,             label:'Total Forks',   val:data.forks,     color:'#60a5fa' },
+    { icon:Package,             label:'Repositories',  val:data.repos,     color:'#c084fc' },
+    { icon:Users,               label:'Followers',     val:data.followers, color:'#4ade80' },
+    { icon:UserPlus,            label:'Following',     val:data.following, color:'#f472b6' },
   ];
 
   const streakCards=[
@@ -1054,12 +1055,7 @@ const GithubStats = React.memo(function GithubStats() {
 
 
         {/* ── Top stats cards ── */}
-        <div className="fade-in" style={{ 
-          display:'grid', 
-          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)', 
-          gap: isMobile ? 8 : 12, 
-          marginBottom: 14 
-        }}>
+        <div className="fade-in gh-stats-grid" style={{ marginBottom: 40 }}>
           {topCards.map(({ icon:Icon, label, val, color })=>(
             <Panel key={label} accent={false} style={{ padding:'20px 12px', textAlign:'center' }}>
               {/* Coloured top bar */}
@@ -1071,7 +1067,7 @@ const GithubStats = React.memo(function GithubStats() {
               }}>
                 <Icon size={18} style={{ color }} />
               </div>
-              <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize: isMobile ? 20 : 24, color:'#fff', lineHeight:1 }}>
+              <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize: 24, color:'#fff', lineHeight:1 }}>
                 <CountUp value={val}/>
               </div>
               <div style={{ fontSize:11, color:'rgba(255,255,255,0.35)', marginTop:6, fontFamily:'Syne,sans-serif', letterSpacing:'0.4px' }}>
@@ -1079,119 +1075,6 @@ const GithubStats = React.memo(function GithubStats() {
               </div>
             </Panel>
           ))}
-        </div>
-
-        {/* ── Main row (Profile Card) ── */}
-        <div className="fade-in" style={{ 
-          display:'flex', 
-          justifyContent:'center',
-          marginBottom: 40 
-        }}>
-
-          {/* Profile Insight Card */}
-          <Panel hover={false} style={{ 
-            padding: isMobile ? 24 : 40, 
-            width: '100%', 
-            maxWidth: 900,
-            background: 'rgba(255,255,255,0.04)',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: '0 24px 64px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)'
-          }}>
-            <div style={{ display:'flex', gap: isMobile ? 30 : 50, alignItems:'center', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between' }}>
-              <div style={{ flex:1 }}>
-                {/* Profile */}
-                <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:26 }}>
-                  <div style={{ position:'relative' }}>
-                    {data.avatarUrl
-                      ? <img src={data.avatarUrl} alt="avatar" style={{ width:50, height:50, borderRadius:'50%', border:'2px solid rgba(138,92,246,0.5)', objectFit:'cover' }}/>
-                      : <div style={{ width:50, height:50, borderRadius:'50%', background:'rgba(138,92,246,0.15)', border:'2px solid rgba(138,92,246,0.3)', display:'flex', alignItems:'center', justifyContent:'center' }}><Github size={22} style={{ color:'#8a5cf6' }}/></div>
-                    }
-                    <div style={{ position:'absolute', bottom:2, right:2, width:10, height:10, borderRadius:'50%', background:'#22c55e', border:'2px solid #0a0812' }}/>
-                  </div>
-                  <div>
-                    <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:15, color:'#fff', letterSpacing:'1.5px' }}>
-                      {data.name?.toUpperCase()}
-                    </div>
-                    <div style={{ fontSize:11, color:'rgba(255,255,255,0.3)', letterSpacing:'1px', fontFamily:'Syne,sans-serif', marginTop:3 }}>
-                      @{USERNAME} · PORTFOLIO INSIGHTS
-                    </div>
-                  </div>
-                </div>
-
-                {/* 4 metrics */}
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'18px 24px' }}>
-                  {[
-                    { icon:Star,               label:'Total Stars',    val:data.stars,   color:'#facc15' },
-                    { icon:GitCommitHorizontal, label:'Total Commits',  val:data.commits, color:'#a78bfa' },
-                    { icon:GitPullRequest,      label:'Pull Requests',  val:data.prs,     color:'#4ade80' },
-                    { icon:CircleDot,           label:'Issues',         val:data.issues,  color:'#f87171' },
-                  ].map(({ icon:Icon, label, val, color })=>(
-                    <div key={label} style={{ display:'flex', alignItems:'center', gap:10 }}>
-                      <div style={{ width:3, height:34, borderRadius:99, background:color, boxShadow:`0 0 8px ${color}88`, flexShrink:0 }}/>
-                      <div>
-                        <div style={{ fontSize:10, color:'rgba(255,255,255,0.3)', fontFamily:'Syne,sans-serif', fontWeight:700, letterSpacing:'0.5px', textTransform:'uppercase', marginBottom:2 }}>{label}</div>
-                        <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:20, color:'#fff', display:'flex', alignItems:'center', gap:5 }}>
-                          <Icon size={12} style={{ color }}/> <CountUp value={val}/>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Interactive Donut Analytics Chart */}
-              <div style={{
-                background: 'rgba(255, 255, 255, 0.015)',
-                border: '1px solid rgba(138, 92, 246, 0.15)',
-                borderRadius: 20, 
-                padding: '24px 20px',
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'center', 
-                gap: 14, 
-                minWidth: isMobile ? '100%' : 210,
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}>
-                <div style={{ 
-                  fontSize: 10, 
-                  color: 'rgba(255,255,255,0.4)', 
-                  fontFamily: 'Syne,sans-serif', 
-                  fontWeight: 800, 
-                  letterSpacing: '1.5px', 
-                  textTransform: 'uppercase',
-                  textAlign: 'center'
-                }}>
-                  Language Distribution
-                </div>
-                
-                <AnalyticsDonutChart 
-                  langs={langs} 
-                  hoveredIdx={hoveredIdx} 
-                  setHoveredIdx={setHoveredIdx}
-                  isMobile={isMobile}
-                />
-                
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: 5,
-                  fontSize: 9,
-                  color: 'rgba(255,255,255,0.25)',
-                  fontFamily: 'Syne,sans-serif',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px',
-                  marginTop: 4
-                }}>
-                  <GitBranch size={10} style={{ color: '#a78bfa' }} />
-                  Interactive Analytics
-                </div>
-              </div>
-            </div>
-          </Panel>
         </div>
 
         {/* ── Contribution Section ── */}

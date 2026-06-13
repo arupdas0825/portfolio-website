@@ -6184,5 +6184,26 @@ a.contact-detail-val-v2:hover { color: var(--theme-light); }
   100% { transform: translateY(-20%) translateX(var(--drift-x, 20px)); opacity: 0; }
 }
 
+/* GitHub Stats Responsive Grid */
+.gh-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1200px) {
+  .gh-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .gh-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+
 
 
