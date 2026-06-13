@@ -148,7 +148,7 @@ export default function Certificates({ featuredOnly = true }) {
   
   // Limiter for homepage previews (responsive limits)
   const MOBILE_LIMIT = 2;
-  const DESKTOP_LIMIT = 3;
+  const DESKTOP_LIMIT = 4;
   const limit = IS_TOUCH ? MOBILE_LIMIT : DESKTOP_LIMIT;
   
   const displayCerts = featuredOnly ? processedCerts.slice(0, limit) : processedCerts;
@@ -193,7 +193,7 @@ export default function Certificates({ featuredOnly = true }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.25 }}
-            className="cert-grid-compact"
+            className={`cert-grid-compact ${activeTab === 'Professional Experience' ? 'four-cols' : ''}`}
             style={{ marginTop: '28px' }}
           >
             {displayCerts.length > 0 ? (

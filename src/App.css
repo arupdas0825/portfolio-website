@@ -3385,6 +3385,10 @@ body {
   .cert-grid-compact {
     grid-template-columns: repeat(3, 1fr);
   }
+  .cert-grid-compact.four-cols {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
 }
 @media (max-width: 900px) {
   .cert-grid-compact {

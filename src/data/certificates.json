@@ -1,5 +1,19 @@
 [
   {
+    "id": 7,
+    "title": "AI Fluency: Framework & Foundations",
+    "issuer": "Anthropic",
+    "date": "2026",
+    "image": "/claude certificate.png",
+    "description": "Certified by Anthropic for completing the AI Fluency: Framework & Foundations course. Validates understanding of Large Language Model mechanics, prompt engineering foundations, and deployment best practices using Claude.",
+    "tags": ["AI Fluency", "LLMs", "Anthropic Claude", "Prompting", "AI Foundations"],
+    "category": "Professional Experience",
+    "credentialLink": "https://github.com/arupdas0825",
+    "verifyLink": "https://github.com/arupdas0825",
+    "color": "#4a7c59",
+    "priority": 1
+  },
+  {
     "id": 6,
     "title": "Responsive Web Design",
     "issuer": "freeCodeCamp",
@@ -11,7 +25,35 @@
     "credentialLink": "https://freecodecamp.org/certification/arupdas0825/responsive-web-design",
     "verifyLink": "https://freecodecamp.org/certification/arupdas0825/responsive-web-design",
     "color": "#198754",
-    "priority": 1
+    "priority": 2
+  },
+  {
+    "id": 8,
+    "title": "Claude 101",
+    "issuer": "Anthropic",
+    "date": "2026",
+    "image": "/claude 101 certificate.png",
+    "description": "Certified by Anthropic for completing the Claude 101 course, showcasing competence in context window usage, Anthropic API foundations, and advanced system instructions for Claude model deployment.",
+    "tags": ["Claude 101", "Anthropic Claude", "Prompt Engineering", "API Integration", "Context Window"],
+    "category": "Professional Experience",
+    "credentialLink": "https://github.com/arupdas0825",
+    "verifyLink": "https://github.com/arupdas0825",
+    "color": "#c5a059",
+    "priority": 3
+  },
+  {
+    "id": 3,
+    "title": "Google Analytics Certification",
+    "issuer": "Google",
+    "date": "2026",
+    "image": "/google analytics certificate.png",
+    "description": "Certified by Google for extensive proficiency in Google Analytics 4 (GA4). Validates capability in tracking cross-platform user journeys, implementing custom conversion events, and translating behavioral data into actionable marketing insights and performance optimizations.",
+    "tags": ["Google Analytics", "GA4", "Data Analytics", "Performance Measurement"],
+    "category": "Professional Experience",
+    "credentialLink": "https://skillshop.exceedlms.com",
+    "verifyLink": "https://github.com/arupdas0825",
+    "color": "#e37400",
+    "priority": 4
   },
   {
     "id": 1,
@@ -28,34 +70,6 @@
     "priority": 1
   },
   {
-    "id": 2,
-    "title": "Google Ads Creative Certification",
-    "issuer": "Google",
-    "date": "2026",
-    "image": "/google ads creative certificate.png",
-    "description": "Certified by Google for advanced proficiency in designing, customizing, and optimizing premium creative assets across Search, Display, and Video campaigns. Validates skills in storytelling and mobile-first creative strategies that drive user engagement and high campaign conversions.",
-    "tags": ["Google Ads", "Creative Design", "Digital Marketing", "Campaign Optimization"],
-    "category": "Professional Experience",
-    "credentialLink": "https://skillshop.exceedlms.com",
-    "verifyLink": "https://github.com/arupdas0825",
-    "color": "#4285f4",
-    "priority": 2
-  },
-  {
-    "id": 3,
-    "title": "Google Analytics Certification",
-    "issuer": "Google",
-    "date": "2026",
-    "image": "/google analytics certificate.png",
-    "description": "Certified by Google for extensive proficiency in Google Analytics 4 (GA4). Validates capability in tracking cross-platform user journeys, implementing custom conversion events, and translating behavioral data into actionable marketing insights and performance optimizations.",
-    "tags": ["Google Analytics", "GA4", "Data Analytics", "Performance Measurement"],
-    "category": "Professional Experience",
-    "credentialLink": "https://skillshop.exceedlms.com",
-    "verifyLink": "https://github.com/arupdas0825",
-    "color": "#e37400",
-    "priority": 3
-  },
-  {
     "id": 4,
     "title": "Class Representative Certificate",
     "issuer": "Brainware University",
@@ -70,6 +84,20 @@
     "priority": 2
   },
   {
+    "id": 2,
+    "title": "Google Ads Creative Certification",
+    "issuer": "Google",
+    "date": "2026",
+    "image": "/google ads creative certificate.png",
+    "description": "Certified by Google for advanced proficiency in designing, customizing, and optimizing premium creative assets across Search, Display, and Video campaigns. Validates skills in storytelling and mobile-first creative strategies that drive user engagement and high campaign conversions.",
+    "tags": ["Google Ads", "Creative Design", "Digital Marketing", "Campaign Optimization"],
+    "category": "Industry Certifications",
+    "credentialLink": "https://skillshop.exceedlms.com",
+    "verifyLink": "https://github.com/arupdas0825",
+    "color": "#4285f4",
+    "priority": 1
+  },
+  {
     "id": 5,
     "title": "AI-Powered Performance Ads Certification",
     "issuer": "Google",
@@ -77,10 +105,10 @@
     "image": "/AI-Powered Performance Ads Certification.png",
     "description": "Certified by Google for expertise in leveraging AI-driven strategies to automate and optimize campaign performance. Validates proficiency in setting up, measuring, and scaling Performance Max, Search, and App campaigns using Google AI tools to maximize conversion value and ROI.",
     "tags": ["AI Ads", "Performance Max", "Google Ads", "Campaign Automation", "ROI Optimization"],
-    "category": "Professional Experience",
+    "category": "Industry Certifications",
     "credentialLink": "https://skillshop.exceedlms.com",
     "verifyLink": "https://github.com/arupdas0825",
     "color": "#34a853",
-    "priority": 4
+    "priority": 2
   }
 ]

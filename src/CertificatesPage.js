@@ -190,7 +190,7 @@ export default function CertificatesPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.25 }}
-            className="cert-grid-compact"
+            className={`cert-grid-compact ${activeTab === 'Professional Experience' ? 'four-cols' : ''}`}
             style={{ marginTop: '28px' }}
           >
             {processedCerts.length > 0 ? (
