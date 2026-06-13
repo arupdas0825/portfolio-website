@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LucideArrowLeft, LucideExternalLink, LucideCheckCircle, LucideMaximize2, LucideX } from 'lucide-react';
+import { LucideArrowLeft, LucideExternalLink, LucideMaximize2, LucideX } from 'lucide-react';
 import Navbar from './Navbar';
 import ALL_CERTIFICATES from './data/certificates.json';
 
@@ -13,14 +13,27 @@ const IS_TOUCH = typeof window !== 'undefined' &&
 // Cyber-holographic empty state component for incoming certifications
 function CertificatesEmptyState({ category }) {
   const isProfessional = category === 'Professional Experience';
-  const text = isProfessional 
-    ? 'Professional experience certifications coming soon.'
-    : 'Industry certifications will be added soon.';
+  const isIndustry = category === 'Industry Certifications';
   
-  const glowAccent = isProfessional ? '#ec4899' : '#00f2fe';
-  const glowColor = isProfessional ? 'rgba(236, 72, 153, 0.15)' : 'rgba(0, 242, 254, 0.15)';
-  const glowAccentAlpha = isProfessional ? 'rgba(236, 72, 153, 0.15)' : 'rgba(0, 242, 254, 0.15)';
-  const icon = isProfessional ? '💼' : '🛡️';
+  let text = '';
+  let title = 'Coming Soon';
+  let icon = '💼';
+  
+  if (isProfessional) {
+    text = 'Professional experience certifications coming soon.';
+    icon = '💼';
+  } else if (isIndustry) {
+    title = 'System Idle / Pending';
+    text = 'No Industry Certifications Available Yet';
+    icon = '🛡️';
+  } else {
+    text = 'Academic certifications will be added soon.';
+    icon = '🎓';
+  }
+  
+  const glowAccent = isProfessional ? '#ec4899' : (isIndustry ? '#8a5cf6' : '#00f2fe');
+  const glowColor = isProfessional ? 'rgba(236, 72, 153, 0.15)' : (isIndustry ? 'rgba(138, 92, 246, 0.15)' : 'rgba(0, 242, 254, 0.15)');
+  const glowAccentAlpha = isProfessional ? 'rgba(236, 72, 153, 0.15)' : (isIndustry ? 'rgba(138, 92, 246, 0.15)' : 'rgba(0, 242, 254, 0.15)');
 
   // Floating background particles
   const particles = Array.from({ length: 6 }).map((_, i) => {
@@ -66,7 +79,7 @@ function CertificatesEmptyState({ category }) {
       </div>
 
       {/* Category Coming Soon Text */}
-      <h4 className="cert-empty-title">Coming Soon</h4>
+      <h4 className="cert-empty-title">{title}</h4>
       <p className="cert-empty-desc">{text}</p>
 
       {/* Ambient Float Particles */}
@@ -254,23 +267,44 @@ export default function CertificatesPage() {
                       </div>
                     </div>
                     
-                    {/* Action buttons and badge */}
-                    <div className="cert-card-actions">
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          setSelectedCert(cert);
-                        }}
-                        className="cert-compact-btn view flex-1" 
-                        style={{ 
-                          background: `${cert.color}15`,
-                          borderColor: `${cert.color}44`,
-                          color: '#fff'
-                        }}
-                      >
-                        <LucideExternalLink size={12} style={{ marginRight: '4px' }} /> View
-                      </button>
+                    {/* Action buttons and badge (2-row structure) */}
+                    <div className="cert-card-footer">
+                      <div className="cert-actions-row-1">
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setSelectedCert(cert);
+                          }}
+                          className="cert-compact-btn view flex-1" 
+                          style={{ 
+                            background: `${cert.color}15`,
+                            borderColor: `${cert.color}44`,
+                            color: '#fff'
+                          }}
+                        >
+                          <LucideMaximize2 size={12} style={{ marginRight: '4px' }} /> View
+                        </button>
+
+                        <a 
+                          href={cert.verifyLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="cert-compact-btn cred-link flex-1" 
+                          style={{ 
+                            background: 'transparent', 
+                            borderColor: `${cert.color}33`,
+                            color: cert.color,
+                            textDecoration: 'none',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <LucideExternalLink size={12} style={{ marginRight: '4px' }} /> Credential Link
+                        </a>
+                      </div>
 
                       {cert.credentialId && (
                         <div 
@@ -281,26 +315,10 @@ export default function CertificatesPage() {
                             boxShadow: `0 0 8px ${cert.color}11`
                           }}
                         >
-                          <span className="cert-cred-label">Credential:</span>
+                          <span className="cert-cred-label">Credential ID:</span>
                           <span className="cert-cred-val">{cert.credentialId}</span>
                         </div>
                       )}
-
-                      <a 
-                        href={cert.verifyLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="cert-compact-btn verify flex-1" 
-                        style={{ 
-                          background: 'transparent', 
-                          borderColor: 'rgba(255, 255, 255, 0.08)',
-                          color: 'var(--text-muted)',
-                          textDecoration: 'none'
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <LucideCheckCircle size={12} style={{ marginRight: '4px' }} /> Verify
-                      </a>
                     </div>
                   </div>
                 </motion.div>

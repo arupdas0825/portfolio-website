@@ -3485,13 +3485,28 @@ body {
   transform: scale(1.05);
 }
 
+/* Card Footer Structure */
+.cert-card-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+  width: 100%;
+}
+
+.cert-actions-row-1 {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
 /* Credential ID Badge */
 .cert-credential-badge {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 6px 10px;
+  gap: 6px;
+  padding: 6px 12px;
   border-radius: 8px;
   background: rgba(138, 92, 246, 0.03);
   border: 1px solid rgba(138, 92, 246, 0.15);
@@ -3499,6 +3514,7 @@ body {
   font-family: 'Fira Code', 'Courier New', monospace;
   letter-spacing: -0.2px;
   white-space: nowrap;
+  width: 100%;
   transition: all 0.3s ease;
 }
 .cert-cred-label {
@@ -3509,32 +3525,11 @@ body {
   font-weight: 600;
   text-shadow: 0 0 8px currentColor;
 }
-.cert-card-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 14px;
-  width: 100%;
-}
+
 @media (max-width: 640px) {
-  .cert-card-actions {
+  .cert-actions-row-1 {
     flex-direction: column;
     gap: 8px;
-    align-items: stretch;
-  }
-  .cert-credential-badge {
-    width: 100%;
-    justify-content: center;
-    order: 2;
-  }
-  .cert-compact-btn.view {
-    order: 1;
-    width: 100%;
-  }
-  .cert-compact-btn.verify {
-    order: 3;
-    width: 100%;
   }
 }
 
