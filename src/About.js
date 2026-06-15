@@ -5,9 +5,18 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function About() {
+export default function About({ onAdminTrigger }) {
   const sectionRef = useRef(null);
   const titleRef = useRef(null);
+  const lastTapRef = useRef(0);
+
+  const handlePhotoTap = () => {
+    const now = Date.now();
+    if (now - lastTapRef.current < 300) {
+      if (onAdminTrigger) onAdminTrigger();
+    }
+    lastTapRef.current = now;
+  };
 
   // ── GSAP ScrollTrigger on section heading ──────────────────────────────
   useEffect(() => {
@@ -79,7 +88,8 @@ export default function About() {
         >
           <div
             className="about-photo-gradient-border"
-            style={{ transform: 'translateZ(50px)' }}
+            onClick={handlePhotoTap}
+            style={{ transform: 'translateZ(50px)', cursor: 'pointer' }}
           >
             <div className="about-photo-inner">
               <img

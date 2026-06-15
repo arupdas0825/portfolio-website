@@ -1,8 +1,11 @@
 import React, { useState, Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Navbar         from './Navbar';
 import Home           from './Home';
 import About          from './About';
+import { isAdminAuthenticated } from './utils/auth';
+import PasswordModal from './components/PasswordModal';
+import AdminPanel from './admin/AdminPanel';
 
 // Lazy load below-the-fold components to maximize performance & speed up welcome screen
 const TechStack = lazy(() => import('./TechStack'));
@@ -79,12 +82,12 @@ function MobileHeader() {
 
 
 
-function PortfolioHome() {
+function PortfolioHome({ onAdminTrigger }) {
   return (
     <>
       <Navbar />
       <div id="home"><Home /></div>
-      <div id="about"><About /></div>
+      <div id="about"><About onAdminTrigger={onAdminTrigger} /></div>
       <Suspense fallback={null}>
         <div id="techstack"><TechStack /></div>
         <div id="work"><Work /></div>
@@ -105,7 +108,9 @@ function PortfolioHome() {
   );
 }
 
-export default function App() {
+function AppContent() {
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const navigate = useNavigate();
 
   // Skip welcome if already seen this session (refresh-safe)
   const [stage, setStage] = useState(() => {
@@ -118,52 +123,76 @@ export default function App() {
     setStage('portfolio');
   };
 
+  const handleAuthSuccess = () => {
+    setShowPasswordModal(false);
+    navigate('/admin');
+  };
+
   return (
-    <BrowserRouter>
-      <div className="app-container" style={{ position: 'relative', width: '100%', height: '100%' }}>
+    <div className="app-container" style={{ position: 'relative', width: '100%', height: '100%' }}>
+      
+      {/* ── STAGE 1: Welcome Intro (Overlay) ── */}
+      {stage === 'welcome' && (
+        <WelcomeScreen onEnter={handleWelcomeDone} />
+      )}
+
+      {/* ── STAGE 2: Main Portfolio (Persistent) ── */}
+      <div className="app-wrapper" style={{ 
+        visibility: stage === 'portfolio' ? 'visible' : 'hidden',
+        opacity: stage === 'portfolio' ? 1 : 0,
+        transition: 'opacity 0.8s ease-in-out',
+        paddingBottom: IS_TOUCH ? '100px' : '0px'
+      }}>
+        <Starfield />
+        <div className="ambient-blob ambient-blob-1" />
+        <div className="ambient-blob ambient-blob-2" />
+        <div className="ambient-blob ambient-blob-3" />
+        {!IS_TOUCH && <CustomCursor />}
         
-        {/* ── STAGE 1: Welcome Intro (Overlay) ── */}
-        {stage === 'welcome' && (
-          <WelcomeScreen onEnter={handleWelcomeDone} />
-        )}
+        {/* ── Mobile Header (Logo + AI) ── */}
+        <MobileHeader />
 
-        {/* ── STAGE 2: Main Portfolio (Persistent) ── */}
-        <div className="app-wrapper" style={{ 
-          visibility: stage === 'portfolio' ? 'visible' : 'hidden',
-          opacity: stage === 'portfolio' ? 1 : 0,
-          transition: 'opacity 0.8s ease-in-out',
-          paddingBottom: IS_TOUCH ? '100px' : '0px'
-        }}>
-          <Starfield />
-          <div className="ambient-blob ambient-blob-1" />
-          <div className="ambient-blob ambient-blob-2" />
-          <div className="ambient-blob ambient-blob-3" />
-          {!IS_TOUCH && <CustomCursor />}
-          
-          {/* ── Mobile Header (Logo + AI) ── */}
-          <MobileHeader />
+        <div style={{ position: 'relative', zIndex: 10 }}>
+          <Suspense fallback={null}>
+            <Routes>
+              <Route
+                path="/"
+                element={<PortfolioHome onAdminTrigger={() => setShowPasswordModal(true)} />}
+              />
+              <Route path="/work" element={<WorkPage />} />
+              <Route path="/work/:categorySlug" element={<WorkCategoryPage />} />
+              <Route path="/photography-gallery" element={<PhotographyGallery />} />
+              <Route path="/publications" element={<PublicationsPage />} />
+              <Route path="/certificates" element={<CertificatesPage />} />
+              
+              {/* Protected Admin Route */}
+              <Route 
+                path="/admin" 
+                element={isAdminAuthenticated() ? <AdminPanel /> : <Navigate to="/" replace />} 
+              />
+            </Routes>
 
-          <div style={{ position: 'relative', zIndex: 10 }}>
-            <Suspense fallback={null}>
-              <Routes>
-                <Route
-                  path="/"
-                  element={<PortfolioHome />}
-                />
-                <Route path="/work" element={<WorkPage />} />
-                <Route path="/work/:categorySlug" element={<WorkCategoryPage />} />
-                <Route path="/photography-gallery" element={<PhotographyGallery />} />
-                <Route path="/publications" element={<PublicationsPage />} />
-                <Route path="/certificates" element={<CertificatesPage />} />
-              </Routes>
+            {/* Password Verification Modal Overlay */}
+            <PasswordModal
+              isOpen={showPasswordModal}
+              onClose={() => setShowPasswordModal(false)}
+              onAuthSuccess={handleAuthSuccess}
+            />
 
-              {/* ── AI Playback Assistant (floating overlay) ── */}
+            {/* ── AI Playback Assistant (floating overlay) ── */}
 
-              <AIPlaybackAssistant />
-            </Suspense>
-          </div>
+            <AIPlaybackAssistant />
+          </Suspense>
         </div>
       </div>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   );
 }
