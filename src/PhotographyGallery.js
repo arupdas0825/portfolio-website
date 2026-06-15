@@ -130,19 +130,31 @@ export default function PhotographyGallery() {
         if (error) throw error;
         
         if (data && data.length > 0) {
-          const mapped = data.map(p => ({
-            id: p.id,
-            src: p.image_url,
-            title: p.title,
-            desc: p.description || `Captured in ${p.location || 'India'} using ${p.camera || 'professional camera'}.`,
-            category: p.category || 'Landscape Photography',
-            location: p.location || 'Kolkata, India',
-            camera: p.camera || 'Unknown',
-            lens: p.lens || 'Unknown',
-            iso: p.iso || 'Auto',
-            shutterSpeed: p.shutter_speed || 'Auto',
-            aperture: p.aperture || 'Auto'
-          }));
+          const mapped = data.map(p => {
+            let exif = {};
+            let desc = p.description || '';
+            if (p.description) {
+              try {
+                exif = JSON.parse(p.description);
+                desc = exif.desc || '';
+              } catch (e) {
+                desc = p.description;
+              }
+            }
+            return {
+              id: p.id,
+              src: p.image || p.image_url,
+              title: p.title,
+              desc: desc || `Captured in ${exif.location || p.location || 'India'} using ${exif.camera || p.camera || 'professional camera'}.`,
+              category: p.category || 'Landscape Photography',
+              location: exif.location || p.location || 'Kolkata, India',
+              camera: exif.camera || p.camera || 'Unknown',
+              lens: exif.lens || p.lens || 'Unknown',
+              iso: exif.iso || p.iso || 'Auto',
+              shutterSpeed: exif.shutterSpeed || exif.shutter_speed || p.shutter_speed || 'Auto',
+              aperture: exif.aperture || p.aperture || 'Auto'
+            };
+          });
           setPhotosList(mapped);
         } else {
           setPhotosList(fallbackPhotos);

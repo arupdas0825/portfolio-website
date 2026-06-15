@@ -427,8 +427,8 @@ export default function WorkPage() {
               forks_count: 0,
               html_url: p.github_url || '',
               homepage: p.live_url || '',
-              image: p.image_url || null,
-              category: p.category || 'Major',
+              image: p.image || p.image_url || null,
+              category: p.catagory || p.category || 'Major',
               featured: !!p.featured,
               display_order: p.display_order || 0
             };

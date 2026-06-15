@@ -79,37 +79,119 @@ export default function AdminPanel() {
       // Profile
       const { data: profileData, error: profileErr } = await supabase.from('profile').select('*').eq('id', 1).maybeSingle();
       if (profileErr) throw profileErr;
-      if (profileData) setProfile(profileData);
+      if (profileData) {
+        setProfile({
+          full_name: profileData.full_name || '',
+          primary_bio: profileData.primary_bio || '',
+          secondary_bio: profileData.secondary_bio || '',
+          profile_image_url: profileData.profile_image_url || '',
+          title: profileData.title || '',
+          location: profileData.location || '',
+          email: profileData.email || '',
+          phone: profileData.phone || '',
+          github: profileData.github || '',
+          linkedin: profileData.linkedin || '',
+          website: profileData.website || '',
+          cgpa: profileData.cgpa || ''
+        });
+      }
 
       // Projects
       const { data: projectsData, error: projErr } = await supabase.from('projects').select('*').order('display_order', { ascending: true }).order('created_at', { ascending: false });
       if (projErr) throw projErr;
-      setProjects(projectsData || []);
+      const mappedProjects = (projectsData || []).map(p => ({
+        ...p,
+        image_url: p.image || '',
+        category: p.catagory || p.category || 'Major'
+      }));
+      setProjects(mappedProjects);
 
       // Internships
       const { data: internshipsData, error: internErr } = await supabase.from('internships').select('*').order('display_order', { ascending: true });
       if (internErr) throw internErr;
-      setInternships(internshipsData || []);
+      const mappedInternships = (internshipsData || []).map(i => {
+        let meta = {};
+        let descriptionText = '';
+        if (i.description) {
+          try {
+            meta = JSON.parse(i.description);
+            descriptionText = meta.description || '';
+          } catch (e) {
+            descriptionText = i.description;
+          }
+        }
+        return {
+          ...i,
+          descriptionText: descriptionText,
+          location: meta.location || '',
+          duration: meta.duration || '',
+          certificate_url: meta.certificate_url || ''
+        };
+      });
+      setInternships(mappedInternships);
 
       // Certificates
       const { data: certsData, error: certErr } = await supabase.from('certificates').select('*').order('display_order', { ascending: true });
       if (certErr) throw certErr;
-      setCertificates(certsData || []);
+      const mappedCerts = (certsData || []).map(c => ({
+        ...c,
+        image_url: c.image || '',
+        credential_url: c.credential_id || ''
+      }));
+      setCertificates(mappedCerts);
 
       // Photography
       const { data: photoData, error: photoErr } = await supabase.from('photography').select('*').order('display_order', { ascending: true });
       if (photoErr) throw photoErr;
-      setPhotography(photoData || []);
+      const mappedPhotos = (photoData || []).map(p => {
+        let exif = {};
+        let descriptionText = '';
+        if (p.description) {
+          try {
+            exif = JSON.parse(p.description);
+            descriptionText = exif.desc || '';
+          } catch (e) {
+            descriptionText = p.description;
+          }
+        }
+        return {
+          ...p,
+          image_url: p.image || '',
+          descriptionText: descriptionText,
+          camera: exif.camera || p.camera || '',
+          lens: exif.lens || p.lens || '',
+          location: exif.location || p.location || '',
+          iso: exif.iso || p.iso || '',
+          shutter_speed: exif.shutterSpeed || exif.shutter_speed || p.shutter_speed || '',
+          aperture: exif.aperture || p.aperture || ''
+        };
+      });
+      setPhotography(mappedPhotos);
 
       // CV
       const { data: cvData, error: cvErr } = await supabase.from('cv').select('*').eq('id', 1).maybeSingle();
       if (cvErr) throw cvErr;
-      if (cvData) setCv(cvData);
+      if (cvData) {
+        setCv({
+          cv_url: cvData.cv_file || '',
+          version: cvData.cv_name || ''
+        });
+      }
 
       // Contact
       const { data: contactData, error: contactErr } = await supabase.from('contact').select('*').eq('id', 1).maybeSingle();
       if (contactErr) throw contactErr;
-      if (contactData) setContact(contactData);
+      if (contactData) {
+        setContact({
+          email: contactData.email || '',
+          phone: contactData.phone || '',
+          location: contactData.address || '',
+          github_url: contactData.github || '',
+          linkedin_url: contactData.linkedin || '',
+          instagram_url: contactData.instagram || '',
+          facebook_url: contactData.facebook || ''
+        });
+      }
 
       // Settings
       const { data: settingsData, error: settingsErr } = await supabase.from('site_settings').select('*').eq('id', 1).maybeSingle();
@@ -199,6 +281,7 @@ export default function AdminPanel() {
     setActionLoading(true);
     try {
       const { error } = await supabase.from('profile').upsert({
+        ...profile,
         id: 1,
         full_name: profile.full_name,
         profile_image_url: profile.profile_image_url,
@@ -222,8 +305,8 @@ export default function AdminPanel() {
     try {
       const { error } = await supabase.from('cv').upsert({
         id: 1,
-        cv_url: cv.cv_url,
-        version: cv.version,
+        cv_file: cv.cv_url,
+        cv_name: cv.version,
         updated_at: new Date().toISOString()
       });
       if (error) throw error;
@@ -244,10 +327,11 @@ export default function AdminPanel() {
         id: 1,
         email: contact.email,
         phone: contact.phone,
-        location: contact.location,
-        github_url: contact.github_url,
-        linkedin_url: contact.linkedin_url,
-        instagram_url: contact.instagram_url,
+        address: contact.location,
+        github: contact.github_url,
+        linkedin: contact.linkedin_url,
+        instagram: contact.instagram_url,
+        facebook: contact.facebook_url || '',
         updated_at: new Date().toISOString()
       });
       if (error) throw error;
@@ -293,7 +377,7 @@ export default function AdminPanel() {
     } else if (type === 'certificate') {
       setCertificateForm({ title: '', issuer: '', year: '', image_url: '', credential_url: '', tags: '', category: 'Academic Certifications', display_order: 0 });
     } else if (type === 'photography') {
-      setPhotographyForm({ title: '', image_url: '', camera: '', lens: '', location: '', category: '', display_order: 0 });
+      setPhotographyForm({ title: '', image_url: '', camera: '', lens: '', location: '', category: '', display_order: 0, description: '', iso: '', shutter_speed: '', aperture: '' });
     }
   };
 
@@ -343,7 +427,11 @@ export default function AdminPanel() {
         lens: item.lens || '',
         location: item.location || '',
         category: item.category || '',
-        display_order: item.display_order || 0
+        display_order: item.display_order || 0,
+        description: item.descriptionText || '',
+        iso: item.iso || '',
+        shutter_speed: item.shutter_speed || '',
+        aperture: item.aperture || ''
       });
     }
   };
@@ -354,42 +442,91 @@ export default function AdminPanel() {
     setActionLoading(true);
     try {
       if (modalType === 'project') {
+        const payload = {
+          title: projectForm.title,
+          description: projectForm.description,
+          github_url: projectForm.github_url,
+          live_url: projectForm.live_url,
+          image: projectForm.image_url,
+          technologies: projectForm.technologies,
+          catagory: projectForm.category,
+          featured: projectForm.featured,
+          display_order: projectForm.display_order
+        };
         if (modalMode === 'add') {
-          const { error } = await supabase.from('projects').insert([projectForm]);
+          const { error } = await supabase.from('projects').insert([payload]);
           if (error) throw error;
           showToast("Project added successfully!");
         } else {
-          const { error } = await supabase.from('projects').update(projectForm).eq('id', currentItem.id);
+          const { error } = await supabase.from('projects').update(payload).eq('id', currentItem.id);
           if (error) throw error;
           showToast("Project updated successfully!");
         }
       } else if (modalType === 'internship') {
+        const metaObj = {
+          location: internshipForm.location,
+          duration: internshipForm.duration,
+          certificate_url: internshipForm.certificate_url,
+          description: internshipForm.description
+        };
+        const payload = {
+          company: internshipForm.company,
+          role: internshipForm.role,
+          description: JSON.stringify(metaObj),
+          display_order: internshipForm.display_order
+        };
         if (modalMode === 'add') {
-          const { error } = await supabase.from('internships').insert([internshipForm]);
+          const { error } = await supabase.from('internships').insert([payload]);
           if (error) throw error;
           showToast("Internship added successfully!");
         } else {
-          const { error } = await supabase.from('internships').update(internshipForm).eq('id', currentItem.id);
+          const { error } = await supabase.from('internships').update(payload).eq('id', currentItem.id);
           if (error) throw error;
           showToast("Internship updated successfully!");
         }
       } else if (modalType === 'certificate') {
+        const payload = {
+          title: certificateForm.title,
+          issuer: certificateForm.issuer,
+          year: certificateForm.year,
+          image: certificateForm.image_url,
+          credential_id: certificateForm.credential_url,
+          tags: certificateForm.tags,
+          category: certificateForm.category,
+          display_order: certificateForm.display_order
+        };
         if (modalMode === 'add') {
-          const { error } = await supabase.from('certificates').insert([certificateForm]);
+          const { error } = await supabase.from('certificates').insert([payload]);
           if (error) throw error;
           showToast("Certificate added successfully!");
         } else {
-          const { error } = await supabase.from('certificates').update(certificateForm).eq('id', currentItem.id);
+          const { error } = await supabase.from('certificates').update(payload).eq('id', currentItem.id);
           if (error) throw error;
           showToast("Certificate updated successfully!");
         }
       } else if (modalType === 'photography') {
+        const exifObj = {
+          desc: photographyForm.description,
+          camera: photographyForm.camera,
+          lens: photographyForm.lens,
+          location: photographyForm.location,
+          iso: photographyForm.iso,
+          shutterSpeed: photographyForm.shutter_speed,
+          aperture: photographyForm.aperture
+        };
+        const payload = {
+          title: photographyForm.title,
+          image: photographyForm.image_url,
+          category: photographyForm.category,
+          display_order: photographyForm.display_order,
+          description: JSON.stringify(exifObj)
+        };
         if (modalMode === 'add') {
-          const { error } = await supabase.from('photography').insert([photographyForm]);
+          const { error } = await supabase.from('photography').insert([payload]);
           if (error) throw error;
           showToast("Photo entry added successfully!");
         } else {
-          const { error } = await supabase.from('photography').update(photographyForm).eq('id', currentItem.id);
+          const { error } = await supabase.from('photography').update(payload).eq('id', currentItem.id);
           if (error) throw error;
           showToast("Photo entry updated successfully!");
         }
@@ -468,6 +605,14 @@ export default function AdminPanel() {
                     <input type="file" accept="image/*" onChange={handleProfileImageUpload} className="cms-file-input" />
                   </div>
                 </div>
+                <input 
+                  type="text" 
+                  value={profile.profile_image_url || ''} 
+                  onChange={e => setProfile(prev => ({ ...prev, profile_image_url: e.target.value }))}
+                  placeholder="Direct Image URL (e.g. /arup.jpg)"
+                  className="cms-input" 
+                  style={{ marginTop: '8px' }}
+                />
               </div>
               <div className="cms-input-group">
                 <label>Full Name</label>
@@ -814,6 +959,15 @@ export default function AdminPanel() {
                   className="cms-input" 
                 />
               </div>
+              <div className="cms-input-group">
+                <label>Facebook Profile</label>
+                <input 
+                  type="url" 
+                  value={contact.facebook_url || ''} 
+                  onChange={e => setContact(prev => ({ ...prev, facebook_url: e.target.value }))}
+                  className="cms-input" 
+                />
+              </div>
             </div>
             <button type="submit" disabled={actionLoading} className="cms-btn-save">
               {actionLoading ? <span className="cms-spinner" /> : "Save Contacts"}
@@ -1106,6 +1260,18 @@ export default function AdminPanel() {
                       <input type="text" value={photographyForm.lens} onChange={e => setPhotographyForm(p => ({ ...p, lens: e.target.value }))} placeholder="35mm f/1.4" className="cms-input" />
                     </div>
                     <div className="cms-input-group">
+                      <label>ISO</label>
+                      <input type="text" value={photographyForm.iso || ''} onChange={e => setPhotographyForm(p => ({ ...p, iso: e.target.value }))} placeholder="100" className="cms-input" />
+                    </div>
+                    <div className="cms-input-group">
+                      <label>Shutter Speed</label>
+                      <input type="text" value={photographyForm.shutter_speed || ''} onChange={e => setPhotographyForm(p => ({ ...p, shutter_speed: e.target.value }))} placeholder="1/250s" className="cms-input" />
+                    </div>
+                    <div className="cms-input-group">
+                      <label>Aperture</label>
+                      <input type="text" value={photographyForm.aperture || ''} onChange={e => setPhotographyForm(p => ({ ...p, aperture: e.target.value }))} placeholder="f/2.8" className="cms-input" />
+                    </div>
+                    <div className="cms-input-group">
                       <label>Capture Location</label>
                       <input type="text" value={photographyForm.location} onChange={e => setPhotographyForm(p => ({ ...p, location: e.target.value }))} placeholder="Kolkata, India" className="cms-input" />
                     </div>
@@ -1116,6 +1282,10 @@ export default function AdminPanel() {
                     <div className="cms-input-group">
                       <label>Display Order</label>
                       <input type="number" value={photographyForm.display_order} onChange={e => setPhotographyForm(p => ({ ...p, display_order: parseInt(e.target.value) || 0 }))} className="cms-input" />
+                    </div>
+                    <div className="cms-input-group">
+                      <label>Description</label>
+                      <textarea rows={3} value={photographyForm.description || ''} onChange={e => setPhotographyForm(p => ({ ...p, description: e.target.value }))} className="cms-textarea" />
                     </div>
                   </>
                 )}

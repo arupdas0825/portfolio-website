@@ -36,7 +36,30 @@ export default function Internship() {
       try {
         const { data, error } = await supabase.from('internships').select('*').order('display_order', { ascending: true });
         if (error) throw error;
-        setInternships(data || []);
+        if (data) {
+          const mapped = data.map(i => {
+            let meta = {};
+            let descriptionText = '';
+            if (i.description) {
+              try {
+                meta = JSON.parse(i.description);
+                descriptionText = meta.description || '';
+              } catch (e) {
+                descriptionText = i.description;
+              }
+            }
+            return {
+              ...i,
+              description: descriptionText,
+              location: meta.location || '',
+              duration: meta.duration || '',
+              certificate_url: meta.certificate_url || ''
+            };
+          });
+          setInternships(mapped);
+        } else {
+          setInternships([]);
+        }
       } catch (err) {
         console.error("Failed to load internships from Supabase:", err);
       }

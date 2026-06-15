@@ -40,11 +40,11 @@ export default function Contact() {
         if (data) {
           setContactData({
             email: data.email || 'dasarup0804@gmail.com',
-            location: data.location || 'Kolkata, West Bengal, India',
-            github: data.github_url || 'https://github.com/arupdas0825',
-            linkedin: data.linkedin_url || 'https://www.linkedin.com/in/arup-das-381bb02a1/',
-            facebook: 'https://www.facebook.com/arupofficial08', // fallback since not in cms form directly but is in table
-            instagram: data.instagram_url || 'https://www.instagram.com/_arup_official_08/'
+            location: data.address || data.location || 'Kolkata, West Bengal, India',
+            github: data.github || data.github_url || 'https://github.com/arupdas0825',
+            linkedin: data.linkedin || data.linkedin_url || 'https://www.linkedin.com/in/arup-das-381bb02a1/',
+            facebook: data.facebook || 'https://www.facebook.com/arupofficial08',
+            instagram: data.instagram || data.instagram_url || 'https://www.instagram.com/_arup_official_08/'
           });
         }
       } catch (err) {

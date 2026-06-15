@@ -146,18 +146,21 @@ export default function Certificates() {
         if (error) throw error;
         
         if (data && data.length > 0) {
-          const mapped = data.map(c => ({
-            id: c.id,
-            title: c.title,
-            issuer: c.issuer,
-            date: c.year || '',
-            image: c.image_url || '/certificate-fallback.png',
-            verifyLink: c.credential_url || '#',
-            tags: c.tags ? c.tags.split(',').map(t => t.trim()) : [],
-            category: c.category || 'Academic Certifications',
-            color: getColorForIssuer(c.issuer),
-            credentialId: c.credential_url ? (c.credential_url.includes('credential/') ? c.credential_url.substring(c.credential_url.lastIndexOf('/') + 1).split('?')[0] : null) : null
-          }));
+          const mapped = data.map(c => {
+            const link = c.credential_id || c.credential_url || '#';
+            return {
+              id: c.id,
+              title: c.title,
+              issuer: c.issuer,
+              date: c.year || '',
+              image: c.image || c.image_url || '/certificate-fallback.png',
+              verifyLink: link,
+              tags: c.tags ? c.tags.split(',').map(t => t.trim()) : [],
+              category: c.category || 'Academic Certifications',
+              color: getColorForIssuer(c.issuer),
+              credentialId: link !== '#' && link.includes('credential/') ? link.substring(link.lastIndexOf('/') + 1).split('?')[0] : null
+            };
+          });
           setCertificatesList(mapped);
         } else {
           // Fallback to static JSON

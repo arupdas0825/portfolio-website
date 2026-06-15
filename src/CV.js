@@ -37,10 +37,10 @@ const CV = React.memo(function CV() {
       try {
         const { data, error } = await supabase.from('cv').select('*').eq('id', 1).maybeSingle();
         if (error) throw error;
-        if (data && data.cv_url) {
+        if (data) {
           setCvInfo({
-            cvUrl: data.cv_url,
-            version: data.version || '1.0'
+            cvUrl: data.cv_file || data.cv_url || '/ARUP DAS CV.pdf',
+            version: data.cv_name || data.version || '1.0'
           });
         }
       } catch (err) {
