@@ -17,11 +17,11 @@ export const PROJECTS_DATA = {
     fullStack: {
       languages: ['Kotlin', 'Java', 'Python'],
       frontend: ['Jetpack Compose', 'Material Design 3', 'XML Layouts'],
-      backend: ['Flask (Python)', 'Firebase Cloud Functions'],
-      database: ['SQLite (Room)', 'Firebase Realtime Database'],
+      backend: ['Flask (Python)', 'REST Web Services'],
+      database: ['SQLite (Room)', 'Local Database'],
       apis: ['Google Maps API', 'OpenStreetMap API', 'Overpass API'],
       tools: ['Android Studio', 'Gradle', 'Postman', 'Git'],
-      deployment: ['Google Play Console', 'Firebase App Distribution']
+      deployment: ['Google Play Console']
     },
     implementationDetails: {
       architecture: 'MVVM (Model-View-ViewModel) with Clean Architecture principles for maximum testability.',
@@ -54,7 +54,7 @@ export const PROJECTS_DATA = {
     },
     metrics: {
       latency: '< 150ms Search Result',
-      uptime: '99.9% Firebase Sync',
+      uptime: '99.9% Database Sync',
       rating: '4.8/5 Beta User Score'
     },
     links: {
@@ -77,9 +77,9 @@ export const PROJECTS_DATA = {
       styling: ['Vanilla CSS', 'TailwindCSS', 'CSS Modules'],
       animation: ['Framer Motion', 'GSAP', 'CSS Keyframes'],
       threejs: ['Three.js', 'React Three Fiber', 'Shaders (GLSL)'],
-      backend: ['Firebase', 'Cloudinary'],
+      backend: ['Local JSON Storage', 'Cloudinary'],
       state: ['React Context API', 'Zustand'],
-      auth: ['Firebase Auth'],
+      auth: ['Local Authentication'],
       tools: ['Vite', 'ESLint', 'Prettier', 'Figma'],
       deployment: ['Vercel', 'CI/CD Pipelines']
     },
@@ -104,7 +104,7 @@ export const PROJECTS_DATA = {
     features: [
       { icon: '🤖', title: 'AI Assistant', explanation: 'Voice-enabled AI that explains project details in real-time.' },
       { icon: '🌌', title: 'Adaptive 3D', explanation: 'Three.js starfield that reacts to mouse movement and scroll.' },
-      { icon: '🛠️', title: 'Glass Admin', explanation: 'Secure, hidden administrative panel with glassmorphism UI.' },
+      { icon: '🛠️', title: 'Modular Design', explanation: 'Bespoke component-based architecture for custom styling.' },
       { icon: '📱', title: 'PWA Ready', explanation: 'Installable mobile experience with offline capability.' }
     ],
     challenges: {
@@ -136,8 +136,8 @@ export const PROJECTS_DATA = {
       frontend: ['React', 'Tailwind CSS', 'Redux Toolkit'],
       backend: ['Node.js', 'Express', 'Python (AI microservice)'],
       ai: ['Google Gemini API', 'OpenAI API (Fallback)', 'LangChain'],
-      database: ['MongoDB', 'Firebase Firestore'],
-      auth: ['Firebase Auth', 'JWT'],
+      database: ['MongoDB', 'Local Storage'],
+      auth: ['JWT', 'Local Authentication'],
       deployment: ['AWS EC2', 'Vercel'],
       tools: ['Docker', 'Postman', 'Swagger']
     },
@@ -167,7 +167,7 @@ export const PROJECTS_DATA = {
     challenges: {
       problem: 'Managing vast amounts of university data and providing accurate AI-driven advice.',
       solution: 'Built a custom RAG (Retrieval-Augmented Generation) pipeline to feed specific study-abroad data to Gemini.',
-      decision: 'Used Firebase for its real-time database capabilities and easy authentication.'
+      decision: 'Used client-side caching for offline capabilities and secure local authentication.'
     },
     metrics: {
       accuracy: '94% AI Precision',

@@ -5,14 +5,13 @@ import {
   FaJava, FaPython, FaNodeJs,
 } from 'react-icons/fa';
 import {
-  SiTypescript, SiFirebase, SiVite,
+  SiTypescript, SiVite,
 } from 'react-icons/si';
 
 const ICONS = [
   { Icon: FaReact, label: 'React', color: '#61DAFB' },
   { Icon: FaJsSquare, label: 'JavaScript', color: '#F7DF1E' },
   { Icon: SiTypescript, label: 'TypeScript', color: '#3178C6' },
-  { Icon: SiFirebase, label: 'Firebase', color: '#FFCA28' },
   { Icon: FaAws, label: 'AWS', color: '#FF9900' },
   { Icon: FaGithub, label: 'GitHub', color: '#E6EDF3' },
   { Icon: FaJava, label: 'Java', color: '#ED8B00' },

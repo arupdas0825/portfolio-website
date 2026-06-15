@@ -24,7 +24,7 @@ const SECTION_CONFIG = [
     getNarration: (content) => {
       const bio = content.bio || '';
       if (bio.includes('Artificial Intelligence')) {
-        return `Here we discover who Arup really is. A detail-oriented engineer with a passion for bridging the gap between robust software architecture and intelligent system design. With a strong foundation in Python, Java, C, C++, and Firebase, Arup focuses on building scalable applications that solve real problems. But here's what makes him unique — he complements his technical toolkit with a creative background in professional photography and video editing. That rare combination of analytical thinking and visual storytelling is what sets his work apart from the crowd.`;
+        return `Here we discover who Arup really is. A detail-oriented engineer with a passion for bridging the gap between robust software architecture and intelligent system design. With a strong foundation in Python, Java, C, C++, and database integrations, Arup focuses on building scalable applications that solve real problems. But here's what makes him unique — he complements his technical toolkit with a creative background in professional photography and video editing. That rare combination of analytical thinking and visual storytelling is what sets his work apart from the crowd.`;
       }
       return `Let's get to know the person behind the code. Arup Das is not your typical developer. He combines deep technical expertise with an artistic sensibility that's evident in every project he builds. His approach to problem-solving blends engineering rigor with creative thinking — a combination that's becoming increasingly valuable in the tech industry.`;
     },
@@ -36,7 +36,7 @@ const SECTION_CONFIG = [
     priority: 3,
     getNarration: (content) => {
       const techs = content.technologies || [];
-      const techList = techs.length > 0 ? techs.join(', ') : 'Python, JavaScript, TypeScript, Java, React, Next.js, Node.js, Firebase, MongoDB, AWS, and Google Cloud';
+      const techList = techs.length > 0 ? techs.join(', ') : 'Python, JavaScript, TypeScript, Java, React, Next.js, Node.js, MongoDB, AWS, and Google Cloud';
       return `Now let's look at the technical arsenal. This is where it gets impressive. Arup works across the entire modern tech stack — from ${techList}. Notice the breadth here: languages like Python and Java for backend and AI work, React and Next.js for cutting-edge frontend development, plus cloud platforms like AWS and Google Cloud for deployment at scale. He also works with data science libraries including Pandas, NumPy, Matplotlib, and Scikit-Learn — essential tools for anyone serious about AI and machine learning. This isn't just a list of technologies — it's a carefully curated toolkit built for shipping production-grade software.`;
     },
   },
@@ -106,7 +106,7 @@ const SECTION_CONFIG = [
     icon: '🛠️',
     priority: 9,
     getNarration: (content) => {
-      return `Here's what Arup brings to the table as a professional. Web Development with React and Tailwind, AI and Machine Learning solutions using cutting-edge models, Mobile App Development with Kotlin and Firebase, Creative Direction combining photography with UI/UX design, Data Analysis with Python's scientific stack, and robust Backend Systems architecture. What makes this service offering unique is the combination — most developers specialize in one or two areas. Arup offers a full spectrum from creative design to backend infrastructure, making him a versatile asset for any team or project.`;
+      return `Here's what Arup brings to the table as a professional. Web Development with React and Tailwind, AI and Machine Learning solutions using cutting-edge models, Mobile App Development with Kotlin and local databases, Creative Direction combining photography with UI/UX design, Data Analysis with Python's scientific stack, and robust Backend Systems architecture. What makes this service offering unique is the combination — most developers specialize in one or two areas. Arup offers a full spectrum from creative design to backend infrastructure, making him a versatile asset for any team or project.`;
     },
   },
   {

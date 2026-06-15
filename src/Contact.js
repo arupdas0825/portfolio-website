@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { db } from './firebase';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -9,7 +7,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function Contact() {
   const titleRef  = useRef(null);
-  const [contactData, setContactData] = useState(null);
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [sent, setSent]     = useState(false);
   const [focused, setFocused] = useState(null);
@@ -24,20 +21,12 @@ export default function Contact() {
     );
   }, []);
 
-  /* Firestore real-time */
-  useEffect(() => {
-    const unsub = onSnapshot(doc(db, 'siteData', 'contact'), snap => {
-      if (snap.exists()) setContactData(snap.data());
-    }, () => {});
-    return unsub;
-  }, []);
-
-  const email     = contactData?.email     || 'dasarup0804@gmail.com';
-  const location  = contactData?.location  || 'Kolkata, West Bengal, India';
-  const github    = contactData?.github    || 'https://github.com/arupdas0825';
-  const linkedin  = contactData?.linkedin  || 'https://www.linkedin.com/in/arup-das-381bb02a1/';
-  const facebook  = contactData?.facebook  || 'https://www.facebook.com/arupofficial08';
-  const instagram = contactData?.instagram || 'https://www.instagram.com/_arup_official_08/';
+  const email     = 'dasarup0804@gmail.com';
+  const location  = 'Kolkata, West Bengal, India';
+  const github    = 'https://github.com/arupdas0825';
+  const linkedin  = 'https://www.linkedin.com/in/arup-das-381bb02a1/';
+  const facebook  = 'https://www.facebook.com/arupofficial08';
+  const instagram = 'https://www.instagram.com/_arup_official_08/';
 
   const handleSubmit = e => {
     e.preventDefault();

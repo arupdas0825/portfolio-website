@@ -34,7 +34,6 @@ const STACKS = [
       { name: 'Flutter', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg' },
       { name: 'Tailwind', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg' },
       { name: 'Vite', icon: 'https://cdn.simpleicons.org/vite/white' },
-      { name: 'Firebase', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg' },
     ],
 
     badges: [
@@ -54,7 +53,6 @@ const STACKS = [
       { name: 'MySQL', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg' },
       { name: 'SQLite', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sqlite/sqlite-original.svg' },
       { name: 'Supabase', icon: 'https://cdn.simpleicons.org/supabase/white' },
-      { name: 'Firebase', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg' },
     ],
   },
   {
@@ -111,7 +109,6 @@ const BRAND_COLORS = {
   flutter: { border: '#54C5F8', glow: 'rgba(84, 197, 248, 0.35)', bg: 'rgba(84, 197, 248, 0.05)' },
   tailwind: { border: '#38BDF8', glow: 'rgba(56, 189, 248, 0.35)', bg: 'rgba(56, 189, 248, 0.05)' },
   vite: { border: '#646CFF', glow: 'rgba(100, 108, 255, 0.35)', bg: 'rgba(100, 108, 255, 0.05)' },
-  firebase: { border: '#FFCA28', glow: 'rgba(255, 202, 40, 0.35)', bg: 'rgba(255, 202, 40, 0.05)' },
 
   // Databases & Cloud
   mongodb: { border: '#47A248', glow: 'rgba(71, 162, 72, 0.35)', bg: 'rgba(71, 162, 72, 0.05)' },

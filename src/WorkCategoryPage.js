@@ -36,7 +36,7 @@ const CATEGORY_MAP = {
 
 const FALLBACK_REPOS = [
   { id: 1, name: 'LocalCare-Finder-Android', language: 'Kotlin', stargazers_count: 1, forks_count: 0, description: 'Find nearby hospitals, pharmacies & blood banks. Built with Kotlin, Google Maps, Flask.', html_url: 'https://github.com/arupdas0825/LocalCare-Finder-Android', homepage: '' },
-  { id: 2, name: 'sahasrajit-foundation', language: 'JavaScript', stargazers_count: 2, forks_count: 0, description: 'Official website for Sahasrajit Foundation NGO. Firebase-powered admin panel.', html_url: 'https://github.com/arupdas0825/sahasrajit-foundation', homepage: '' },
+  { id: 2, name: 'sahasrajit-foundation', language: 'JavaScript', stargazers_count: 2, forks_count: 0, description: 'Official website for Sahasrajit Foundation NGO. Integrated database dashboard.', html_url: 'https://github.com/arupdas0825/sahasrajit-foundation', homepage: '' },
   { id: 3, name: 'quiz-web', language: 'JavaScript', stargazers_count: 3, forks_count: 1, description: 'Online Examination System with ReactJs, 10-min countdown, grade calculation.', html_url: 'https://github.com/arupdas0825/quiz-web', homepage: 'https://quiz-web-demo.vercel.app' },
   { id: 4, name: 'arupdas0825', language: 'JavaScript', stargazers_count: 4, forks_count: 0, description: 'B.Tech CSE (AIML) | React Developer | Exploring AI, Algorithms & Full-Stack.', html_url: 'https://github.com/arupdas0825', homepage: '' },
   { id: 5, name: 'algorithm-visualizer', language: 'JavaScript', stargazers_count: 2, forks_count: 0, description: 'React-based Algorithm Visualizer animating sorting algorithms in real-time.', html_url: 'https://github.com/arupdas0825/algorithm-visualizer', homepage: '' },

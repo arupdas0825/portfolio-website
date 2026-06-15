@@ -33,7 +33,7 @@ const services = [
   },
   {
     name: 'Mobile App Dev',
-    desc: 'Creating Android applications with Kotlin, Firebase backend, and modern UI patterns — from concept to Play Store ready.',
+    desc: 'Creating Android applications with Kotlin, database integrations, and modern UI patterns — from concept to Play Store ready.',
     color: '#f472b6',
     icon: (
       <svg fill="none" stroke="currentColor" strokeWidth="1.8" width="26" height="26" viewBox="0 0 24 24">
@@ -64,7 +64,7 @@ const services = [
   },
   {
     name: 'Backend Systems',
-    desc: 'Building robust server-side logic with Java, Firebase, and REST APIs — scalable, secure, and production-ready systems for modern web applications.',
+    desc: 'Building robust server-side logic with Java, REST APIs, and modern databases — scalable, secure, and production-ready systems for modern web applications.',
     color: '#f87171',
     icon: (
       <svg fill="none" stroke="currentColor" strokeWidth="1.8" width="26" height="26" viewBox="0 0 24 24">

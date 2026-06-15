@@ -1,24 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { db } from './firebase';
+import React, { useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function About({ onPhotoDoubleClick }) {
+export default function About() {
   const sectionRef = useRef(null);
   const titleRef = useRef(null);
-  const [aboutData, setAboutData] = useState(null);
-
-  // Real-time listener from Firestore
-  useEffect(() => {
-    const unsub = onSnapshot(doc(db, 'siteData', 'about'), snap => {
-      if (snap.exists()) setAboutData(snap.data());
-    }, () => { }); // silent fail if no Firebase config
-    return unsub;
-  }, []);
 
   // ── GSAP ScrollTrigger on section heading ──────────────────────────────
   useEffect(() => {
@@ -44,10 +33,10 @@ export default function About({ onPhotoDoubleClick }) {
   });
   const photoY = useTransform(scrollYProgress, [0, 1], [30, -30]);
 
-  // Bio from Firestore or fallback
-  const bio1 = aboutData?.bio1 || 'I am a detail-oriented Computer Science & Engineering student at Brainware University, specialising in Artificial Intelligence and Machine Learning. Based in Kolkata, I am passionate about bridging the gap between robust software architecture and intelligent system design.';
-  const bio2 = aboutData?.bio2 || 'With a strong foundation in Python, Java, C/C++, and Google Firebase, I focus on building scalable applications. My technical toolkit is complemented by a creative background in Photography and Professional Video Editing.';
-  const photoUrl = aboutData?.photoUrl || '/arup.jpg';
+  // Bio from fallback static data
+  const bio1 = 'I am a detail-oriented Computer Science & Engineering student at Brainware University, specialising in Artificial Intelligence and Machine Learning. Based in Kolkata, I am passionate about bridging the gap between robust software architecture and intelligent system design.';
+  const bio2 = 'With a strong foundation in Python, Java, C/C++, and scalable backend databases, I focus on building stable applications. My technical toolkit is complemented by a creative background in Photography and Professional Video Editing.';
+  const photoUrl = '/arup.jpg';
 
 
 
@@ -90,8 +79,6 @@ export default function About({ onPhotoDoubleClick }) {
         >
           <div
             className="about-photo-gradient-border"
-            onDoubleClick={onPhotoDoubleClick}
-            title="Double-click to open admin"
             style={{ transform: 'translateZ(50px)' }}
           >
             <div className="about-photo-inner">

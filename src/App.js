@@ -16,7 +16,6 @@ const Gallery = lazy(() => import('./Gallery'));
 const Services = lazy(() => import('./Services'));
 const CV = lazy(() => import('./CV'));
 const Contact = lazy(() => import('./Contact'));
-const AdminPanel = lazy(() => import('./admin/AdminPanel'));
 const CustomCursor = lazy(() => import('./CustomCursor'));
 const WorkPage = lazy(() => import('./WorkPage'));
 const WorkCategoryPage = lazy(() => import('./WorkCategoryPage'));
@@ -80,12 +79,12 @@ function MobileHeader() {
 
 
 
-function PortfolioHome({ onAdminOpen }) {
+function PortfolioHome() {
   return (
     <>
       <Navbar />
       <div id="home"><Home /></div>
-      <div id="about"><About onPhotoDoubleClick={onAdminOpen} /></div>
+      <div id="about"><About /></div>
       <Suspense fallback={null}>
         <div id="techstack"><TechStack /></div>
         <div id="work"><Work /></div>
@@ -107,7 +106,6 @@ function PortfolioHome({ onAdminOpen }) {
 }
 
 export default function App() {
-  const [adminOpen, setAdminOpen] = useState(false);
 
   // Skip welcome if already seen this session (refresh-safe)
   const [stage, setStage] = useState(() => {
@@ -150,7 +148,7 @@ export default function App() {
               <Routes>
                 <Route
                   path="/"
-                  element={<PortfolioHome onAdminOpen={() => setAdminOpen(true)} />}
+                  element={<PortfolioHome />}
                 />
                 <Route path="/work" element={<WorkPage />} />
                 <Route path="/work/:categorySlug" element={<WorkCategoryPage />} />
@@ -158,7 +156,6 @@ export default function App() {
                 <Route path="/publications" element={<PublicationsPage />} />
                 <Route path="/certificates" element={<CertificatesPage />} />
               </Routes>
-              {adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
 
               {/* ── AI Playback Assistant (floating overlay) ── */}
 

@@ -82,7 +82,7 @@ const FALLBACK_REPOS = [
   },
   {
     id: 2, name: 'sahasrajit-foundation', fork: false,
-    description: 'Built the official website for Sahasrajit Foundation, a grassroots NGO. Firebase-powered admin panel.',
+    description: 'Built the official website for Sahasrajit Foundation, a grassroots NGO. Integrated database dashboard.',
     language: 'JavaScript', stargazers_count: 2, forks_count: 0,
     html_url: 'https://github.com/arupdas0825/sahasrajit-foundation', homepage: '',
     languages_url: '',
