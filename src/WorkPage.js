@@ -8,6 +8,7 @@ import {
 import ProjectDetails from './components/ProjectDetails';
 import Navbar from './Navbar';
 import projectsConfig from './content/projects/projects-config.json';
+import { supabase } from './supabase';
 
 const GITHUB_USERNAME = 'arupdas0825';
 
@@ -403,87 +404,152 @@ export default function WorkPage() {
   }, []);
 
   useEffect(() => {
-    const CACHE_KEY = `gh_repos_${GITHUB_USERNAME}`;
-    const CACHE_TTL = 60 * 60 * 1000;
+    const fetchProjects = async () => {
+      setLoading(true);
+      try {
+        const { data: dbProjects, error } = await supabase
+          .from('projects')
+          .select('*')
+          .order('display_order', { ascending: true })
+          .order('created_at', { ascending: false });
 
-    try {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        const { data, ts } = JSON.parse(cached);
-        if (Date.now() - ts < CACHE_TTL && Array.isArray(data) && data.length > 0) {
-          setRepos(data);
-          setLanguages(['All', ...new Set(data.map(r => r.language).filter(Boolean))]);
-          setLoading(false);
-          return;
+        if (error) throw error;
+
+        if (dbProjects && dbProjects.length > 0) {
+          const mapped = dbProjects.map(p => {
+            const techs = p.technologies ? p.technologies.split(',').map(t => t.trim()) : [];
+            return {
+              id: p.id,
+              name: p.title,
+              description: p.description || '',
+              language: techs[0] || 'JavaScript',
+              stargazers_count: p.featured ? 10 : 2,
+              forks_count: 0,
+              html_url: p.github_url || '',
+              homepage: p.live_url || '',
+              image: p.image_url || null,
+              category: p.category || 'Major',
+              featured: !!p.featured,
+              display_order: p.display_order || 0
+            };
+          });
+          setRepos(mapped);
+          setLanguages(['All', ...new Set(mapped.map(r => r.language).filter(Boolean))]);
+        } else {
+          await fetchGitHubRepos();
         }
+      } catch (err) {
+        console.error("Failed to load projects from Supabase:", err);
+        await fetchGitHubRepos();
+      } finally {
+        setLoading(false);
       }
-    } catch (_) {}
+    };
 
-    fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`, { headers: { Accept: 'application/vnd.github.v3+json' } })
-      .then(r => { if (!r.ok) throw new Error(); return r.json(); })
-      .then(data => {
+    const fetchGitHubRepos = async () => {
+      const CACHE_KEY = `gh_repos_${GITHUB_USERNAME}`;
+      const CACHE_TTL = 60 * 60 * 1000;
+
+      try {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          const { data, ts } = JSON.parse(cached);
+          if (Date.now() - ts < CACHE_TTL && Array.isArray(data) && data.length > 0) {
+            setRepos(data);
+            setLanguages(['All', ...new Set(data.map(r => r.language).filter(Boolean))]);
+            return;
+          }
+        }
+      } catch (_) {}
+
+      try {
+        const res = await fetch(
+          `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`,
+          { headers: { Accept: 'application/vnd.github.v3+json' } }
+        );
+        if (!res.ok) throw new Error();
+        const data = await res.json();
         const own = data.filter(r => !r.fork);
-        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ data: own, ts: Date.now() })); } catch (_) {}
+        try {
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ data: own, ts: Date.now() }));
+        } catch (_) {}
         setRepos(own);
         setLanguages(['All', ...new Set(own.map(r => r.language).filter(Boolean))]);
-      })
-      .catch(() => {
+      } catch (err) {
         setRepos(FALLBACK_REPOS);
         setLanguages(['All', ...new Set(FALLBACK_REPOS.map(r => r.language).filter(Boolean))]);
-      })
-      .finally(() => setLoading(false));
+      }
+    };
+
+    fetchProjects();
   }, []);
 
-  // Match repos against custom categories in projects-config.json
+  // Match repos against custom categories
   const categorizeRepos = () => {
-    const repoMap = {};
-    repos.forEach(repo => {
-      repoMap[repo.name.toLowerCase()] = repo;
-    });
-
     const major = [];
     const secondary = [];
     const college = [];
-    const matchedNames = new Set();
 
-    // 1. Curated Major
-    projectsConfig.major.forEach(name => {
-      const repo = repoMap[name.toLowerCase()];
-      if (repo) {
-        major.push(repo);
-        matchedNames.add(name.toLowerCase());
-      }
-    });
+    // Check if the loaded projects are database-driven
+    const isDbDriven = repos.length > 0 && repos[0].category !== undefined;
 
-    // 2. Curated Secondary
-    projectsConfig.secondary.forEach(name => {
-      const repo = repoMap[name.toLowerCase()];
-      if (repo) {
-        secondary.push(repo);
-        matchedNames.add(name.toLowerCase());
-      }
-    });
+    if (isDbDriven) {
+      repos.forEach(repo => {
+        if (repo.category === 'Major') major.push(repo);
+        else if (repo.category === 'Secondary') secondary.push(repo);
+        else if (repo.category === 'Academic') college.push(repo);
+        else secondary.push(repo); // fallback
+      });
+    } else {
+      const repoMap = {};
+      repos.forEach(repo => {
+        repoMap[repo.name.toLowerCase()] = repo;
+      });
 
-    // 3. Curated College
-    projectsConfig.college.forEach(name => {
-      const repo = repoMap[name.toLowerCase()];
-      if (repo) {
-        college.push(repo);
-        matchedNames.add(name.toLowerCase());
-      }
-    });
+      const matchedNames = new Set();
 
-    // 4. Unmatched GitHub repos: auto append at the end of Secondary
-    repos.forEach(repo => {
-      const lowerName = repo.name.toLowerCase();
-      if (!matchedNames.has(lowerName) && lowerName !== GITHUB_USERNAME.toLowerCase()) {
-        secondary.push(repo);
-      }
-    });
+      // Curated Major
+      projectsConfig.major.forEach(name => {
+        const repo = repoMap[name.toLowerCase()];
+        if (repo) {
+          major.push(repo);
+          matchedNames.add(name.toLowerCase());
+        }
+      });
+
+      // Curated Secondary
+      projectsConfig.secondary.forEach(name => {
+        const repo = repoMap[name.toLowerCase()];
+        if (repo) {
+          secondary.push(repo);
+          matchedNames.add(name.toLowerCase());
+        }
+      });
+
+      // Curated College
+      projectsConfig.college.forEach(name => {
+        const repo = repoMap[name.toLowerCase()];
+        if (repo) {
+          college.push(repo);
+          matchedNames.add(name.toLowerCase());
+        }
+      });
+
+      // Unmatched GitHub repos: auto append at the end of Secondary
+      repos.forEach(repo => {
+        const lowerName = repo.name.toLowerCase();
+        if (!matchedNames.has(lowerName) && lowerName !== GITHUB_USERNAME.toLowerCase()) {
+          secondary.push(repo);
+        }
+      });
+    }
 
     const processList = (list) => {
       const filtered = filter === 'All' ? list : list.filter(r => r.language === filter);
       return [...filtered].sort((a, b) => {
+        if (isDbDriven) {
+          return (a.display_order || 0) - (b.display_order || 0);
+        }
         const timeA = new Date(a.pushed_at || a.updated_at || 0).getTime();
         const timeB = new Date(b.pushed_at || b.updated_at || 0).getTime();
         return timeB - timeA;

@@ -12,10 +12,11 @@ import {
   LucideMapPin
 } from 'lucide-react';
 import Navbar from './Navbar';
+import { supabase } from './supabase';
 import './PhotographyGallery.css'; // New styles
 
 // Extended Data Model with EXIF info
-const photos = [
+const fallbackPhotos = [
   { 
     id: 1, src: "/photos/1.jpg", 
     title: "Amber Awakening", 
@@ -106,26 +107,9 @@ const photos = [
   },
 ];
 
-const featuredPhoto = photos[0];
-const carouselPhotos = photos.slice(1);
-
-// Generate categories
-const categories = photos.reduce((acc, photo) => {
-  if (!acc[photo.category]) {
-    acc[photo.category] = { count: 0, cover: photo.src };
-  }
-  acc[photo.category].count += 1;
-  return acc;
-}, {});
-
-const categoryList = Object.keys(categories).map(key => ({
-  name: key,
-  count: categories[key].count,
-  cover: categories[key].cover
-}));
-
 export default function PhotographyGallery() {
   const navigate = useNavigate();
+  const [photosList, setPhotosList] = useState([]);
   const [selected, setSelected] = useState(null);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
@@ -138,36 +122,94 @@ export default function PhotographyGallery() {
     window.scrollTo(0, 0);
   }, []);
 
+  // Fetch photos from Supabase
+  useEffect(() => {
+    async function loadPhotos() {
+      try {
+        const { data, error } = await supabase.from('photography').select('*').order('display_order', { ascending: true });
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          const mapped = data.map(p => ({
+            id: p.id,
+            src: p.image_url,
+            title: p.title,
+            desc: p.description || `Captured in ${p.location || 'India'} using ${p.camera || 'professional camera'}.`,
+            category: p.category || 'Landscape Photography',
+            location: p.location || 'Kolkata, India',
+            camera: p.camera || 'Unknown',
+            lens: p.lens || 'Unknown',
+            iso: p.iso || 'Auto',
+            shutterSpeed: p.shutter_speed || 'Auto',
+            aperture: p.aperture || 'Auto'
+          }));
+          setPhotosList(mapped);
+        } else {
+          setPhotosList(fallbackPhotos);
+        }
+      } catch (err) {
+        console.error("Failed to fetch photography from Supabase:", err);
+        setPhotosList(fallbackPhotos);
+      }
+    }
+    loadPhotos();
+  }, []);
+
+  // Derived variables
+  const featuredPhoto = photosList[0] || { src: '', title: '', category: '', location: '' };
+  const carouselPhotos = photosList.slice(1);
+
+  // Generate categories
+  const categories = photosList.reduce((acc, photo) => {
+    if (!acc[photo.category]) {
+      acc[photo.category] = { count: 0, cover: photo.src };
+    }
+    acc[photo.category].count += 1;
+    return acc;
+  }, {});
+
+  const categoryList = Object.keys(categories).map(key => ({
+    name: key,
+    count: categories[key].count,
+    cover: categories[key].cover
+  }));
+
   // Carousel Autoplay
   useEffect(() => {
-    if (isHovered || selected) return;
+    if (isHovered || selected || carouselPhotos.length === 0) return;
     const timer = setInterval(() => {
       setCarouselIndex((prev) => (prev + 1) % carouselPhotos.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, [isHovered, selected]);
+  }, [isHovered, selected, carouselPhotos.length]);
 
-  const handleCarouselNext = () => setCarouselIndex((prev) => (prev + 1) % carouselPhotos.length);
-  const handleCarouselPrev = () => setCarouselIndex((prev) => (prev - 1 + carouselPhotos.length) % carouselPhotos.length);
+  const handleCarouselNext = () => {
+    if (carouselPhotos.length === 0) return;
+    setCarouselIndex((prev) => (prev + 1) % carouselPhotos.length);
+  };
+  const handleCarouselPrev = () => {
+    if (carouselPhotos.length === 0) return;
+    setCarouselIndex((prev) => (prev - 1 + carouselPhotos.length) % carouselPhotos.length);
+  };
 
   // Lightbox Navigation
   const handleLightboxPrev = useCallback((e) => {
     e?.stopPropagation();
     setSelected(prev => {
       if (!prev) return null;
-      const idx = photos.findIndex(p => p.id === prev.id);
-      return photos[(idx - 1 + photos.length) % photos.length];
+      const idx = photosList.findIndex(p => p.id === prev.id);
+      return photosList[(idx - 1 + photosList.length) % photosList.length];
     });
-  }, []);
+  }, [photosList]);
 
   const handleLightboxNext = useCallback((e) => {
     e?.stopPropagation();
     setSelected(prev => {
       if (!prev) return null;
-      const idx = photos.findIndex(p => p.id === prev.id);
-      return photos[(idx + 1) % photos.length];
+      const idx = photosList.findIndex(p => p.id === prev.id);
+      return photosList[(idx + 1) % photosList.length];
     });
-  }, []);
+  }, [photosList]);
 
   useEffect(() => {
     const handler = (e) => {

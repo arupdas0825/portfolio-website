@@ -4,6 +4,29 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LucideArrowLeft, LucideExternalLink, LucideMaximize2 } from 'lucide-react';
 import Navbar from './Navbar';
 import ALL_CERTIFICATES from './data/certificates.json';
+import { supabase } from './supabase';
+
+// Helper to assign vibrant brand colors based on issuer
+const getColorForIssuer = (issuer) => {
+  if (!issuer) return '#3b82f6';
+  const name = issuer.toLowerCase();
+  if (name.includes('google')) return '#4285f4';
+  if (name.includes('aws') || name.includes('amazon')) return '#ff9900';
+  if (name.includes('ibm')) return '#0f62fe';
+  if (name.includes('microsoft')) return '#00a4ef';
+  if (name.includes('anthropic')) return '#e0b880';
+  if (name.includes('freecodecamp')) return '#0a0a23';
+  if (name.includes('coursera')) return '#0056d2';
+  
+  // Consistent color based on name hash
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const h = Math.abs(hash) % 360;
+  return `hsl(${h}, 75%, 60%)`;
+};
+
 
 const IS_TOUCH = typeof window !== 'undefined' &&
   (window.matchMedia('(pointer: coarse)').matches ||
@@ -91,8 +114,53 @@ function CertificatesEmptyState({ category }) {
 export default function CertificatesPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Professional Experience');
+  const [certificatesList, setCertificatesList] = useState([]);
 
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  useEffect(() => { 
+    window.scrollTo(0, 0); 
+  }, []);
+
+  // Fetch certificates from Supabase
+  useEffect(() => {
+    async function loadCertificates() {
+      try {
+        const { data, error } = await supabase.from('certificates').select('*').order('display_order', { ascending: true });
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          const mapped = data.map(c => ({
+            id: c.id,
+            title: c.title,
+            issuer: c.issuer,
+            date: c.year || '',
+            image: c.image_url || '/certificate-fallback.png',
+            verifyLink: c.credential_url || '#',
+            tags: c.tags ? c.tags.split(',').map(t => t.trim()) : [],
+            category: c.category || 'Academic Certifications',
+            color: getColorForIssuer(c.issuer),
+            credentialId: c.credential_url ? (c.credential_url.includes('credential/') ? c.credential_url.substring(c.credential_url.lastIndexOf('/') + 1).split('?')[0] : null) : null
+          }));
+          setCertificatesList(mapped);
+        } else {
+          // Fallback to static JSON
+          const mappedJson = ALL_CERTIFICATES.map(c => ({
+            ...c,
+            color: c.color || getColorForIssuer(c.issuer)
+          }));
+          setCertificatesList(mappedJson);
+        }
+      } catch (err) {
+        console.error("Failed to load certificates from Supabase:", err);
+        // Fallback to static JSON
+        const mappedJson = ALL_CERTIFICATES.map(c => ({
+          ...c,
+          color: c.color || getColorForIssuer(c.issuer)
+        }));
+        setCertificatesList(mappedJson);
+      }
+    }
+    loadCertificates();
+  }, []);
 
   const categories = [
     'Academic Certifications',
@@ -102,7 +170,7 @@ export default function CertificatesPage() {
 
   // Filter and sort certificates for the active tab
   const getProcessedCertificates = () => {
-    const filtered = ALL_CERTIFICATES.filter(cert => {
+    const filtered = certificatesList.filter(cert => {
       const cat = cert.category || "Industry Certifications";
       return cat === activeTab;
     });
@@ -145,7 +213,7 @@ export default function CertificatesPage() {
       <div className="cert-category-tabs-container" style={{ maxWidth: '1200px', margin: '0 auto 12px' }}>
         <div className="cert-category-tabs" style={{ margin: '0 auto' }}>
           {categories.map(cat => {
-            const count = ALL_CERTIFICATES.filter(c => (c.category || "Industry Certifications") === cat).length;
+            const count = certificatesList.filter(c => (c.category || "Industry Certifications") === cat).length;
             return (
               <button
                 key={cat}

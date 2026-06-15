@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { supabase } from './supabase';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -9,6 +10,11 @@ export default function About({ onAdminTrigger }) {
   const sectionRef = useRef(null);
   const titleRef = useRef(null);
   const lastTapRef = useRef(0);
+  const [profile, setProfile] = useState({
+    bio1: 'I am a detail-oriented Computer Science & Engineering student at Brainware University, specialising in Artificial Intelligence and Machine Learning. Based in Kolkata, I am passionate about bridging the gap between robust software architecture and intelligent system design.',
+    bio2: 'With a strong foundation in Python, Java, C/C++, and scalable backend databases, I focus on building stable applications. My technical toolkit is complemented by a creative background in Photography and Professional Video Editing.',
+    photoUrl: '/arup.jpg'
+  });
 
   const handlePhotoTap = () => {
     const now = Date.now();
@@ -35,6 +41,26 @@ export default function About({ onAdminTrigger }) {
     );
   }, []);
 
+  // ── Load profile from Supabase ──────────────────────────────────────────
+  useEffect(() => {
+    async function loadProfile() {
+      try {
+        const { data, error } = await supabase.from('profile').select('*').eq('id', 1).maybeSingle();
+        if (error) throw error;
+        if (data) {
+          setProfile({
+            bio1: data.primary_bio || '',
+            bio2: data.secondary_bio || '',
+            photoUrl: data.profile_image_url || '/arup.jpg'
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load profile from Supabase:", err);
+      }
+    }
+    loadProfile();
+  }, []);
+
   // ── Framer Motion scroll parallax on photo ─────────────────────────────
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -42,10 +68,9 @@ export default function About({ onAdminTrigger }) {
   });
   const photoY = useTransform(scrollYProgress, [0, 1], [30, -30]);
 
-  // Bio from fallback static data
-  const bio1 = 'I am a detail-oriented Computer Science & Engineering student at Brainware University, specialising in Artificial Intelligence and Machine Learning. Based in Kolkata, I am passionate about bridging the gap between robust software architecture and intelligent system design.';
-  const bio2 = 'With a strong foundation in Python, Java, C/C++, and scalable backend databases, I focus on building stable applications. My technical toolkit is complemented by a creative background in Photography and Professional Video Editing.';
-  const photoUrl = '/arup.jpg';
+  const bio1 = profile.bio1;
+  const bio2 = profile.bio2;
+  const photoUrl = profile.photoUrl;
 
 
 

@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ZoomIn, ZoomOut, Download, X, Eye } from 'lucide-react';
 
+import { supabase } from './supabase';
+
 const CV = React.memo(function CV() {
   const fadeRefs = useRef([]);
   const addRef = (el) => { if (el && !fadeRefs.current.includes(el)) fadeRefs.current.push(el); };
@@ -10,6 +12,10 @@ const CV = React.memo(function CV() {
   const [zoom, setZoom] = useState(1);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [cvInfo, setCvInfo] = useState({
+    cvUrl: '/ARUP DAS CV.pdf',
+    version: '1.0'
+  });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -24,6 +30,24 @@ const CV = React.memo(function CV() {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    async function loadCv() {
+      try {
+        const { data, error } = await supabase.from('cv').select('*').eq('id', 1).maybeSingle();
+        if (error) throw error;
+        if (data && data.cv_url) {
+          setCvInfo({
+            cvUrl: data.cv_url,
+            version: data.version || '1.0'
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load CV from Supabase:", err);
+      }
+    }
+    loadCv();
   }, []);
 
   const toggleViewer = (e) => {
@@ -94,7 +118,7 @@ const CV = React.memo(function CV() {
               </div>
               <div className="premium-media-gradient-overlay" />
               <div className="premium-meta-badges">
-                <div className="premium-meta-badge" style={{ background: 'rgba(255,255,255,0.1)' }}>UPDATED</div>
+                <div className="premium-meta-badge" style={{ background: 'rgba(255,255,255,0.1)' }}>VERSION {cvInfo.version}</div>
               </div>
             </div>
             
@@ -123,7 +147,7 @@ const CV = React.memo(function CV() {
                 <button onClick={toggleViewer} className="premium-action-link github" style={{ border: 'none', cursor: 'pointer', flex: isMobile ? '1' : 'initial', justifyContent: 'center' }}>
                   <Eye size={13} /> VIEW CV
                 </button>
-                <a href="/ARUP%20DAS%20CV.pdf" download className="premium-action-link demo" style={{ flex: isMobile ? '1' : 'initial', justifyContent: 'center' }}>
+                <a href={cvInfo.cvUrl} download className="premium-action-link demo" style={{ flex: isMobile ? '1' : 'initial', justifyContent: 'center' }}>
                   <Download size={13} /> DOWNLOAD
                 </a>
               </div>
@@ -166,7 +190,7 @@ const CV = React.memo(function CV() {
               
               <div className="pdf-toolbar glass-toolbar" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                 <div className="toolbar-left">
-                  <span className="toolbar-title" style={{ color: '#fff', fontWeight: 600 }}>ARUP_DAS_CV.pdf</span>
+                  <span className="toolbar-title" style={{ color: '#fff', fontWeight: 600 }}>{cvInfo.cvUrl.substring(cvInfo.cvUrl.lastIndexOf('/') + 1) || 'ARUP_DAS_CV.pdf'}</span>
                 </div>
                 <div className="toolbar-center">
                   <button onClick={() => setZoom(z => Math.max(0.5, z - 0.2))}><ZoomOut size={16} /></button>
@@ -174,7 +198,7 @@ const CV = React.memo(function CV() {
                   <button onClick={() => setZoom(z => Math.min(2.5, z + 0.2))}><ZoomIn size={16} /></button>
                 </div>
                 <div className="toolbar-right">
-                  <a href="/ARUP%20DAS%20CV.pdf" download className="toolbar-btn"><Download size={16} /></a>
+                  <a href={cvInfo.cvUrl} download className="toolbar-btn"><Download size={16} /></a>
                   <button className="toolbar-btn close-btn" onClick={closeViewer}><X size={18} /></button>
                 </div>
               </div>
@@ -182,7 +206,7 @@ const CV = React.memo(function CV() {
               <div className="pdf-content-wrapper" style={{ background: 'rgba(0,0,0,0.2)' }}>
                 <div className="pdf-scale-container" style={{ transform: `scale(${zoom})`, transformOrigin: 'top center' }}>
                   <iframe 
-                    src="/ARUP%20DAS%20CV.pdf#toolbar=0&navpanes=0&scrollbar=0" 
+                    src={`${cvInfo.cvUrl}#toolbar=0&navpanes=0&scrollbar=0`} 
                     title="CV PDF"
                     className="pdf-iframe"
                     style={{ background: 'transparent' }}
