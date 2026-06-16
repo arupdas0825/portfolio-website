@@ -15,7 +15,7 @@ const getColorForIssuer = (issuer) => {
   if (name.includes('ibm')) return '#0f62fe';
   if (name.includes('microsoft')) return '#00a4ef';
   if (name.includes('anthropic')) return '#e0b880';
-  if (name.includes('freecodecamp')) return '#0a0a23';
+  if (name.includes('freecodecamp')) return '#198754';
   if (name.includes('coursera')) return '#0056d2';
   
   // Consistent color based on name hash
