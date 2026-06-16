@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { LucideExternalLink, LucideMaximize2 } from 'lucide-react';
-import ALL_CERTIFICATES from './data/certificates.json';
 import { supabase } from './supabase';
 
 // Helper to assign vibrant brand colors based on issuer
@@ -145,7 +144,7 @@ export default function Certificates() {
         const { data, error } = await supabase.from('certificates').select('*').order('display_order', { ascending: true });
         if (error) throw error;
         
-        if (data && data.length > 0) {
+        if (data) {
           const mapped = data
             .filter(c => c.title) // filter out invalid null entries
             .map(c => {
@@ -189,22 +188,9 @@ export default function Certificates() {
               };
             });
           setCertificatesList(mapped);
-        } else {
-          // Fallback to static JSON
-          const mappedJson = ALL_CERTIFICATES.map(c => ({
-            ...c,
-            color: c.color || getColorForIssuer(c.issuer)
-          }));
-          setCertificatesList(mappedJson);
         }
       } catch (err) {
         console.error("Failed to load certificates from Supabase:", err);
-        // Fallback to static JSON
-        const mappedJson = ALL_CERTIFICATES.map(c => ({
-          ...c,
-          color: c.color || getColorForIssuer(c.issuer)
-        }));
-        setCertificatesList(mappedJson);
       }
     }
     loadCertificates();
@@ -238,16 +224,8 @@ export default function Certificates() {
   const processedCerts = getProcessedCertificates();
   
   // Decide which certificates to display
-  let displayCerts = [];
-  if (isMobile) {
-    displayCerts = processedCerts.slice(0, 2);
-  } else {
-    displayCerts = isExpanded ? processedCerts : processedCerts.slice(0, 4);
-  }
-
-  const hasMore = isMobile 
-    ? processedCerts.length > 2 
-    : processedCerts.length > 4;
+  const displayCerts = isExpanded ? processedCerts : processedCerts.slice(0, 4);
+  const hasMore = processedCerts.length > 4;
 
   const handleTabChange = (cat) => {
     setActiveTab(cat);
@@ -424,16 +402,9 @@ export default function Certificates() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            {isMobile ? (
-              <button className="cert-see-more-btn" onClick={() => navigate('/certificates')}>
-                View All Certificates
-                <LucideExternalLink size={14} style={{ marginLeft: 6 }} />
-              </button>
-            ) : (
-              <button className="cert-see-more-btn" onClick={() => setIsExpanded(!isExpanded)}>
-                {isExpanded ? 'Show Less' : 'Show More Certificates'}
-              </button>
-            )}
+            <button className="cert-see-more-btn" onClick={() => setIsExpanded(!isExpanded)}>
+              {isExpanded ? 'Show Less' : 'Show More Certificates'}
+            </button>
           </motion.div>
         )}
       </div>

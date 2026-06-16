@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LucideArrowLeft, LucideExternalLink, LucideMaximize2 } from 'lucide-react';
 import Navbar from './Navbar';
-import ALL_CERTIFICATES from './data/certificates.json';
 import { supabase } from './supabase';
 
 // Helper to assign vibrant brand colors based on issuer
@@ -127,7 +126,7 @@ export default function CertificatesPage() {
         const { data, error } = await supabase.from('certificates').select('*').order('display_order', { ascending: true });
         if (error) throw error;
         
-        if (data && data.length > 0) {
+        if (data) {
           const mapped = data
             .filter(c => c.title) // filter out invalid null entries
             .map(c => {
@@ -171,22 +170,9 @@ export default function CertificatesPage() {
               };
             });
           setCertificatesList(mapped);
-        } else {
-          // Fallback to static JSON
-          const mappedJson = ALL_CERTIFICATES.map(c => ({
-            ...c,
-            color: c.color || getColorForIssuer(c.issuer)
-          }));
-          setCertificatesList(mappedJson);
         }
       } catch (err) {
         console.error("Failed to load certificates from Supabase:", err);
-        // Fallback to static JSON
-        const mappedJson = ALL_CERTIFICATES.map(c => ({
-          ...c,
-          color: c.color || getColorForIssuer(c.issuer)
-        }));
-        setCertificatesList(mappedJson);
       }
     }
     loadCertificates();

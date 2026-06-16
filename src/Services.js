@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ContainerScroll, CardSticky } from './components/ui/cards-stack';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -109,24 +108,18 @@ function ServiceCard({ service, index }) {
   return (
     <motion.div
       className="svc-card"
-      style={{
-        ...(IS_TOUCH ? {} : { 
-          rotateX, 
-          rotateY, 
-          transformStyle: 'preserve-3d',
-          perspective: '1200px'
-        }),
-        aspectRatio: 'unset',
-        height: 'auto',
-        width: '100%',
-        marginBottom: '0px'
+      style={IS_TOUCH ? {} : { 
+        rotateX, 
+        rotateY, 
+        transformStyle: 'preserve-3d',
+        perspective: '1200px'
       }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.5, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.5, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
     >
       {/* Specular Shine Overlay */}
       <motion.div 
@@ -222,37 +215,17 @@ export default function Services() {
       )}
 
       <div className="section-inner" style={{ position: 'relative', zIndex: 1 }}>
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12 xl:gap-16">
-          {/* Left Column: Title & Description */}
-          <div className="left-column-sticky md:sticky md:top-28 md:h-[calc(100vh-200px)] flex flex-col justify-start">
-            <span className="section-label" style={{ textAlign: 'left', margin: '0 0 12px 0' }}>✦ WHAT I OFFER ✦</span>
-            <h2 className="section-title" ref={titleRef} style={{ textAlign: 'left', margin: '0 0 16px 0' }}>
-              Features &amp; <span>Services</span>
-            </h2>
-            <div className="section-line" style={{ margin: '0 0 24px 0' }} />
-            <p className="section-sub" style={{ textAlign: 'left', margin: 0, maxWidth: '100%' }}>
-              What I bring to the table — from intelligent systems to creative digital experiences. I combine technical skills with a designer's eye to deliver high-performing solutions.
-            </p>
-          </div>
+        <span className="section-label">✦ WHAT I OFFER ✦</span>
+        <h2 className="section-title" ref={titleRef}>Features &amp; <span>Services</span></h2>
+        <div className="section-line" />
+        <p className="section-sub">
+          What I bring to the table — from intelligent systems to creative digital experiences.
+        </p>
 
-          {/* Right Column: Scrolling Cards Stack */}
-          <ContainerScroll className="min-h-[350vh] space-y-6 py-6">
-            {services.map((service, i) => (
-              <CardSticky
-                key={service.name}
-                index={i}
-                incrementY={40}
-                incrementZ={3}
-                className="w-full"
-                style={{ 
-                  top: `${100 + i * 40}px`,
-                  marginBottom: '16px'
-                }}
-              >
-                <ServiceCard service={service} index={i} />
-              </CardSticky>
-            ))}
-          </ContainerScroll>
+        <div className="svc-grid">
+          {services.map((service, i) => (
+            <ServiceCard key={service.name} service={service} index={i} />
+          ))}
         </div>
       </div>
     </section>
