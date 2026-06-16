@@ -183,13 +183,19 @@ export default function AdminPanel() {
       setInternships(mappedInternships);
 
       // Certificates
-      const { data: certsData, error: certErr } = await supabase.from('certificates').select('*').order('display_order', { ascending: true });
+      const { data: certsData, error: certErr } = await supabase
+        .from('certificates')
+        .select('*')
+        .order('category', { ascending: true })
+        .order('display_order', { ascending: true });
       if (certErr) throw certErr;
-      const mappedCerts = (certsData || []).map(c => ({
-        ...c,
-        image_url: c.image || '',
-        credential_url: c.credential_id || ''
-      }));
+      const mappedCerts = (certsData || [])
+        .filter(c => c.title)
+        .map(c => ({
+          ...c,
+          image_url: c.image || '',
+          credential_url: c.credential_id || ''
+        }));
       setCertificates(mappedCerts);
 
       // Photography

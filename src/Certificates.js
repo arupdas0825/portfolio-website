@@ -146,21 +146,48 @@ export default function Certificates() {
         if (error) throw error;
         
         if (data && data.length > 0) {
-          const mapped = data.map(c => {
-            const link = c.credential_id || c.credential_url || '#';
-            return {
-              id: c.id,
-              title: c.title,
-              issuer: c.issuer,
-              date: c.year || '',
-              image: c.image || c.image_url || '/certificate-fallback.png',
-              verifyLink: link,
-              tags: c.tags ? c.tags.split(',').map(t => t.trim()) : [],
-              category: c.category || 'Academic Certifications',
-              color: getColorForIssuer(c.issuer),
-              credentialId: link !== '#' && link.includes('credential/') ? link.substring(link.lastIndexOf('/') + 1).split('?')[0] : null
-            };
-          });
+          const mapped = data
+            .filter(c => c.title) // filter out invalid null entries
+            .map(c => {
+              const link = c.credential_id || c.credential_url || '#';
+              return {
+                id: c.id,
+                title: c.title,
+                issuer: c.issuer,
+                date: c.year || '',
+                image: c.image || c.image_url || '/certificate-fallback.png',
+                verifyLink: link,
+                tags: c.tags ? c.tags.split(',').map(t => t.trim()) : [],
+                category: c.category || 'Academic Certifications',
+                color: getColorForIssuer(c.issuer),
+                priority: c.display_order !== null && c.display_order !== undefined ? c.display_order : 999,
+                credentialId: (() => {
+                  if (link === '#') return null;
+                  if (link.includes('credential/') || link.includes('credential.net/')) {
+                    return link.substring(link.lastIndexOf('/') + 1).split('?')[0];
+                  }
+                  if (link.includes('verify.skilljar.com/c/')) {
+                    return link.substring(link.lastIndexOf('/') + 1).split('?')[0];
+                  }
+                  if (link.includes('freecodecamp.org/certification/')) {
+                    const parts = link.split('/');
+                    const username = parts[parts.indexOf('certification') + 1];
+                    const certName = parts[parts.indexOf('certification') + 2];
+                    if (username && certName) {
+                      const shortName = certName.includes('responsive-web-design') ? 'rwdv9' : certName;
+                      return `${username}-${shortName}`;
+                    }
+                  }
+                  if (c.title && c.title.includes('TEXIBITION')) {
+                    return 'BWU-TEX-2026';
+                  }
+                  if (c.title && c.title.includes('Class Representative')) {
+                    return 'BWU/BTA/24/641';
+                  }
+                  return null;
+                })()
+              };
+            });
           setCertificatesList(mapped);
         } else {
           // Fallback to static JSON

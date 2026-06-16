@@ -161,6 +161,8 @@ function ServiceCard({ service, index }) {
   );
 }
 
+import DisplayCards from './components/ui/display-cards';
+
 export default function Services() {
   const titleRef = useRef(null);
   const sectionRef = useRef(null);
@@ -187,6 +189,85 @@ export default function Services() {
     const rect = sectionRef.current.getBoundingClientRect();
     setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   };
+
+  const devCards = [
+    {
+      title: "Mobile App Dev",
+      description: "Creating Android applications with Kotlin, database integrations, and modern UI patterns — from concept to Play Store ready.",
+      date: "Android / Kotlin",
+      icon: (
+        <svg fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/>
+        </svg>
+      ),
+      color: "#f472b6",
+      className: "[grid-area:stack] hover:-translate-y-12 before:absolute before:w-full before:h-full before:rounded-xl before:border before:border-white/5 before:bg-[#07000F]/60 before:content-[''] before:transition-opacity before:duration-700 hover:before:opacity-0 grayscale hover:grayscale-0 before:left-0 before:top-0 transition-all duration-700"
+    },
+    {
+      title: "Backend Systems",
+      description: "Building robust server-side logic with Java, REST APIs, and databases — scalable, secure, and production-ready systems.",
+      date: "Java / REST / SQL",
+      icon: (
+        <svg fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>
+        </svg>
+      ),
+      color: "#f87171",
+      className: "[grid-area:stack] translate-x-8 translate-y-8 hover:-translate-y-4 before:absolute before:w-full before:h-full before:rounded-xl before:border before:border-white/5 before:bg-[#07000F]/60 before:content-[''] before:transition-opacity before:duration-700 hover:before:opacity-0 grayscale hover:grayscale-0 before:left-0 before:top-0 transition-all duration-700"
+    },
+    {
+      title: "Web Development",
+      description: "Building responsive, modern web applications using React, JavaScript, and Tailwind CSS with a focus on clean UI and solid engineering.",
+      date: "React / Tailwind / JS",
+      icon: (
+        <svg fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l-3 3 3 3m4.5-6l3 3-3 3M13.5 6l-3 12"/>
+        </svg>
+      ),
+      color: "#60a5fa",
+      className: "[grid-area:stack] translate-x-16 translate-y-16 hover:translate-y-8 transition-all duration-700"
+    }
+  ];
+
+  const aiCards = [
+    {
+      title: "Creative Direction",
+      description: "Combining technical skills with a photographer's eye — UI/UX design, video editing, and visual storytelling.",
+      date: "Design / Video / Photos",
+      icon: (
+        <svg fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/>
+        </svg>
+      ),
+      color: "#2dd4bf",
+      className: "[grid-area:stack] hover:-translate-y-12 before:absolute before:w-full before:h-full before:rounded-xl before:border before:border-white/5 before:bg-[#07000F]/60 before:content-[''] before:transition-opacity before:duration-700 hover:before:opacity-0 grayscale hover:grayscale-0 before:left-0 before:top-0 transition-all duration-700"
+    },
+    {
+      title: "Data Analysis",
+      description: "Turning raw data into insights using Python, SQL, and machine learning techniques — from cleaning to advanced reports.",
+      date: "Python / ML / SQL",
+      icon: (
+        <svg fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/>
+        </svg>
+      ),
+      color: "#4ade80",
+      className: "[grid-area:stack] translate-x-8 translate-y-8 hover:-translate-y-4 before:absolute before:w-full before:h-full before:rounded-xl before:border before:border-white/5 before:bg-[#07000F]/60 before:content-[''] before:transition-opacity before:duration-700 hover:before:opacity-0 grayscale hover:grayscale-0 before:left-0 before:top-0 transition-all duration-700"
+    },
+    {
+      title: "AI / ML Solutions",
+      description: "Designing and implementing intelligent systems — from Gemini AI integrations to machine learning models that solve real-world problems.",
+      date: "Gemini / NLP / PyTorch",
+      icon: (
+        <svg fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/>
+        </svg>
+      ),
+      color: "#c084fc",
+      className: "[grid-area:stack] translate-x-16 translate-y-16 hover:translate-y-8 transition-all duration-700"
+    }
+  ];
 
   return (
     <section 
@@ -222,10 +303,19 @@ export default function Services() {
           What I bring to the table — from intelligent systems to creative digital experiences.
         </p>
 
-        <div className="svc-grid">
-          {services.map((service, i) => (
-            <ServiceCard key={service.name} service={service} index={i} />
-          ))}
+        <div className="flex flex-col lg:flex-row gap-20 lg:gap-24 justify-center items-center py-12 px-4 select-none" style={{ minHeight: '480px' }}>
+          <div className="flex flex-col items-center gap-6">
+            <h3 className="text-xl font-bold tracking-widest text-[#60a5fa] uppercase mb-4">Engineering &amp; Development</h3>
+            <div className="w-[26rem] h-[16rem] flex items-start justify-center">
+              <DisplayCards cards={devCards} />
+            </div>
+          </div>
+          <div className="flex flex-col items-center gap-6 mt-12 lg:mt-0">
+            <h3 className="text-xl font-bold tracking-widest text-[#c084fc] uppercase mb-4">AI, Analytics &amp; Creative</h3>
+            <div className="w-[26rem] h-[16rem] flex items-start justify-center">
+              <DisplayCards cards={aiCards} />
+            </div>
+          </div>
         </div>
       </div>
     </section>

@@ -11,7 +11,7 @@
     "verifyLink": "https://verify.skilljar.com/c/4vqqntrfh6kc",
     "tags": ["AI", "Claude", "Anthropic", "AI Literacy"],
     "color": "#4a7c59",
-    "priority": 1
+    "priority": 2
   },
   {
     "id": 6,
@@ -25,7 +25,7 @@
     "verifyLink": "https://freecodecamp.org/certification/arupdas0825/responsive-web-design-v9",
     "tags": ["HTML5", "CSS3", "Responsive Design", "Frontend"],
     "color": "#198754",
-    "priority": 2
+    "priority": 3
   },
   {
     "id": 8,
@@ -39,7 +39,7 @@
     "verifyLink": "https://verify.skilljar.com/c/i4m9mvyxk776",
     "tags": ["Anthropic", "Claude", "AI", "Prompt Engineering"],
     "color": "#c5a059",
-    "priority": 3
+    "priority": 1
   },
   {
     "id": 3,
