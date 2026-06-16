@@ -22,6 +22,7 @@ if (!IS_TOUCH) {
     smooth: true,
     smoothTouch: false,
   });
+  window.lenis = lenis;
 
   function raf(time) {
     lenis.raf(time);

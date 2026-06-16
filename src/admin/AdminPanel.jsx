@@ -23,6 +23,58 @@ const TABS = [
 
 export default function AdminPanel() {
   const navigate = useNavigate();
+
+  // Handle scroll controller conflicts (Lenis) and diagnostics logging
+  useEffect(() => {
+    // 1. Pause global Lenis scroll listener
+    if (window.lenis) {
+      console.log('[CMS Scroll] Pausing global Lenis scroll controller.');
+      window.lenis.stop();
+    }
+
+    // 2. Unlock scroll overflow values on document body/root elements
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+    const originalBodyHeight = document.body.style.height;
+    
+    document.body.style.overflow = 'auto';
+    document.documentElement.style.overflow = 'auto';
+    document.body.style.height = 'auto';
+
+    // 3. Logger diagnostics
+    const logScrollParams = () => {
+      const rootEl = document.querySelector('.cms-root');
+      const mainEl = document.querySelector('.cms-main');
+      console.log('[CMS Scroll Diagnostics]', {
+        viewportHeight: window.innerHeight,
+        rootHeight: rootEl?.scrollHeight,
+        rootOverflow: rootEl ? window.getComputedStyle(rootEl).overflow : null,
+        mainHeight: mainEl?.scrollHeight,
+        mainOverflow: mainEl ? window.getComputedStyle(mainEl).overflowY : null,
+        bodyOverflow: window.getComputedStyle(document.body).overflow,
+        htmlOverflow: window.getComputedStyle(document.documentElement).overflow
+      });
+    };
+
+    // Log once on mount and also on window resize
+    logScrollParams();
+    window.addEventListener('resize', logScrollParams);
+
+    // Cleanup on unmount
+    return () => {
+      // Restore Lenis smooth scrolling
+      if (window.lenis) {
+        console.log('[CMS Scroll] Resuming global Lenis scroll controller.');
+        window.lenis.start();
+      }
+      // Restore original body styles
+      document.body.style.overflow = originalBodyOverflow;
+      document.documentElement.style.overflow = originalHtmlOverflow;
+      document.body.style.height = originalBodyHeight;
+      window.removeEventListener('resize', logScrollParams);
+    };
+  }, []);
+
   const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
