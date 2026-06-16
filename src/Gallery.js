@@ -7,129 +7,193 @@ import {
   LucideMapPin,
   LucideCamera
 } from 'lucide-react';
+import { supabase } from './supabase';
+import { ZoomParallax } from './components/ui/zoom-parallax';
 import './Gallery.css'; // Minimalist styles
 
-// Photo Data
-const photosData = [
+// Extended Fallback Data Model (same as PhotographyGallery fallback)
+const fallbackPhotos = [
   { 
     id: 1, src: "/photos/1.jpg", 
     title: "Amber Awakening", 
+    desc: "A meditation on perception and intimacy—the human eye becomes a universe unto itself. The warm, honey-toned iris captures light like a sunset.", 
     category: "Portrait Photography",
-    location: "Kolkata, India"
+    location: "Kolkata, India",
+    camera: "Sony A7IV", lens: "FE 85mm F1.4 GM", iso: "100", shutterSpeed: "1/200s", aperture: "f/1.8"
   },
   { 
     id: 2, src: "/photos/2.jpg", 
     title: "Offerings of Devotion", 
+    desc: "In the chaos of the crowd, one man stands anchored in faith. The marigold garlands symbolize the persistence of tradition in modern India.", 
     category: "Festival Photography",
-    location: "Varanasi, India"
+    location: "Varanasi, India",
+    camera: "Fujifilm X-T4", lens: "XF 23mm F1.4 R", iso: "400", shutterSpeed: "1/500s", aperture: "f/2.8"
   },
   { 
     id: 4, src: "/photos/4.jpg", 
     title: "Geometric Dreams", 
+    desc: "A ferris wheel transformed into a kaleidoscope of neon geometry.", 
     category: "Night Photography",
-    location: "Mumbai, India"
+    location: "Mumbai, India",
+    camera: "Sony A7R IV", lens: "FE 24-70mm F2.8 GM", iso: "1600", shutterSpeed: "1/30s", aperture: "f/4.0"
   },
   { 
     id: 3, src: "/photos/3.jpg", 
     title: "Symphony of Light", 
+    desc: "Nature and celebration collide in a single frame. The fireworks mirror the ephemeral beauty of blooming flowers.", 
     category: "Night Photography",
-    location: "Kolkata, India"
+    location: "Kolkata, India",
+    camera: "Canon EOS R5", lens: "RF 15-35mm F2.8 L", iso: "100", shutterSpeed: "4s", aperture: "f/8.0"
   },
   { 
     id: 5, src: "/photos/5.jpg", 
     title: "Still Waiting for Tomorrow", 
+    desc: "A powerful portrait of urban invisibility. The elderly man and his dog exist in parallel with the rushing world behind them.", 
     category: "Street Photography",
-    location: "Delhi, India"
+    location: "Delhi, India",
+    camera: "Fujifilm X-Pro3", lens: "XF 35mm F2 R WR", iso: "800", shutterSpeed: "1/250s", aperture: "f/2.0"
   },
   { 
     id: 6, src: "/photos/6.jpg", 
     title: "Golden Hour Commute", 
+    desc: "The ordinary transformed by light. Morning mist and golden haze turn a mundane street into a cinematic dreamscape.", 
     category: "Street Photography",
-    location: "Kolkata, India"
+    location: "Kolkata, India",
+    camera: "Sony A7IV", lens: "FE 35mm F1.4 GM", iso: "100", shutterSpeed: "1/1000s", aperture: "f/1.4"
   },
   { 
     id: 7, src: "/photos/7.jpg", 
     title: "The Last Red of the Day", 
+    desc: "The sun sinks behind wires and concrete, yet still finds space to glow.", 
     category: "Urban Landscapes",
-    location: "Bangalore, India"
+    location: "Bangalore, India",
+    camera: "Nikon Z7 II", lens: "NIKKOR Z 24-120mm f/4 S", iso: "200", shutterSpeed: "1/60s", aperture: "f/5.6"
   },
   { 
     id: 8, src: "/photos/8.jpg", 
     title: "Hooghly Serenity", 
+    desc: "The iconic Vidyasagar Setu stands sentinel over the Hooghly River as fishermen continue their timeless practice.", 
     category: "Landscape Photography",
-    location: "Kolkata, India"
+    location: "Kolkata, India",
+    camera: "Sony A7R IV", lens: "FE 16-35mm F2.8 GM", iso: "100", shutterSpeed: "1/125s", aperture: "f/8.0"
   },
   { 
     id: 9, src: "/photos/9.jpg", 
     title: "Consuming Light", 
+    desc: "In the darkness, fire becomes a living entity—breathing, moving, devouring.", 
     category: "Light Trails",
-    location: "Jaipur, India"
+    location: "Jaipur, India",
+    camera: "Canon EOS R6", lens: "RF 50mm F1.2 L", iso: "400", shutterSpeed: "1/50s", aperture: "f/1.2"
   },
   { 
     id: 10, src: "/photos/10.jpg", 
     title: "Solitary Path", 
+    desc: "An empty lane bathed in nocturnal green—simultaneously inviting and isolating.", 
     category: "Night Photography",
-    location: "Kolkata, India"
+    location: "Kolkata, India",
+    camera: "Fujifilm X-T4", lens: "XF 18-55mm F2.8-4", iso: "3200", shutterSpeed: "1/15s", aperture: "f/2.8"
   },
   { 
     id: 11, src: "/photos/11.jpg", 
     title: "Last Light Over the Ganges", 
+    desc: "A mesmerizing view of the sacred Ganges river bathed in the fading light of dusk.", 
     category: "Landscape Photography",
-    location: "Varanasi, India"
+    location: "Varanasi, India",
+    camera: "Unknown", lens: "Unknown", iso: "Auto", shutterSpeed: "Auto", aperture: "Auto"
   },
 ];
 
 export default function Gallery() {
-  
-  // States
+  const [photosList, setPhotosList] = useState([]);
   const [activeCategory, setActiveCategory] = useState("All");
-  const [carouselIndex, setCarouselIndex] = useState(0);
-  const [isCarouselHovered, setIsCarouselHovered] = useState(false);
   const [lightboxPhoto, setLightboxPhoto] = useState(null);
 
-  // Derived Data
-  const categories = ["All", ...Array.from(new Set(photosData.map(p => p.category)))];
+  // Load photos from Supabase
+  useEffect(() => {
+    async function loadPhotos() {
+      try {
+        const { data, error } = await supabase
+          .from('photography')
+          .select('*')
+          .order('display_order', { ascending: true });
+        
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          const mapped = data.map(p => {
+            let exif = {};
+            let desc = p.description || '';
+            if (p.description) {
+              try {
+                exif = JSON.parse(p.description);
+                desc = exif.desc || '';
+              } catch (e) {
+                desc = p.description;
+              }
+            }
+            return {
+              id: p.id,
+              src: p.image || p.image_url,
+              title: p.title,
+              desc: desc || `Captured in ${exif.location || p.location || 'India'} using ${exif.camera || p.camera || 'professional camera'}.`,
+              category: p.category || 'Landscape Photography',
+              location: exif.location || p.location || 'Kolkata, India',
+              camera: exif.camera || p.camera || 'Unknown',
+              lens: exif.lens || p.lens || 'Unknown',
+              iso: exif.iso || p.iso || 'Auto',
+              shutterSpeed: exif.shutterSpeed || exif.shutter_speed || p.shutter_speed || 'Auto',
+              aperture: exif.aperture || p.aperture || 'Auto'
+            };
+          });
+          setPhotosList(mapped);
+        } else {
+          setPhotosList(fallbackPhotos);
+        }
+      } catch (err) {
+        console.error("Failed to fetch photography from Supabase:", err);
+        setPhotosList(fallbackPhotos);
+      }
+    }
+    loadPhotos();
+  }, []);
+
+  // Dynamically generate categories from photos list
+  const categories = useMemo(() => {
+    const list = Array.from(new Set(photosList.map(p => p.category))).filter(Boolean);
+    return ["All", ...list];
+  }, [photosList]);
   
+  // Filter photos based on selection
   const filteredPhotos = useMemo(() => {
-    if (activeCategory === "All") return photosData;
-    return photosData.filter(p => p.category === activeCategory);
-  }, [activeCategory]);
+    if (activeCategory === "All") return photosList;
+    return photosList.filter(p => p.category === activeCategory);
+  }, [activeCategory, photosList]);
 
-  const featuredPhoto = filteredPhotos[0] || photosData[0];
-  const carouselPhotos = filteredPhotos;
-  const totalCarousel = carouselPhotos.length;
+  // Map to ZoomParallax required format
+  const zoomImages = useMemo(() => {
+    return filteredPhotos.map(photo => ({
+      id: photo.id,
+      src: photo.src,
+      alt: photo.title,
+      title: photo.title,
+      category: photo.category,
+      camera: photo.camera,
+      lens: photo.lens,
+      location: photo.location,
+      desc: photo.desc,
+      iso: photo.iso,
+      shutterSpeed: photo.shutterSpeed,
+      aperture: photo.aperture
+    }));
+  }, [filteredPhotos]);
 
-  // Reset carousel index when category changes
-  useEffect(() => {
-    setCarouselIndex(0);
-  }, [activeCategory]);
-
-  // Carousel Autoplay
-  useEffect(() => {
-    if (isCarouselHovered || lightboxPhoto || totalCarousel <= 1) return;
-    const timer = setInterval(() => {
-      setCarouselIndex(prev => (prev + 1) % totalCarousel);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, [isCarouselHovered, lightboxPhoto, totalCarousel]);
-
-  // Carousel Navigation
-  const wrap = useCallback((idx) => ((idx % totalCarousel) + totalCarousel) % totalCarousel, [totalCarousel]);
-  const handleCarouselNext = useCallback((e) => {
-    e?.stopPropagation();
-    if (totalCarousel > 1) setCarouselIndex(prev => wrap(prev + 1));
-  }, [totalCarousel, wrap]);
-  const handleCarouselPrev = useCallback((e) => {
-    e?.stopPropagation();
-    if (totalCarousel > 1) setCarouselIndex(prev => wrap(prev - 1));
-  }, [totalCarousel, wrap]);
-
-  // Lightbox Navigation
+  // Lightbox navigation handlers
   const handleLightboxNext = useCallback((e) => {
     e?.stopPropagation();
     setLightboxPhoto(prev => {
       if (!prev) return null;
       const idx = filteredPhotos.findIndex(p => p.id === prev.id);
+      if (idx === -1) return null;
       return filteredPhotos[(idx + 1) % filteredPhotos.length];
     });
   }, [filteredPhotos]);
@@ -139,6 +203,7 @@ export default function Gallery() {
     setLightboxPhoto(prev => {
       if (!prev) return null;
       const idx = filteredPhotos.findIndex(p => p.id === prev.id);
+      if (idx === -1) return null;
       return filteredPhotos[(idx - 1 + filteredPhotos.length) % filteredPhotos.length];
     });
   }, [filteredPhotos]);
@@ -156,17 +221,14 @@ export default function Gallery() {
     return () => window.removeEventListener('keydown', handler);
   }, [lightboxPhoto, handleLightboxNext, handleLightboxPrev]);
 
-  // Swipe Helpers
   const swipeConfidenceThreshold = 10000;
   const swipePower = (offset, velocity) => Math.abs(offset) * velocity;
-
-  // Current Lightbox Index for counter
   const lightboxCurrentIndex = lightboxPhoto ? filteredPhotos.findIndex(p => p.id === lightboxPhoto.id) + 1 : 0;
 
   return (
     <section id="photography" className="page-section hm-gallery-root">
       
-      {/* ── SECTION 1: Featured Photo Hero ── */}
+      {/* ── SECTION HEADER ── */}
       <div className="hm-hero-wrapper">
         <motion.div 
           className="section-header" 
@@ -184,33 +246,9 @@ export default function Gallery() {
             A curated selection of moments frozen in time.
           </p>
         </motion.div>
-
-        <motion.div 
-          className="hm-hero"
-          onClick={() => setLightboxPhoto(featuredPhoto)}
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
-          <img 
-            src={featuredPhoto.src} 
-            alt={featuredPhoto.title} 
-            className="hm-hero-bg" 
-            loading="lazy"
-          />
-          <div className="hm-hero-gradient" />
-          <div className="hm-hero-content">
-            <div className="hm-hero-badge">Featured Capture</div>
-            <h3 className="hm-hero-title">{featuredPhoto.title}</h3>
-            <div className="hm-hero-meta">
-              <span><LucideCamera size={18}/> {featuredPhoto.category}</span>
-            </div>
-          </div>
-        </motion.div>
       </div>
 
-      {/* ── SECTION 2: Category Chips ── */}
+      {/* ── CATEGORY FILTER CHIPS ── */}
       <div className="hm-categories">
         {categories.map(cat => (
           <button 
@@ -223,78 +261,21 @@ export default function Gallery() {
         ))}
       </div>
 
-      {/* ── SECTION 3: Premium Film Strip Carousel ── */}
-      {totalCarousel > 0 && (
-        <div 
-          className="hm-carousel-section"
-          onMouseEnter={() => setIsCarouselHovered(true)}
-          onMouseLeave={() => setIsCarouselHovered(false)}
-        >
-          {totalCarousel > 1 && (
-            <button className="hm-carousel-nav prev" onClick={handleCarouselPrev}>
-              <LucideChevronLeft />
-            </button>
-          )}
-
-          <AnimatePresence initial={false}>
-            {carouselPhotos.map((photo, i) => {
-              let pos = "hidden";
-              if (totalCarousel === 1) pos = "center";
-              else if (totalCarousel === 2) {
-                if (i === carouselIndex) pos = "center";
-                else pos = "left";
-              } else {
-                if (i === carouselIndex) pos = "center";
-                else if (i === wrap(carouselIndex - 1)) pos = "left";
-                else if (i === wrap(carouselIndex + 1)) pos = "right";
-                else if (i === wrap(carouselIndex - 2)) pos = "far-left";
-                else if (i === wrap(carouselIndex + 2)) pos = "far-right";
-              }
-
-              if (pos === "hidden") return null;
-
-              return (
-                <motion.div
-                  key={`${photo.id}-${activeCategory}`}
-                  className={`hm-carousel-slide ${pos}`}
-                  onClick={() => {
-                    if (pos === "center") setLightboxPhoto(photo);
-                    else if (pos === "left" || pos === "far-left") handleCarouselPrev();
-                    else if (pos === "right" || pos === "far-right") handleCarouselNext();
-                  }}
-                  drag={pos === "center" ? "x" : false}
-                  dragConstraints={{ left: 0, right: 0 }}
-                  dragElastic={1}
-                  onDragEnd={(e, { offset, velocity }) => {
-                    const swipe = swipePower(offset.x, velocity.x);
-                    if (swipe < -swipeConfidenceThreshold) handleCarouselNext();
-                    else if (swipe > swipeConfidenceThreshold) handleCarouselPrev();
-                  }}
-                >
-                  <img src={photo.src} alt={photo.title} loading="lazy" />
-                  
-                  {/* Overlay added directly on slider image */}
-                  <div className="hm-slide-overlay">
-                    <h4 className="hm-slide-title">{photo.title}</h4>
-                    <div className="hm-slide-meta">
-                      <span>{photo.category}</span>
-                    </div>
-                  </div>
-
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-
-          {totalCarousel > 1 && (
-            <button className="hm-carousel-nav next" onClick={handleCarouselNext}>
-              <LucideChevronRight />
-            </button>
-          )}
+      {/* ── RESPONSIVE ZOOM PARALLAX SHOWCASE ── */}
+      {zoomImages.length > 0 ? (
+        <div style={{ position: 'relative', zIndex: 10, width: '100%' }}>
+          <ZoomParallax 
+            images={zoomImages} 
+            onImageClick={(photo) => setLightboxPhoto(photo)} 
+          />
+        </div>
+      ) : (
+        <div className="text-center py-20 text-gray-400">
+          <p>No captures found for this category.</p>
         </div>
       )}
 
-      {/* ── SECTION 4: Premium Photo Lightbox ── */}
+      {/* ── PREMIUM LIGHTBOX VIEWER ── */}
       <AnimatePresence>
         {lightboxPhoto && (
           <motion.div 
@@ -304,7 +285,7 @@ export default function Gallery() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            {/* Header: Back Button, Counter, Close */}
+            {/* Header */}
             <div className="hm-lightbox-header">
               <button className="hm-lightbox-back" onClick={() => setLightboxPhoto(null)}>
                 <LucideChevronLeft size={20} />
@@ -354,11 +335,35 @@ export default function Gallery() {
               )}
             </div>
 
-            {/* Footer: Meta Info */}
-            <div className="hm-lightbox-footer">
+            {/* Footer */}
+            <div className="hm-lightbox-footer" style={{ pointerEvents: 'auto' }}>
               <h2 className="hm-lightbox-title">{lightboxPhoto.title}</h2>
-              <div className="hm-lightbox-meta">
-                <span>{lightboxPhoto.category}</span>
+              <div className="hm-lightbox-meta flex flex-col gap-2">
+                <span className="text-[#a78bfa] tracking-wider uppercase font-semibold text-xs">
+                  {lightboxPhoto.category}
+                </span>
+                {lightboxPhoto.desc && (
+                  <p className="max-w-xl mx-auto text-xs text-gray-300 font-normal leading-relaxed mb-1 mt-0.5">
+                    {lightboxPhoto.desc}
+                  </p>
+                )}
+                <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 text-xs text-gray-400">
+                  {lightboxPhoto.camera && (
+                    <span className="flex items-center gap-1">
+                      <LucideCamera size={12} className="text-[#a78bfa]" /> {lightboxPhoto.camera}
+                    </span>
+                  )}
+                  {lightboxPhoto.lens && (
+                    <span className="flex items-center gap-1">
+                      🔍 {lightboxPhoto.lens}
+                    </span>
+                  )}
+                  {lightboxPhoto.location && (
+                    <span className="flex items-center gap-1">
+                      <LucideMapPin size={12} className="text-[#a78bfa]" /> {lightboxPhoto.location}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 

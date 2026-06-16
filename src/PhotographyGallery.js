@@ -174,8 +174,15 @@ export default function PhotographyGallery() {
   const zoomParallaxImages = (photosList.length > 0 ? photosList : fallbackPhotos)
     .slice(0, 7)
     .map(p => ({
+      id: p.id,
       src: p.src,
-      alt: p.title
+      alt: p.title,
+      title: p.title,
+      category: p.category,
+      camera: p.camera,
+      lens: p.lens,
+      location: p.location,
+      desc: p.desc
     }));
 
   // Generate categories
@@ -285,7 +292,7 @@ export default function PhotographyGallery() {
       {/* SECTION 1.5: Zoom Parallax Reel */}
       {zoomParallaxImages.length > 0 && (
         <div style={{ position: 'relative', zIndex: 10 }}>
-          <ZoomParallax images={zoomParallaxImages} />
+          <ZoomParallax images={zoomParallaxImages} onImageClick={(photo) => setSelected(photo)} />
         </div>
       )}
 
