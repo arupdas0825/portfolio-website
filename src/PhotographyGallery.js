@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import Navbar from './Navbar';
 import { supabase } from './supabase';
+import { ZoomParallax } from './components/ui/zoom-parallax';
 import './PhotographyGallery.css'; // New styles
 
 // Extended Data Model with EXIF info
@@ -170,6 +171,12 @@ export default function PhotographyGallery() {
   // Derived variables
   const featuredPhoto = photosList[0] || { src: '', title: '', category: '', location: '' };
   const carouselPhotos = photosList.slice(1);
+  const zoomParallaxImages = (photosList.length > 0 ? photosList : fallbackPhotos)
+    .slice(0, 7)
+    .map(p => ({
+      src: p.src,
+      alt: p.title
+    }));
 
   // Generate categories
   const categories = photosList.reduce((acc, photo) => {
@@ -257,33 +264,30 @@ export default function PhotographyGallery() {
         <LucideArrowLeft size={16} /> Back
       </button>
 
-      {/* SECTION 1: Featured Photo Hero */}
-      <section className="pg-hero">
-        <motion.img 
-          src={featuredPhoto.src} 
-          alt={featuredPhoto.title}
-          className="pg-hero-bg"
-          style={{ y: heroY }}
-          loading="lazy"
-        />
-        <div className="pg-hero-gradient" />
-        
-        <div className="pg-hero-content">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <div className="pg-hero-badge">Featured Shot</div>
-            <h1 className="pg-hero-title">{featuredPhoto.title}</h1>
-            <div className="pg-hero-meta">
-              <span><LucideMapPin size={16} /> {featuredPhoto.location}</span>
-              <span>•</span>
-              <span>{featuredPhoto.category}</span>
-            </div>
-          </motion.div>
+      {/* SECTION 1: Intro Title Screen */}
+      <div className="relative flex h-[60vh] flex-col items-center justify-center text-center px-4" style={{ zIndex: 20 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <span className="section-label" style={{ letterSpacing: '4px', opacity: 0.8 }}>✦ VISUAL JOURNAL ✦</span>
+          <h1 className="pg-hero-title mt-4 mb-4" style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', fontWeight: 800 }}>
+            Captured <span style={{ color: 'var(--theme-primary)', textShadow: '0 0 30px rgba(138, 92, 246, 0.4)' }}>Moments</span>
+          </h1>
+          <div className="section-line mx-auto" style={{ width: '80px', height: '3px', background: 'var(--gradient)' }} />
+          <p className="max-w-xl mx-auto mt-6" style={{ color: 'var(--text-muted)', fontSize: '1.1rem', lineHeight: '1.6' }}>
+            A cinematic exploration of light, life, and landscapes through my lens. Scroll down to enter the visual story.
+          </p>
+        </motion.div>
+      </div>
+
+      {/* SECTION 1.5: Zoom Parallax Reel */}
+      {zoomParallaxImages.length > 0 && (
+        <div style={{ position: 'relative', zIndex: 10 }}>
+          <ZoomParallax images={zoomParallaxImages} />
         </div>
-      </section>
+      )}
 
       {/* SECTION 2: Cinematic Film Strip */}
       <section className="pg-carousel-section">
