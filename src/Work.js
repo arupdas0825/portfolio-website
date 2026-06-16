@@ -6,53 +6,13 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import ProjectDetails from './components/ProjectDetails';
 import CoverflowCarousel from './components/CoverflowCarousel';
-import projectsConfig from './content/projects/projects-config.json';
-import { supabase } from './supabase';
+import { fetchAndMergeProjects, REPO_VIDEOS, getRepoImage, langColors } from './utils/projectsFetcher';
 
 const isMobileDevice = () => typeof window !== 'undefined' && window.innerWidth < 768;
 
 gsap.registerPlugin(ScrollTrigger);
 
 const GITHUB_USERNAME = 'arupdas0825';
-
-const langColors = {
-  JavaScript: '#f1e05a', Python: '#3572A5', Java: '#b07219',
-  Kotlin: '#A97BFF', TypeScript: '#2b7489', CSS: '#563d7c',
-  HTML: '#e34c26', Dart: '#00B4AB', default: '#8a5cf6',
-};
-
-const REPO_IMAGES = {
-  'scientific-calculator': '/scientific-calculator.png',
-  'ai-code-translator': '/ai-code-translator.png',
-  'arupdas0825': '/arupdas0825.jpeg',
-  'client-portfolio': '/client-portfolio.png',
-  'EverBond-Wealth': '/EverBond-Wealth.png',
-  'portfolio-website': '/portfolio-website.jpeg',
-  'sentiment-analysis-project': '/sentiment-analysis-project.png',
-  'streamnest': '/streamnest.png',
-  'algorithm-visualizer': '/algorithm-visualizer.png',
-  'quiz-web': '/quiz-web.png',
-  'studytra': '/studytra.png',
-  'sahasrajit-foundation': '/sahasrajit-foundation.png',
-  'HireSight-AI': '/HireSight-AI.png',
-  'LocalCare-Finder-Android': '/LocalCare-Finder-Android.jpeg',
-  'NEURAL-RIFT': '/NEURAL-RIFT.png',
-  'HyperLane': '/HyperLane.jpeg',
-  'Space-Combat-Game': '/Space-Combat-Game.png',
-};
-
-const REPO_VIDEOS = {
-  'portfolio-website': '/videos/portfolio-website.mp4',
-  'streamnest': '/videos/streamnest.mp4',
-  'HireSight-AI': '/videos/HireSight-AI.mp4',
-  'EverBond-Wealth': '/videos/everbond-wealth.mp4',
-  'Space-Combat-Game': '/videos/Space-Combat-Game.mp4',
-};
-
-const REPO_HOMEPAGES = {
-  'scientific-calculator': 'https://arupdas0825.github.io/scientific-calculator/scientific-complex-calculator.html',
-  'sentiment-analysis-project': 'https://sentiment-analysis-project-zvtb4q6vncknfc5qvkb63w.streamlit.app/',
-};
 
 function getRepoEmoji(lang) {
   const map = {
@@ -62,89 +22,6 @@ function getRepoEmoji(lang) {
   };
   return map[lang] || '💻';
 }
-
-const getRepoImage = (repo) => {
-  if (repo.image) return repo.image;
-  if (!repo.name) return null;
-  const name = repo.name.toLowerCase();
-  const keys = Object.keys(REPO_IMAGES);
-  const matchKey = keys.find(k => k.toLowerCase() === name);
-  return matchKey ? REPO_IMAGES[matchKey] : null;
-};
-
-/* ── Fallback repos (shown when API rate-limited) ── */
-const FALLBACK_REPOS = [
-  {
-    id: 1, name: 'LocalCare-Finder-Android', fork: false,
-    description: 'LocalCare Finder — Find nearby hospitals, pharmacies & blood banks across India instantly. Built with Kotlin, Google Maps, Flask & OpenStreetMap API.',
-    language: 'Kotlin', stargazers_count: 1, forks_count: 0,
-    html_url: 'https://github.com/arupdas0825/LocalCare-Finder-Android', homepage: '',
-    languages_url: '',
-  },
-  {
-    id: 2, name: 'sahasrajit-foundation', fork: false,
-    description: 'Built the official website for Sahasrajit Foundation, a grassroots NGO. Integrated database dashboard.',
-    language: 'JavaScript', stargazers_count: 2, forks_count: 0,
-    html_url: 'https://github.com/arupdas0825/sahasrajit-foundation', homepage: '',
-    languages_url: '',
-  },
-  {
-    id: 3, name: 'quiz-web', fork: false,
-    description: 'A modern Online Examination System built with ReactJs. Features DBMS, OOPS, Python, C, DSA, 10-min countdown timer, grade calculation.',
-    language: 'JavaScript', stargazers_count: 3, forks_count: 1,
-    html_url: 'https://github.com/arupdas0825/quiz-web', homepage: 'https://quiz-web-demo.vercel.app',
-    languages_url: '',
-  },
-  {
-    id: 4, name: 'arupdas0825', fork: false,
-    description: 'B.Tech CSE (AIML) | React Developer | Exploring AI, Algorithms & Full-Stack Development',
-    language: 'JavaScript', stargazers_count: 4, forks_count: 0,
-    html_url: 'https://github.com/arupdas0825', homepage: '',
-    languages_url: '',
-  },
-  {
-    id: 5, name: 'algorithm-visualizer', fork: false,
-    description: 'A React-based Algorithm Visualizer that animates sorting algorithms like Bubble Sort for real-time visualization.',
-    language: 'JavaScript', stargazers_count: 2, forks_count: 0,
-    html_url: 'https://github.com/arupdas0825/algorithm-visualizer', homepage: '',
-    languages_url: '',
-  },
-  {
-    id: 6, name: 'portfolio-website', fork: false,
-    description: 'A premium interactive portfolio blending Artificial Intelligence, software engineering, and cinematic photography. Built with React, Tailwind CSS.',
-    language: 'JavaScript', stargazers_count: 3, forks_count: 0,
-    html_url: 'https://github.com/arupdas0825/portfolio-website', homepage: 'https://arup-portfolio08.netlify.app',
-    languages_url: '',
-  },
-  {
-    id: 7, name: 'Online-Examination-System-Java', fork: false,
-    description: 'A robust, scalable Java web application for seamless online assessment management with secure user authentication and automated evaluation.',
-    language: 'Java', stargazers_count: 1, forks_count: 0,
-    html_url: 'https://github.com/arupdas0825/Online-Examination-System-Java', homepage: '',
-    languages_url: '',
-  },
-  {
-    id: 8, name: 'localcare-finder', fork: false,
-    description: 'LocalCare Finder is a public utility web app to help users quickly locate nearby healthcare services using location-based search.',
-    language: 'CSS', stargazers_count: 1, forks_count: 0,
-    html_url: 'https://github.com/arupdas0825/localcare-finder', homepage: '',
-    languages_url: '',
-  },
-  {
-    id: 9, name: 'studytra', fork: false,
-    description: 'Study Abroad Execution Platform for Indian students wanting to study in Germany, USA or Canada. Powered by Gemini AI.',
-    language: 'JavaScript', stargazers_count: 5, forks_count: 1,
-    html_url: 'https://github.com/arupdas0825/studytra', homepage: '',
-    languages_url: '',
-  },
-  {
-    id: 10, name: 'Space-Combat-Game', fork: false,
-    description: 'A 3D space flight combat simulation game built with HTML Canvas, WebGL, and custom particle engines.',
-    language: 'JavaScript', stargazers_count: 5, forks_count: 0,
-    html_url: 'https://github.com/arupdas0825/Space-Combat-Game', homepage: '',
-    languages_url: '',
-  },
-];
 
 /* ── 1. MAJOR PROJECT CARD (Largest Premium Grid Layout) ── */
 export const MajorProjectCard = React.memo(({ repo, idx, isMobile, onClick }) => {
@@ -523,88 +400,19 @@ const Work = () => {
   }, []);
 
   useEffect(() => {
-    const fetchProjects = async () => {
+    const loadProjects = async () => {
       setLoading(true);
       try {
-        const { data: dbProjects, error } = await supabase
-          .from('projects')
-          .select('*')
-          .order('display_order', { ascending: true })
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        if (dbProjects && dbProjects.length > 0) {
-          const mapped = dbProjects.map(p => {
-            const techs = p.technologies ? p.technologies.split(',').map(t => t.trim()) : [];
-            return {
-              id: p.id,
-              name: p.title,
-              description: p.description || '',
-              language: techs[0] || 'JavaScript',
-              stargazers_count: p.featured ? 10 : 2,
-              forks_count: 0,
-              html_url: p.github_url || '',
-              homepage: p.live_url || '',
-              image: p.image || p.image_url || null,
-              category: p.catagory || p.category || 'Major',
-              featured: !!p.featured,
-              display_order: p.display_order || 0
-            };
-          });
-          setRepos(mapped);
-          setLanguages(['All', ...new Set(mapped.map(r => r.language).filter(Boolean))]);
-        } else {
-          await fetchGitHubRepos();
-        }
+        const merged = await fetchAndMergeProjects();
+        setRepos(merged);
+        setLanguages(['All', ...new Set(merged.map(r => r.language).filter(Boolean))]);
       } catch (err) {
-        console.error("Failed to load projects from Supabase:", err);
-        await fetchGitHubRepos();
+        console.error("Failed to fetch merged projects:", err);
       } finally {
         setLoading(false);
       }
     };
-
-    const fetchGitHubRepos = async () => {
-      const CACHE_KEY = `gh_repos_${GITHUB_USERNAME}`;
-      const CACHE_TTL = 60 * 60 * 1000;
-
-      try {
-        const cached = localStorage.getItem(CACHE_KEY);
-        if (cached) {
-          const { data, ts } = JSON.parse(cached);
-          if (Date.now() - ts < CACHE_TTL && Array.isArray(data) && data.length > 0) {
-            setRepos(data);
-            setLanguages(['All', ...new Set(data.map(r => r.language).filter(Boolean))]);
-            return;
-          }
-        }
-      } catch (_) {}
-
-      try {
-        const res = await fetch(
-          `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`,
-          { headers: { 'Accept': 'application/vnd.github.v3+json' } }
-        );
-        if (!res.ok) throw new Error(`API ${res.status}`);
-        const data = await res.json();
-        if (!Array.isArray(data) || data.length === 0) throw new Error('Empty');
-        const ownRepos = data.filter(r => !r.fork);
-
-        try {
-          localStorage.setItem(CACHE_KEY, JSON.stringify({ data: ownRepos, ts: Date.now() }));
-        } catch (_) {}
-
-        setRepos(ownRepos);
-        setLanguages(['All', ...new Set(ownRepos.map(r => r.language).filter(Boolean))]);
-      } catch (err) {
-        console.warn('GitHub API failed, using fallback:', err.message);
-        setRepos(FALLBACK_REPOS);
-        setLanguages(['All', ...new Set(FALLBACK_REPOS.map(r => r.language).filter(Boolean))]);
-      }
-    };
-
-    fetchProjects();
+    loadProjects();
   }, []);
 
   // Match repos against custom categories
@@ -613,66 +421,18 @@ const Work = () => {
     const secondary = [];
     const college = [];
 
-    // Check if the loaded projects are database-driven
-    const isDbDriven = repos.length > 0 && repos[0].category !== undefined;
-
-    if (isDbDriven) {
-      repos.forEach(repo => {
-        if (repo.category === 'Major') major.push(repo);
-        else if (repo.category === 'Secondary') secondary.push(repo);
-        else if (repo.category === 'Academic') college.push(repo);
-        else secondary.push(repo); // fallback
-      });
-    } else {
-      const repoMap = {};
-      repos.forEach(repo => {
-        repoMap[repo.name.toLowerCase()] = repo;
-      });
-
-      const matchedNames = new Set();
-
-      // Curated Major
-      projectsConfig.major.forEach(name => {
-        const repo = repoMap[name.toLowerCase()];
-        if (repo) {
-          major.push(repo);
-          matchedNames.add(name.toLowerCase());
-        }
-      });
-
-      // Curated Secondary
-      projectsConfig.secondary.forEach(name => {
-        const repo = repoMap[name.toLowerCase()];
-        if (repo) {
-          secondary.push(repo);
-          matchedNames.add(name.toLowerCase());
-        }
-      });
-
-      // Curated College
-      projectsConfig.college.forEach(name => {
-        const repo = repoMap[name.toLowerCase()];
-        if (repo) {
-          college.push(repo);
-          matchedNames.add(name.toLowerCase());
-        }
-      });
-
-      // Unmatched GitHub repos: auto append at the end of Secondary
-      repos.forEach(repo => {
-        const lowerName = repo.name.toLowerCase();
-        if (!matchedNames.has(lowerName) && lowerName !== GITHUB_USERNAME.toLowerCase()) {
-          secondary.push(repo);
-        }
-      });
-    }
+    repos.forEach(repo => {
+      if (repo.category === 'Major') major.push(repo);
+      else if (repo.category === 'Academic') college.push(repo);
+      else secondary.push(repo); // 'Secondary' fallback
+    });
 
     // Filter categories by selected language filter & sort dynamically
     const processList = (list) => {
       const filtered = filter === 'All' ? list : list.filter(r => r.language === filter);
       return [...filtered].sort((a, b) => {
-        if (isDbDriven) {
-          return (a.display_order || 0) - (b.display_order || 0);
+        if (a.display_order !== undefined && b.display_order !== undefined && a.display_order !== 999 && b.display_order !== 999) {
+          return a.display_order - b.display_order;
         }
         const timeA = new Date(a.pushed_at || a.updated_at || 0).getTime();
         const timeB = new Date(b.pushed_at || b.updated_at || 0).getTime();
