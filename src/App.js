@@ -3,6 +3,11 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-route
 import Navbar         from './Navbar';
 import Home           from './Home';
 import About          from './About';
+import Starfield       from './Starfield';
+import WelcomeScreen   from './WelcomeScreen';
+import usePlaybackStore from './ai-playback/usePlaybackStore';
+import './App.css';
+import './MobileExperience.css';
 
 // Lazy load below-the-fold components to maximize performance & speed up welcome screen
 const TechStack = lazy(() => import('./TechStack'));
@@ -23,11 +28,7 @@ const PhotographyGallery = lazy(() => import('./PhotographyGallery'));
 const PublicationsPage = lazy(() => import('./PublicationsPage'));
 const AIPlaybackAssistant = lazy(() => import('./ai-playback/AIPlaybackAssistant'));
 
-import Starfield       from './Starfield';
-import WelcomeScreen   from './WelcomeScreen';
-import usePlaybackStore from './ai-playback/usePlaybackStore';
-import './App.css';
-import './MobileExperience.css';
+
 
 
 const IS_TOUCH = typeof window !== 'undefined' &&
