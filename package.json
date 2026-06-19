@@ -22,7 +22,7 @@
   },
   "scripts": {
     "start": "cross-env NODE_OPTIONS=\"--no-deprecation\" react-scripts start",
-    "build": "cross-env NODE_OPTIONS=\"--no-deprecation\" react-scripts build",
+    "build": "cross-env CI=false NODE_OPTIONS=\"--no-deprecation\" react-scripts build",
     "test": "cross-env NODE_OPTIONS=\"--no-deprecation\" react-scripts test",
     "eject": "react-scripts eject"
   },
