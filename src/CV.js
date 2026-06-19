@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ZoomIn, ZoomOut, Download, X, Eye } from 'lucide-react';
 
-import { supabase } from './supabase';
 
 const CV = React.memo(function CV() {
   const fadeRefs = useRef([]);
@@ -32,23 +31,6 @@ const CV = React.memo(function CV() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  useEffect(() => {
-    async function loadCv() {
-      try {
-        const { data, error } = await supabase.from('cv').select('*').eq('id', 1).maybeSingle();
-        if (error) throw error;
-        if (data) {
-          setCvInfo({
-            cvUrl: data.cv_file || data.cv_url || '/ARUP DAS CV.pdf',
-            version: data.cv_name || data.version || '1.0'
-          });
-        }
-      } catch (err) {
-        console.error("Failed to load CV from Supabase:", err);
-      }
-    }
-    loadCv();
-  }, []);
 
   const toggleViewer = (e) => {
     if (e) e.preventDefault();

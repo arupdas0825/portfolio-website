@@ -7,7 +7,7 @@ import {
   LucideMapPin,
   LucideCamera
 } from 'lucide-react';
-import { supabase } from './supabase';
+import { PHOTOGRAPHY_DUMP } from './data/photographyDump';
 import { ZoomParallax } from './components/ui/zoom-parallax';
 import './Gallery.css'; // Minimalist styles
 
@@ -108,53 +108,39 @@ export default function Gallery() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [lightboxPhoto, setLightboxPhoto] = useState(null);
 
-  // Load photos from Supabase
+  // Load photos from local dump
   useEffect(() => {
-    async function loadPhotos() {
-      try {
-        const { data, error } = await supabase
-          .from('photography')
-          .select('*')
-          .order('display_order', { ascending: true });
-        
-        if (error) throw error;
-        
-        if (data && data.length > 0) {
-          const mapped = data.map(p => {
-            let exif = {};
-            let desc = p.description || '';
-            if (p.description) {
-              try {
-                exif = JSON.parse(p.description);
-                desc = exif.desc || '';
-              } catch (e) {
-                desc = p.description;
-              }
-            }
-            return {
-              id: p.id,
-              src: p.image || p.image_url,
-              title: p.title,
-              desc: desc || `Captured in ${exif.location || p.location || 'India'} using ${exif.camera || p.camera || 'professional camera'}.`,
-              category: p.category || 'Landscape Photography',
-              location: exif.location || p.location || 'Kolkata, India',
-              camera: exif.camera || p.camera || 'Unknown',
-              lens: exif.lens || p.lens || 'Unknown',
-              iso: exif.iso || p.iso || 'Auto',
-              shutterSpeed: exif.shutterSpeed || exif.shutter_speed || p.shutter_speed || 'Auto',
-              aperture: exif.aperture || p.aperture || 'Auto'
-            };
-          });
-          setPhotosList(mapped);
-        } else {
-          setPhotosList(fallbackPhotos);
+    const data = PHOTOGRAPHY_DUMP ? PHOTOGRAPHY_DUMP.filter(p => p.image) : [];
+    if (data && data.length > 0) {
+      const mapped = data.map(p => {
+        let exif = {};
+        let desc = p.description || '';
+        if (p.description) {
+          try {
+            exif = JSON.parse(p.description);
+            desc = exif.desc || '';
+          } catch (e) {
+            desc = p.description;
+          }
         }
-      } catch (err) {
-        console.error("Failed to fetch photography from Supabase:", err);
-        setPhotosList(fallbackPhotos);
-      }
+        return {
+          id: p.id,
+          src: p.image || p.image_url,
+          title: p.title,
+          desc: desc || `Captured in ${exif.location || p.location || 'India'} using ${exif.camera || p.camera || 'professional camera'}.`,
+          category: p.category || 'Landscape Photography',
+          location: exif.location || p.location || 'Kolkata, India',
+          camera: exif.camera || p.camera || 'Unknown',
+          lens: exif.lens || p.lens || 'Unknown',
+          iso: exif.iso || p.iso || 'Auto',
+          shutterSpeed: exif.shutterSpeed || exif.shutter_speed || p.shutter_speed || 'Auto',
+          aperture: exif.aperture || p.aperture || 'Auto'
+        };
+      });
+      setPhotosList(mapped);
+    } else {
+      setPhotosList(fallbackPhotos);
     }
-    loadPhotos();
   }, []);
 
   // Dynamically generate categories from photos list

@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-import { supabase } from './supabase';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -31,28 +30,6 @@ export default function Contact() {
     );
   }, []);
 
-  /* Load contact from Supabase */
-  useEffect(() => {
-    async function loadContact() {
-      try {
-        const { data, error } = await supabase.from('contact').select('*').eq('id', 1).maybeSingle();
-        if (error) throw error;
-        if (data) {
-          setContactData({
-            email: data.email || 'dasarup0804@gmail.com',
-            location: data.address || data.location || 'Kolkata, West Bengal, India',
-            github: data.github || data.github_url || 'https://github.com/arupdas0825',
-            linkedin: data.linkedin || data.linkedin_url || 'https://www.linkedin.com/in/arup-das-381bb02a1/',
-            facebook: data.facebook || 'https://www.facebook.com/arupofficial08',
-            instagram: data.instagram || data.instagram_url || 'https://www.instagram.com/_arup_official_08/'
-          });
-        }
-      } catch (err) {
-        console.error("Failed to load contact data from Supabase:", err);
-      }
-    }
-    loadContact();
-  }, []);
 
   const email     = contactData.email;
   const location  = contactData.location;

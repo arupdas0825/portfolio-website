@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { LucideExternalLink, LucideMaximize2 } from 'lucide-react';
-import { supabase } from './supabase';
+import { CERTIFICATES_DUMP } from './data/certificatesDump';
 
 // Helper to assign vibrant brand colors based on issuer
 const getColorForIssuer = (issuer) => {
@@ -137,63 +137,54 @@ export default function Certificates() {
     );
   }, []);
 
-  // Load certificates from Supabase
+  // Load certificates from local dump
   useEffect(() => {
-    async function loadCertificates() {
-      try {
-        const { data, error } = await supabase.from('certificates').select('*').order('display_order', { ascending: true });
-        if (error) throw error;
-        
-        if (data) {
-          const mapped = data
-            .filter(c => c.title) // filter out invalid null entries
-            .map(c => {
-              const link = c.credential_id || c.credential_url || '#';
-              return {
-                id: c.id,
-                title: c.title,
-                issuer: c.issuer,
-                date: c.year || '',
-                image: c.image || c.image_url || '/certificate-fallback.png',
-                verifyLink: link,
-                tags: c.tags ? c.tags.split(',').map(t => t.trim()) : [],
-                category: c.category || 'Academic Certifications',
-                color: getColorForIssuer(c.issuer),
-                priority: c.display_order !== null && c.display_order !== undefined ? c.display_order : 999,
-                credentialId: (() => {
-                  if (link === '#') return null;
-                  if (link.includes('credential/') || link.includes('credential.net/')) {
-                    return link.substring(link.lastIndexOf('/') + 1).split('?')[0];
-                  }
-                  if (link.includes('verify.skilljar.com/c/')) {
-                    return link.substring(link.lastIndexOf('/') + 1).split('?')[0];
-                  }
-                  if (link.includes('freecodecamp.org/certification/')) {
-                    const parts = link.split('/');
-                    const username = parts[parts.indexOf('certification') + 1];
-                    const certName = parts[parts.indexOf('certification') + 2];
-                    if (username && certName) {
-                      const shortName = certName.includes('responsive-web-design') ? 'rwdv9' : certName;
-                      return `${username}-${shortName}`;
-                    }
-                  }
-                  if (c.title && c.title.includes('TEXIBITION')) {
-                    return 'BWU-TEX-2026';
-                  }
-                  if (c.title && c.title.includes('Class Representative')) {
-                    return 'BWU/BTA/24/641';
-                  }
-                  return null;
-                })()
-              };
-            });
-          setCertificatesList(mapped);
-        }
-      } catch (err) {
-        console.error("Failed to load certificates from Supabase:", err);
-      }
+    const data = CERTIFICATES_DUMP;
+    if (data) {
+      const mapped = data
+        .filter(c => c.title) // filter out invalid null entries
+        .map(c => {
+          const link = c.credential_id || c.credential_url || '#';
+          return {
+            id: c.id,
+            title: c.title,
+            issuer: c.issuer,
+            date: c.year || '',
+            image: c.image || c.image_url || '/certificate-fallback.png',
+            verifyLink: link,
+            tags: c.tags ? c.tags.split(',').map(t => t.trim()) : [],
+            category: c.category || 'Academic Certifications',
+            color: getColorForIssuer(c.issuer),
+            priority: c.display_order !== null && c.display_order !== undefined ? c.display_order : 999,
+            credentialId: (() => {
+              if (link === '#') return null;
+              if (link.includes('credential/') || link.includes('credential.net/')) {
+                return link.substring(link.lastIndexOf('/') + 1).split('?')[0];
+              }
+              if (link.includes('verify.skilljar.com/c/')) {
+                return link.substring(link.lastIndexOf('/') + 1).split('?')[0];
+              }
+              if (link.includes('freecodecamp.org/certification/')) {
+                const parts = link.split('/');
+                const username = parts[parts.indexOf('certification') + 1];
+                const certName = parts[parts.indexOf('certification') + 2];
+                if (username && certName) {
+                  const shortName = certName.includes('responsive-web-design') ? 'rwdv9' : certName;
+                  return `${username}-${shortName}`;
+                }
+              }
+              if (c.title && c.title.includes('TEXIBITION')) {
+                return 'BWU-TEX-2026';
+              }
+              if (c.title && c.title.includes('Class Representative')) {
+                return 'BWU/BTA/24/641';
+              }
+              return null;
+            })()
+          };
+        });
+      setCertificatesList(mapped);
     }
-    loadCertificates();
   }, []);
 
   const categories = [

@@ -1,4 +1,4 @@
-import { supabase } from '../supabase';
+import { PROJECTS_DUMP } from '../data/projectsDump';
 import projectsConfig from '../content/projects/projects-config.json';
 
 const GITHUB_USERNAME = 'arupdas0825';
@@ -132,20 +132,9 @@ export const getRepoImage = (repo) => {
 export const fetchAndMergeProjects = async () => {
   console.log('[Projects Fetcher] Starting project aggregation...');
 
-  // 1. Fetch Supabase Projects
-  let dbProjects = [];
-  try {
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
-      .order('display_order', { ascending: true })
-      .order('created_at', { ascending: false });
-    if (error) throw error;
-    dbProjects = data || [];
-    console.log(`[Projects Fetcher] Supabase returned ${dbProjects.length} records.`);
-  } catch (err) {
-    console.error('[Projects Fetcher] Failed to load projects from Supabase:', err);
-  }
+  // 1. Fetch local Projects Dump
+  const dbProjects = PROJECTS_DUMP || [];
+  console.log(`[Projects Fetcher] Loaded ${dbProjects.length} records from local dump.`);
 
   // 2. Fetch GitHub Repositories
   let githubRepos = [];

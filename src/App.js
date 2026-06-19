@@ -3,10 +3,6 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-route
 import Navbar         from './Navbar';
 import Home           from './Home';
 import About          from './About';
-import { isAdminAuthenticated } from './utils/auth';
-import PasswordModal from './components/PasswordModal';
-import AdminPanel from './admin/AdminPanel';
-import { supabase } from './supabase';
 
 // Lazy load below-the-fold components to maximize performance & speed up welcome screen
 const TechStack = lazy(() => import('./TechStack'));
@@ -83,12 +79,12 @@ function MobileHeader() {
 
 
 
-function PortfolioHome({ onAdminTrigger }) {
+function PortfolioHome() {
   return (
     <>
       <Navbar />
       <div id="home"><Home /></div>
-      <div id="about"><About onAdminTrigger={onAdminTrigger} /></div>
+      <div id="about"><About /></div>
       <Suspense fallback={null}>
         <div id="techstack"><TechStack /></div>
         <div id="work"><Work /></div>
@@ -110,31 +106,7 @@ function PortfolioHome({ onAdminTrigger }) {
 }
 
 function AppContent() {
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    async function fetchSiteSettings() {
-      try {
-        const { data, error } = await supabase.from('site_settings').select('*').eq('id', 1).maybeSingle();
-        if (error) throw error;
-        if (data) {
-          if (data.portfolio_title) {
-            document.title = data.portfolio_title;
-          }
-          if (data.portfolio_description) {
-            const metaDesc = document.querySelector('meta[name="description"]');
-            if (metaDesc) {
-              metaDesc.setAttribute('content', data.portfolio_description);
-            }
-          }
-        }
-      } catch (err) {
-        console.error("Failed to load site settings:", err);
-      }
-    }
-    fetchSiteSettings();
-  }, []);
 
   // Skip welcome if already seen this session (refresh-safe)
   const [stage, setStage] = useState(() => {
@@ -145,11 +117,6 @@ function AppContent() {
   const handleWelcomeDone = () => {
     sessionStorage.setItem('seenWelcome', 'true');
     setStage('portfolio');
-  };
-
-  const handleAuthSuccess = () => {
-    setShowPasswordModal(false);
-    navigate('/admin');
   };
 
   return (
@@ -181,27 +148,14 @@ function AppContent() {
             <Routes>
               <Route
                 path="/"
-                element={<PortfolioHome onAdminTrigger={() => setShowPasswordModal(true)} />}
+                element={<PortfolioHome />}
               />
               <Route path="/work" element={<WorkPage />} />
               <Route path="/work/:categorySlug" element={<WorkCategoryPage />} />
               <Route path="/photography-gallery" element={<PhotographyGallery />} />
               <Route path="/publications" element={<PublicationsPage />} />
               <Route path="/certificates" element={<CertificatesPage />} />
-              
-              {/* Protected Admin Route */}
-              <Route 
-                path="/admin" 
-                element={isAdminAuthenticated() ? <AdminPanel /> : <Navigate to="/" replace />} 
-              />
             </Routes>
-
-            {/* Password Verification Modal Overlay */}
-            <PasswordModal
-              isOpen={showPasswordModal}
-              onClose={() => setShowPasswordModal(false)}
-              onAuthSuccess={handleAuthSuccess}
-            />
 
             {/* ── AI Playback Assistant (floating overlay) ── */}
 
