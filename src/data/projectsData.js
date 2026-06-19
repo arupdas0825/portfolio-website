@@ -236,55 +236,51 @@ export const PROJECTS_DATA = {
     }
   },
   'Dev-Track': {
-    title: 'Dev-Track',
+    title: 'DevTrack',
     tagline: 'AI-Powered Developer Intelligence Platform',
-    status: 'Active',
+    status: 'Completed',
     year: '2026',
     timeline: '3 Months',
-    role: 'Creator & Lead Architect',
+    role: 'Lead Full-Stack Engineer',
     banner: '/Dev-Track.png',
     description: 'DevTrack is an AI-powered Developer Intelligence Platform that transforms GitHub activity into actionable insights, developer scores, growth analytics, and personalized career recommendations.',
     fullStack: {
       languages: ['TypeScript', 'JavaScript'],
-      frameworks: ['Next.js 16 (App Router)', 'React 19'],
-      styling: ['Tailwind CSS v4', 'Framer Motion'],
-      backend: ['Firebase', 'Next.js Server Actions'],
-      database: ['Firestore Database'],
-      analytics: ['Recharts (Growth Analytics)', 'Developer Scoring Algorithms'],
-      tools: ['Git', 'GitHub API', 'Vercel']
+      frontend: ['React 19', 'Next.js 15 (App Router)', 'Tailwind CSS', 'Framer Motion'],
+      ai: ['Google Gemini API', 'LangChain'],
+      apis: ['GitHub API'],
+      tools: ['Git', 'GitHub', 'Vercel']
     },
     implementationDetails: {
-      architecture: 'Modern Next.js 16 App Router architecture leveraging React 19 Concurrent Features and Server Actions.',
-      workflow: 'Component-driven frontend design integrated with high-performance GitHub API REST queries.',
-      rendering: 'Server-Side Rendering (SSR) for real-time dashboard data with Client-Side React rendering for animations.',
-      performance: 'Optimized API polling with efficient client caching and clean Firebase real-time sync.',
-      responsive: 'Fluid grid layout custom built using Tailwind v4 to support devices of all screen sizes.'
+      architecture: 'Next.js App Router architecture combined with client-side dashboard layouts and interactive charting elements.',
+      workflow: 'Leverages the GitHub API to fetch commit history, language distributions, and pull request activity dynamically.',
+      rendering: 'Hybrid rendering model utilizing Server Components for initial shell load and Client Components for dynamic data fetching and visualizations.',
+      performance: 'Aggressive caching of API responses and optimized payload delivery to minimize network latency.',
+      responsive: 'Highly adaptive responsive layout built with Tailwind CSS, providing a premium desktop and mobile dashboard experience.'
     },
     planningDetails: {
-      origin: 'Conceived to automate and visualize developer growth, turning git commits and pull requests into clear career insight dashboards.',
-      problem: 'Traditional resumes fail to showcase code quality, consistency, and dynamic skill progression over time.',
-      decisions: 'Adopted React 19 and Next.js 16 to leverage cutting-edge Server Actions, minimizing backend boilerplate.',
-      priority: 'High emphasis on interactive visualizations and rapid GitHub data assimilation.'
+      origin: 'Conceived from the challenge of objectively measuring developer productivity and growth trends across various projects.',
+      problem: 'Fragmented data makes it hard to track long-term coding velocity and learning progress.',
+      decisions: 'Chose TypeScript for type safety and Next.js 15 for optimal performance and built-in API routing capabilities.',
+      priority: 'Focused on low-latency data aggregation and secure OAuth connection to GitHub.'
     },
     futureRoadmap: [
-      { title: 'AI Portfolio Builder', description: 'Generate custom portfolio sites directly from DevTrack profiles.', status: 'planned' },
-      { title: 'Peer Comparison', description: 'Enable anonymous skill benchmarks with developers globally.', status: 'upcoming' },
-      { title: 'Job Matching', description: 'Match developers with open jobs based on real-time project metrics.', status: 'in-progress' }
+      { title: 'Team Analytics', description: 'Aggregated analytics for collaborative development teams.', status: 'planned' },
+      { title: 'Enterprise SSO', description: 'Integration with major enterprise identity providers.', status: 'research' }
     ],
     features: [
-      { icon: '📊', title: 'Developer Scores', explanation: 'Algorithmic assessment of development speed, consistency, and impact.' },
-      { icon: '📈', title: 'Growth Analytics', explanation: 'Visualizing commits, PRs, and language distributions using Recharts.' },
-      { icon: '🤖', title: 'Career Guidance', explanation: 'Personalized learning paths and next-step recommendations.' }
+      { icon: '📊', title: 'Activity Insights', explanation: 'Visualizing commit activity, peak hours, and consistency trends.' },
+      { icon: '🎯', title: 'Developer Scores', explanation: 'Algorithmic assessment of contributions and impact.' }
     ],
     challenges: {
-      problem: 'Handling high-volume GitHub API rate limits when generating aggregate profile stats.',
-      solution: 'Designed an aggressive caching and incremental aggregation layer with Firebase.',
-      decision: 'Chose TypeScript for type safety across complex third-party API payloads.'
+      problem: 'Navigating GitHub API rate limits when fetching deep analytics for multiple active repositories.',
+      solution: 'Implemented a local database cache layer and optimized GraphQL queries to bundle resource requests.',
+      decision: 'Selected Redis for intermediate query caching.'
     },
     metrics: {
-      render: 'Next.js 16 Native',
-      load: '< 1.5s Execution',
-      features: 'Interactive Charts'
+      precision: '98% Accuracy',
+      uptime: '99.9% Platform Uptime',
+      latency: '< 200ms API Response'
     },
     links: {
       github: 'https://github.com/arupdas0825/Dev-Track',

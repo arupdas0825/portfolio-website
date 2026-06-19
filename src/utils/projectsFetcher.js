@@ -117,13 +117,6 @@ const FALLBACK_REPOS = [
     html_url: 'https://github.com/arupdas0825/Space-Combat-Game', homepage: '',
     updated_at: '2024-04-01T00:00:00Z', pushed_at: '2024-04-01T00:00:00Z'
   },
-  {
-    id: 11, name: 'Dev-Track', fork: false,
-    description: 'DevTrack is an AI-powered Developer Intelligence Platform that transforms GitHub activity into actionable insights, developer scores, growth analytics, and personalized career recommendations.',
-    language: 'TypeScript', stargazers_count: 1, forks_count: 0,
-    html_url: 'https://github.com/arupdas0825/Dev-Track', homepage: 'https://dev-track-brown.vercel.app',
-    updated_at: '2026-06-19T07:25:54Z', pushed_at: '2026-06-19T07:16:28Z'
-  },
 ];
 
 export const getRepoImage = (repo) => {

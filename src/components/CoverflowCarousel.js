@@ -26,6 +26,7 @@ const REPO_IMAGES = {
   'NEURAL-RIFT': '/NEURAL-RIFT.png',
   'HyperLane': '/HyperLane.jpeg',
   'Space-Combat-Game': '/Space-Combat-Game.png',
+  'Dev-Track': '/Dev-Track.png',
 };
 
 const REPO_VIDEOS = {
@@ -39,6 +40,7 @@ const REPO_VIDEOS = {
 const REPO_HOMEPAGES = {
   'scientific-calculator': 'https://arupdas0825.github.io/scientific-calculator/scientific-complex-calculator.html',
   'sentiment-analysis-project': 'https://sentiment-analysis-project-zvtb4q6vncknfc5qvkb63w.streamlit.app/',
+  'Dev-Track': 'https://dev-track-brown.vercel.app',
 };
 
 function getRepoEmoji(lang) {
