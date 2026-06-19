@@ -234,6 +234,62 @@ export const PROJECTS_DATA = {
       github: 'https://github.com/arupdas0825/NEURAL-RIFT',
       demo: null
     }
+  },
+  'Dev-Track': {
+    title: 'Dev-Track',
+    tagline: 'AI-Powered Developer Intelligence Platform',
+    status: 'Active',
+    year: '2026',
+    timeline: '3 Months',
+    role: 'Creator & Lead Architect',
+    banner: '/Dev-Track.png',
+    description: 'DevTrack is an AI-powered Developer Intelligence Platform that transforms GitHub activity into actionable insights, developer scores, growth analytics, and personalized career recommendations.',
+    fullStack: {
+      languages: ['TypeScript', 'JavaScript'],
+      frameworks: ['Next.js 16 (App Router)', 'React 19'],
+      styling: ['Tailwind CSS v4', 'Framer Motion'],
+      backend: ['Firebase', 'Next.js Server Actions'],
+      database: ['Firestore Database'],
+      analytics: ['Recharts (Growth Analytics)', 'Developer Scoring Algorithms'],
+      tools: ['Git', 'GitHub API', 'Vercel']
+    },
+    implementationDetails: {
+      architecture: 'Modern Next.js 16 App Router architecture leveraging React 19 Concurrent Features and Server Actions.',
+      workflow: 'Component-driven frontend design integrated with high-performance GitHub API REST queries.',
+      rendering: 'Server-Side Rendering (SSR) for real-time dashboard data with Client-Side React rendering for animations.',
+      performance: 'Optimized API polling with efficient client caching and clean Firebase real-time sync.',
+      responsive: 'Fluid grid layout custom built using Tailwind v4 to support devices of all screen sizes.'
+    },
+    planningDetails: {
+      origin: 'Conceived to automate and visualize developer growth, turning git commits and pull requests into clear career insight dashboards.',
+      problem: 'Traditional resumes fail to showcase code quality, consistency, and dynamic skill progression over time.',
+      decisions: 'Adopted React 19 and Next.js 16 to leverage cutting-edge Server Actions, minimizing backend boilerplate.',
+      priority: 'High emphasis on interactive visualizations and rapid GitHub data assimilation.'
+    },
+    futureRoadmap: [
+      { title: 'AI Portfolio Builder', description: 'Generate custom portfolio sites directly from DevTrack profiles.', status: 'planned' },
+      { title: 'Peer Comparison', description: 'Enable anonymous skill benchmarks with developers globally.', status: 'upcoming' },
+      { title: 'Job Matching', description: 'Match developers with open jobs based on real-time project metrics.', status: 'in-progress' }
+    ],
+    features: [
+      { icon: '📊', title: 'Developer Scores', explanation: 'Algorithmic assessment of development speed, consistency, and impact.' },
+      { icon: '📈', title: 'Growth Analytics', explanation: 'Visualizing commits, PRs, and language distributions using Recharts.' },
+      { icon: '🤖', title: 'Career Guidance', explanation: 'Personalized learning paths and next-step recommendations.' }
+    ],
+    challenges: {
+      problem: 'Handling high-volume GitHub API rate limits when generating aggregate profile stats.',
+      solution: 'Designed an aggressive caching and incremental aggregation layer with Firebase.',
+      decision: 'Chose TypeScript for type safety across complex third-party API payloads.'
+    },
+    metrics: {
+      render: 'Next.js 16 Native',
+      load: '< 1.5s Execution',
+      features: 'Interactive Charts'
+    },
+    links: {
+      github: 'https://github.com/arupdas0825/Dev-Track',
+      demo: 'https://dev-track-brown.vercel.app'
+    }
   }
 };
 

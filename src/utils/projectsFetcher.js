@@ -27,6 +27,7 @@ export const REPO_IMAGES = {
   'NEURAL-RIFT': '/NEURAL-RIFT.png',
   'HyperLane': '/HyperLane.jpeg',
   'Space-Combat-Game': '/Space-Combat-Game.png',
+  'Dev-Track': '/Dev-Track.png',
 };
 
 export const REPO_VIDEOS = {
@@ -42,6 +43,7 @@ export const REPO_HOMEPAGES = {
   'sentiment-analysis-project': 'https://sentiment-analysis-project-zvtb4q6vncknfc5qvkb63w.streamlit.app/',
   'quiz-web': 'https://quiz-web-demo.vercel.app',
   'portfolio-website': 'https://arup-portfolio08.netlify.app',
+  'Dev-Track': 'https://dev-track-brown.vercel.app',
 };
 
 const FALLBACK_REPOS = [
@@ -114,6 +116,13 @@ const FALLBACK_REPOS = [
     language: 'JavaScript', stargazers_count: 5, forks_count: 0,
     html_url: 'https://github.com/arupdas0825/Space-Combat-Game', homepage: '',
     updated_at: '2024-04-01T00:00:00Z', pushed_at: '2024-04-01T00:00:00Z'
+  },
+  {
+    id: 11, name: 'Dev-Track', fork: false,
+    description: 'DevTrack is an AI-powered Developer Intelligence Platform that transforms GitHub activity into actionable insights, developer scores, growth analytics, and personalized career recommendations.',
+    language: 'TypeScript', stargazers_count: 1, forks_count: 0,
+    html_url: 'https://github.com/arupdas0825/Dev-Track', homepage: 'https://dev-track-brown.vercel.app',
+    updated_at: '2026-06-19T07:25:54Z', pushed_at: '2026-06-19T07:16:28Z'
   },
 ];
 
