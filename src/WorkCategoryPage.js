@@ -5,7 +5,9 @@ import { LucideArrowLeft, LucideGithub } from 'lucide-react';
 import Navbar from './Navbar';
 import ProjectDetails from './components/ProjectDetails';
 import { MajorProjectCard, SecondaryProjectCard, CollegeProjectCard } from './Work';
-import { fetchAndMergeProjects } from './utils/projectsFetcher';
+import { fetchAndMergeProjects, REPO_HOMEPAGES } from './utils/projectsFetcher';
+
+const GITHUB_USERNAME = 'arupdas0825';
 
 // Category slug mapping
 const CATEGORY_MAP = {

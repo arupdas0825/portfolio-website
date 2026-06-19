@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import ProjectDetails from './components/ProjectDetails';
 import Navbar from './Navbar';
-import { fetchAndMergeProjects, REPO_VIDEOS, getRepoImage, langColors } from './utils/projectsFetcher';
+import { fetchAndMergeProjects, REPO_VIDEOS, REPO_HOMEPAGES, getRepoImage, langColors } from './utils/projectsFetcher';
 
 const GITHUB_USERNAME = 'arupdas0825';
 

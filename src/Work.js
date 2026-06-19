@@ -6,7 +6,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import ProjectDetails from './components/ProjectDetails';
 import CoverflowCarousel from './components/CoverflowCarousel';
-import { fetchAndMergeProjects, REPO_VIDEOS, getRepoImage, langColors } from './utils/projectsFetcher';
+import { fetchAndMergeProjects, REPO_VIDEOS, REPO_HOMEPAGES, getRepoImage, langColors } from './utils/projectsFetcher';
 
 const isMobileDevice = () => typeof window !== 'undefined' && window.innerWidth < 768;
 
