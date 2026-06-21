@@ -1,17 +1,21 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, Suspense, useCallback } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { OrbitControls, Html } from '@react-three/drei';
+import * as THREE from 'three';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  LucideChevronLeft, 
-  LucideChevronRight, 
   LucideX,
   LucideMapPin,
-  LucideCamera
+  LucideCamera,
+  LucideChevronLeft,
+  LucideChevronRight,
+  LucideAperture,
+  LucideFocus
 } from 'lucide-react';
 import { PHOTOGRAPHY_DUMP } from './data/photographyDump';
-import { ZoomParallax } from './components/ui/zoom-parallax';
-import './Gallery.css'; // Minimalist styles
+import './Gallery.css';
 
-// Extended Fallback Data Model (same as PhotographyGallery fallback)
+// Fallback Data Model
 const fallbackPhotos = [
   { 
     id: 1, src: "/photos/1.jpg", 
@@ -103,12 +107,210 @@ const fallbackPhotos = [
   },
 ];
 
+// Single Orbiting Photo Card (Outward facing, styled in 3D CSS3D space)
+function OrbitingImageCard({ imageConfig, onSelect }) {
+  const [hovered, setHovered] = useState(false);
+  const { photo, position, rotation, isMobile } = imageConfig;
+
+  useEffect(() => {
+    document.body.style.cursor = hovered ? 'pointer' : 'auto';
+    return () => {
+      document.body.style.cursor = 'auto';
+    };
+  }, [hovered]);
+
+  return (
+    <group position={position} rotation={rotation}>
+      <Html 
+        transform 
+        distanceFactor={isMobile ? 4.5 : 5.5} 
+        pointerEvents="auto"
+      >
+        <div 
+          className={`three-orbit-card ${hovered ? 'hovered' : ''}`}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          onClick={() => onSelect(photo)}
+          style={{
+            width: isMobile ? '200px' : '290px',
+            height: isMobile ? '140px' : '200px',
+            borderRadius: '24px',
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: hovered ? '2px solid #00f2fe' : '1px solid rgba(255, 255, 255, 0.15)',
+            boxShadow: hovered 
+              ? '0 0 35px rgba(0, 242, 254, 0.6), inset 0 0 15px rgba(0, 242, 254, 0.3)' 
+              : '0 15px 35px rgba(0, 0, 0, 0.5)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            transition: 'all 0.35s cubic-bezier(0.22, 1, 0.36, 1)',
+            transform: hovered ? 'scale(1.15)' : 'scale(1)',
+            cursor: 'pointer',
+            padding: isMobile ? '4px' : '6px',
+            boxSizing: 'border-box',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden'
+          }}
+        >
+          <div style={{
+            width: '100%',
+            height: '100%',
+            borderRadius: '18px',
+            overflow: 'hidden',
+            position: 'relative'
+          }}>
+            <img 
+              src={photo.src} 
+              alt={photo.title} 
+              loading="eager"
+              style={{ 
+                width: '100%', 
+                height: '100%', 
+                objectFit: 'cover',
+                pointerEvents: 'none'
+              }} 
+            />
+            {/* Hover overlay text */}
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(to top, rgba(8, 6, 16, 0.9) 0%, rgba(8, 6, 16, 0) 70%)',
+              opacity: hovered ? 1 : 0,
+              transition: 'opacity 0.3s ease',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-end',
+              padding: '16px',
+              boxSizing: 'border-box',
+              color: '#fff',
+              fontFamily: 'Syne, sans-serif',
+              textAlign: 'left'
+            }}>
+              <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: '#00f2fe', fontWeight: 700, letterSpacing: '1px' }}>{photo.category}</span>
+              <h4 style={{ fontSize: '0.95rem', margin: '4px 0 0', fontWeight: 700, textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>{photo.title}</h4>
+            </div>
+          </div>
+        </div>
+      </Html>
+    </group>
+  );
+}
+
+// Particle Sphere and Orbiting Images Combined Scene
+function ParticleGalleryScene({ photosList, isMobile, onSelect }) {
+  const groupRef = useRef();
+
+  // Settings matching user's request
+  const PARTICLE_COUNT = isMobile ? 300 : 750; // reduced particle count
+  const PARTICLE_SIZE_MIN = 0.005; // smaller particle size
+  const PARTICLE_SIZE_MAX = 0.015; // smaller particle size
+  const SPHERE_RADIUS = isMobile ? 6 : 9;
+  const POSITION_RANDOMNESS = isMobile ? 2.5 : 4;
+  const ROTATION_SPEED_Y = 0.001; // slow continuous orbit rotation
+
+  // Generate particles distributed on Fibonacci sphere
+  const particles = useMemo(() => {
+    const list = [];
+    const colorPalette = [
+      new THREE.Color('#00f2fe'), // cyan
+      new THREE.Color('#3b82f6'), // blue
+      new THREE.Color('#8a5cf6'), // purple
+    ];
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const phi = Math.acos(-1 + (2 * i) / PARTICLE_COUNT);
+      const theta = Math.sqrt(PARTICLE_COUNT * Math.PI) * phi;
+
+      const radiusVariation = SPHERE_RADIUS + (Math.random() - 0.5) * POSITION_RANDOMNESS;
+
+      const x = radiusVariation * Math.cos(theta) * Math.sin(phi);
+      const y = radiusVariation * Math.cos(phi);
+      const z = radiusVariation * Math.sin(theta) * Math.sin(phi);
+
+      const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+
+      list.push({
+        position: [x, y, z],
+        scale: Math.random() * (PARTICLE_SIZE_MAX - PARTICLE_SIZE_MIN) + PARTICLE_SIZE_MIN,
+        color: color
+      });
+    }
+    return list;
+  }, [PARTICLE_COUNT, SPHERE_RADIUS, POSITION_RANDOMNESS, PARTICLE_SIZE_MIN, PARTICLE_SIZE_MAX]);
+
+  // Generate orbiting images positions facing outward
+  const orbitingImages = useMemo(() => {
+    const images = [];
+    const count = photosList.length;
+
+    if (count === 0) return [];
+
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2;
+      const x = SPHERE_RADIUS * Math.cos(angle);
+      const y = 0;
+      const z = SPHERE_RADIUS * Math.sin(angle);
+
+      const position = new THREE.Vector3(x, y, z);
+      const center = new THREE.Vector3(0, 0, 0);
+      const outwardDirection = position.clone().sub(center).normalize();
+
+      const euler = new THREE.Euler();
+      const matrix = new THREE.Matrix4();
+      matrix.lookAt(position, position.clone().add(outwardDirection), new THREE.Vector3(0, 1, 0));
+      euler.setFromRotationMatrix(matrix);
+
+      // Face the correct direction without flipping upside down
+      // euler.z += Math.PI;
+
+      images.push({
+        photo: photosList[i],
+        position: [x, y, z],
+        rotation: [euler.x, euler.y, euler.z],
+        isMobile: isMobile
+      });
+    }
+
+    return images;
+  }, [photosList, SPHERE_RADIUS, isMobile]);
+
+  // Rotate group slowly
+  useFrame(() => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y += ROTATION_SPEED_Y;
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      {/* 3D Particle Starfield */}
+      {particles.map((particle, index) => (
+        <mesh key={`part-${index}`} position={particle.position} scale={particle.scale}>
+          <sphereGeometry args={[1, 6, 6]} />
+          <meshBasicMaterial color={particle.color} transparent opacity={0.8} />
+        </mesh>
+      ))}
+
+      {/* Orbiting Images */}
+      {orbitingImages.map((image, index) => (
+        <OrbitingImageCard 
+          key={`img-${image.photo.id}-${index}`} 
+          imageConfig={image} 
+          onSelect={onSelect} 
+        />
+      ))}
+    </group>
+  );
+}
+
+// Main Component
 export default function Gallery() {
   const [photosList, setPhotosList] = useState([]);
-  const [activeCategory, setActiveCategory] = useState("All");
-  const [lightboxPhoto, setLightboxPhoto] = useState(null);
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Load photos from local dump
+  // Load photos database
   useEffect(() => {
     const data = PHOTOGRAPHY_DUMP ? PHOTOGRAPHY_DUMP.filter(p => p.image) : [];
     if (data && data.length > 0) {
@@ -143,82 +345,56 @@ export default function Gallery() {
     }
   }, []);
 
-  // Dynamically generate categories from photos list
-  const categories = useMemo(() => {
-    const list = Array.from(new Set(photosList.map(p => p.category))).filter(Boolean);
-    return ["All", ...list];
+  // Screen resizing
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Lightbox navigation
+  const handleLightboxNext = useCallback(() => {
+    setSelectedPhoto(prev => {
+      if (!prev) return null;
+      const idx = photosList.findIndex(p => p.id === prev.id);
+      if (idx === -1) return null;
+      return photosList[(idx + 1) % photosList.length];
+    });
   }, [photosList]);
-  
-  // Filter photos based on selection
-  const filteredPhotos = useMemo(() => {
-    if (activeCategory === "All") return photosList;
-    return photosList.filter(p => p.category === activeCategory);
-  }, [activeCategory, photosList]);
 
-  // Map to ZoomParallax required format
-  const zoomImages = useMemo(() => {
-    return filteredPhotos.map(photo => ({
-      id: photo.id,
-      src: photo.src,
-      alt: photo.title,
-      title: photo.title,
-      category: photo.category,
-      camera: photo.camera,
-      lens: photo.lens,
-      location: photo.location,
-      desc: photo.desc,
-      iso: photo.iso,
-      shutterSpeed: photo.shutterSpeed,
-      aperture: photo.aperture
-    }));
-  }, [filteredPhotos]);
-
-  // Lightbox navigation handlers
-  const handleLightboxNext = useCallback((e) => {
-    e?.stopPropagation();
-    setLightboxPhoto(prev => {
+  const handleLightboxPrev = useCallback(() => {
+    setSelectedPhoto(prev => {
       if (!prev) return null;
-      const idx = filteredPhotos.findIndex(p => p.id === prev.id);
+      const idx = photosList.findIndex(p => p.id === prev.id);
       if (idx === -1) return null;
-      return filteredPhotos[(idx + 1) % filteredPhotos.length];
+      return photosList[(idx - 1 + photosList.length) % photosList.length];
     });
-  }, [filteredPhotos]);
+  }, [photosList]);
 
-  const handleLightboxPrev = useCallback((e) => {
-    e?.stopPropagation();
-    setLightboxPhoto(prev => {
-      if (!prev) return null;
-      const idx = filteredPhotos.findIndex(p => p.id === prev.id);
-      if (idx === -1) return null;
-      return filteredPhotos[(idx - 1 + filteredPhotos.length) % filteredPhotos.length];
-    });
-  }, [filteredPhotos]);
-
-  // Global Keyboard listener for Lightbox
+  // Keyboard navigation
   useEffect(() => {
     const handler = (e) => {
-      if (e.key === 'Escape') setLightboxPhoto(null);
-      if (lightboxPhoto) {
+      if (e.key === 'Escape') setSelectedPhoto(null);
+      if (selectedPhoto) {
         if (e.key === 'ArrowRight') handleLightboxNext();
         if (e.key === 'ArrowLeft') handleLightboxPrev();
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [lightboxPhoto, handleLightboxNext, handleLightboxPrev]);
-
-  const swipeConfidenceThreshold = 10000;
-  const swipePower = (offset, velocity) => Math.abs(offset) * velocity;
-  const lightboxCurrentIndex = lightboxPhoto ? filteredPhotos.findIndex(p => p.id === lightboxPhoto.id) + 1 : 0;
+  }, [selectedPhoto, handleLightboxNext, handleLightboxPrev]);
 
   return (
-    <section id="photography" className="page-section hm-gallery-root">
+    <section id="photography" className="page-section 3d-gallery-root">
       
       {/* ── SECTION HEADER ── */}
-      <div className="hm-hero-wrapper">
+      <div className="gallery-header-wrapper">
         <motion.div 
           className="section-header" 
-          style={{ marginBottom: '30px' }}
+          style={{ marginBottom: '20px' }}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -229,134 +405,115 @@ export default function Gallery() {
           </h2>
           <div className="section-line" />
           <p className="section-sub">
-            A curated selection of moments frozen in time.
+            Drag to orbit the 3D sphere. Scroll to zoom. Click any photo to inspect details.
           </p>
         </motion.div>
       </div>
 
-      {/* ── CATEGORY FILTER CHIPS ── */}
-      <div className="hm-categories">
-        {categories.map(cat => (
-          <button 
-            key={cat} 
-            className={`hm-chip ${activeCategory === cat ? 'active' : ''}`}
-            onClick={() => setActiveCategory(cat)}
+      {/* ── 3D CANVAS WRAPPER ── */}
+      <div className="canvas-container">
+        <Suspense fallback={null}>
+          <Canvas
+            camera={{ position: [-10, 1.5, 10], fov: 50 }}
+            gl={{ antialias: true, alpha: true }}
+            dpr={[1, 2]}
           >
-            {cat}
-          </button>
-        ))}
+            <ambientLight intensity={0.6} />
+            <pointLight position={[10, 10, 10]} intensity={1.2} />
+            
+            <ParticleGalleryScene 
+              photosList={photosList} 
+              isMobile={isMobile} 
+              onSelect={setSelectedPhoto} 
+            />
+
+            <OrbitControls 
+              enablePan={true} 
+              enableZoom={true} 
+              enableRotate={true} 
+              minDistance={4} 
+              maxDistance={22} 
+            />
+          </Canvas>
+        </Suspense>
       </div>
 
-      {/* ── RESPONSIVE ZOOM PARALLAX SHOWCASE ── */}
-      {zoomImages.length > 0 ? (
-        <div style={{ position: 'relative', zIndex: 10, width: '100%' }}>
-          <ZoomParallax 
-            images={zoomImages} 
-            onImageClick={(photo) => setLightboxPhoto(photo)} 
-          />
-        </div>
-      ) : (
-        <div className="text-center py-20 text-gray-400">
-          <p>No captures found for this category.</p>
-        </div>
-      )}
-
-      {/* ── PREMIUM LIGHTBOX VIEWER ── */}
+      {/* ── PREMIUM LIGHTBOX VIEWER MODAL ── */}
       <AnimatePresence>
-        {lightboxPhoto && (
+        {selectedPhoto && (
           <motion.div 
-            className="hm-lightbox"
+            className="premium-lightbox"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            {/* Header */}
-            <div className="hm-lightbox-header">
-              <button className="hm-lightbox-back" onClick={() => setLightboxPhoto(null)}>
-                <LucideChevronLeft size={20} />
-                <span>Back to Gallery</span>
+            <div className="lightbox-backdrop" onClick={() => setSelectedPhoto(null)} />
+
+            {/* Lightbox Content Container */}
+            <motion.div 
+              className="lightbox-box"
+              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 20, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 180 }}
+            >
+              {/* Close Button */}
+              <button className="lightbox-close-btn" onClick={() => setSelectedPhoto(null)} aria-label="Close lightbox">
+                <LucideX size={20} />
               </button>
-              
-              <div className="hm-lightbox-count">
-                {lightboxCurrentIndex} / {filteredPhotos.length}
-              </div>
 
-              <button className="hm-lightbox-close" onClick={() => setLightboxPhoto(null)}>
-                <LucideX size={24} />
+              {/* Navigation Buttons */}
+              <button className="lightbox-nav-btn prev" onClick={handleLightboxPrev} aria-label="Previous image">
+                <LucideChevronLeft size={28} />
               </button>
-            </div>
+              <button className="lightbox-nav-btn next" onClick={handleLightboxNext} aria-label="Next image">
+                <LucideChevronRight size={28} />
+              </button>
 
-            {/* Viewer Area */}
-            <div className="hm-lightbox-viewer" onClick={() => setLightboxPhoto(null)}>
-              {filteredPhotos.length > 1 && (
-                <button className="hm-lightbox-nav prev" onClick={handleLightboxPrev}>
-                  <LucideChevronLeft size={44} />
-                </button>
-              )}
+              {/* Layout Content */}
+              <div className="lightbox-body">
+                {/* Image Section */}
+                <div className="lightbox-image-section">
+                  <img src={selectedPhoto.src} alt={selectedPhoto.title} />
+                </div>
 
-              <motion.img 
-                src={lightboxPhoto.src} 
-                alt={lightboxPhoto.title}
-                className="hm-lightbox-img"
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                onClick={e => e.stopPropagation()}
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.8}
-                onDragEnd={(e, { offset, velocity }) => {
-                  const swipe = swipePower(offset.x, velocity.x);
-                  if (swipe < -swipeConfidenceThreshold) handleLightboxNext();
-                  else if (swipe > swipeConfidenceThreshold) handleLightboxPrev();
-                }}
-              />
+                {/* Details Section */}
+                <div className="lightbox-details-section">
+                  <div className="details-header">
+                    <span className="details-category-badge">{selectedPhoto.category}</span>
+                    <h2 className="details-title">{selectedPhoto.title}</h2>
+                  </div>
 
-              {filteredPhotos.length > 1 && (
-                <button className="hm-lightbox-nav next" onClick={handleLightboxNext}>
-                  <LucideChevronRight size={44} />
-                </button>
-              )}
-            </div>
+                  <p className="details-description">{selectedPhoto.desc}</p>
 
-            {/* Footer */}
-            <div className="hm-lightbox-footer" style={{ pointerEvents: 'auto' }}>
-              <h2 className="hm-lightbox-title">{lightboxPhoto.title}</h2>
-              <div className="hm-lightbox-meta flex flex-col gap-2">
-                <span className="text-[#a78bfa] tracking-wider uppercase font-semibold text-xs">
-                  {lightboxPhoto.category}
-                </span>
-                {lightboxPhoto.desc && (
-                  <p className="max-w-xl mx-auto text-xs text-gray-300 font-normal leading-relaxed mb-1 mt-0.5">
-                    {lightboxPhoto.desc}
-                  </p>
-                )}
-                <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 text-xs text-gray-400">
-                  {lightboxPhoto.camera && (
-                    <span className="flex items-center gap-1">
-                      <LucideCamera size={12} className="text-[#a78bfa]" /> {lightboxPhoto.camera}
-                    </span>
-                  )}
-                  {lightboxPhoto.lens && (
-                    <span className="flex items-center gap-1">
-                      🔍 {lightboxPhoto.lens}
-                    </span>
-                  )}
-                  {lightboxPhoto.location && (
-                    <span className="flex items-center gap-1">
-                      <LucideMapPin size={12} className="text-[#a78bfa]" /> {lightboxPhoto.location}
-                    </span>
-                  )}
+                  {/* EXIF Information Grid */}
+                  <div className="exif-grid-layout">
+                    <div className="exif-cell">
+                      <div className="exif-cell-label"><LucideMapPin size={13} /> Location</div>
+                      <div className="exif-cell-value">{selectedPhoto.location}</div>
+                    </div>
+                    <div className="exif-cell">
+                      <div className="exif-cell-label"><LucideCamera size={13} /> Camera</div>
+                      <div className="exif-cell-value">{selectedPhoto.camera}</div>
+                    </div>
+                    <div className="exif-cell">
+                      <div className="exif-cell-label"><LucideFocus size={13} /> Lens</div>
+                      <div className="exif-cell-value">{selectedPhoto.lens}</div>
+                    </div>
+                    <div className="exif-cell">
+                      <div className="exif-cell-label"><LucideAperture size={13} /> Settings</div>
+                      <div className="exif-cell-value">
+                        {selectedPhoto.aperture} • {selectedPhoto.shutterSpeed} • ISO {selectedPhoto.iso}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-
     </section>
   );
 }

@@ -47,7 +47,13 @@ export default function Navbar() {
 
   const scrollTo = (id) => {
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (el) {
+      if (window.lenis) {
+        window.lenis.scrollTo(el);
+      } else {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
     setMenuOpen(false);
   };
 
