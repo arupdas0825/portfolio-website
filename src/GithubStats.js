@@ -5,8 +5,9 @@ import {
   Star, GitFork, Package, Users, UserPlus,
   Github, Trophy, Zap, Clock, Code2,
   GitCommitHorizontal, GitPullRequest, CircleDot, GitBranch,
-  Brain, Rocket
+  Brain, Rocket, Flame
 } from 'lucide-react';
+import GlowingStatsCard from './components/ui/GlowingStatsCard';
 
 const USERNAME = 'arupdas0825';
 
@@ -325,6 +326,13 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
     };
   }, [weeks]);
 
+  // Auto-scroll to the end (most recent contributions) on mobile web
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollLeft = scrollContainerRef.current.scrollWidth;
+    }
+  }, [weeks]);
+
   // Tap dismiss listener for mobile devices
   useEffect(() => {
     if (!isMobile || !hoveredCell) return;
@@ -341,6 +349,27 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
     };
   }, [isMobile, hoveredCell]);
 
+  // Unify hover and click positioning with clamping to prevent mobile screen edge cutoffs
+  const calculateTooltipPosition = useCallback((targetEl) => {
+    const rect = targetEl.getBoundingClientRect();
+    const cellCenter = rect.left + rect.width / 2;
+    const cellTop = rect.top;
+    const cellBottom = rect.bottom;
+    
+    // Intelligently flip vertical orientation if the cell is near the top of the viewport
+    const shouldFlip = cellTop < 240;
+    
+    // Clamp horizontal position so it stays fully inside the viewport with a safety margin
+    const tooltipWidth = 180;
+    const margin = 12;
+    const clampedX = Math.max(tooltipWidth / 2 + margin, Math.min(window.innerWidth - (tooltipWidth / 2 + margin), cellCenter));
+    
+    // Snug positioning immediately above or below the cell boundary (exactly 6px gap)
+    const targetY = shouldFlip ? cellBottom + 6 : cellTop - 6;
+    
+    return { x: clampedX, y: targetY, shouldFlip };
+  }, []);
+
   // Stable event handlers wrapped in callbacks to prevent memoized child re-renders
   const handleCellEnter = useCallback((day, e) => {
     if (!day || day.count === null) return;
@@ -352,28 +381,10 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
     
     setHoveredCell(day);
     
-    const rect = e.currentTarget.getBoundingClientRect();
-    const cellCenter = rect.left + rect.width / 2;
-    const cellTop = rect.top;
-    const cellBottom = rect.bottom;
-    
-    // Intelligently flip vertical orientation if the cell is near the top of the viewport
-    const shouldFlip = cellTop < 240;
-    
-    // Clamp horizontal position so it stays fully inside the viewport with a safety margin
-    const tooltipWidth = 240;
-    const margin = 16;
-    const clampedX = Math.max(tooltipWidth / 2 + margin, Math.min(window.innerWidth - (tooltipWidth / 2 + margin), cellCenter));
-    
-    // Snug positioning immediately above or below the cell boundary (exactly 6px gap)
-    const targetY = shouldFlip ? cellBottom + 6 : cellTop - 6;
-    
+    const { x, y, shouldFlip } = calculateTooltipPosition(e.currentTarget);
     setIsFlipped(shouldFlip);
-    setMousePos({
-      x: clampedX,
-      y: targetY
-    });
-  }, []);
+    setMousePos({ x, y });
+  }, [calculateTooltipPosition]);
 
   const handleCellLeave = useCallback(() => {
     leaveTimeoutRef.current = setTimeout(() => {
@@ -389,13 +400,10 @@ const ContributionHeatmap = ({ rawData, isMobile, selectedYear }) => {
     
     setHoveredCell(prev => (prev && prev.date === day.date) ? null : day);
     
-    const rect = e.currentTarget.getBoundingClientRect();
-    const cellCenter = rect.left + rect.width / 2;
-    const cellTop = rect.top;
-    
-    setMousePos({ x: cellCenter, y: cellTop - 6 });
-    setIsFlipped(false);
-  }, [isMobile]);
+    const { x, y, shouldFlip } = calculateTooltipPosition(e.currentTarget);
+    setIsFlipped(shouldFlip);
+    setMousePos({ x, y });
+  }, [isMobile, calculateTooltipPosition]);
 
   const activeDetails = hoveredCell ? getContributionDetails(hoveredCell.date, hoveredCell.count) : null;
 
@@ -851,7 +859,7 @@ const GithubStats = React.memo(function GithubStats() {
   }, []);
 
   const fetchData = useCallback(async () => {
-    const CACHE_KEY = 'gh_stats_v2_' + USERNAME;
+    const CACHE_KEY = 'gh_stats_v3_' + USERNAME;
     const CACHE_TTL = 60 * 60 * 1000;
 
     // Check cache first
@@ -921,12 +929,21 @@ const GithubStats = React.memo(function GithubStats() {
           sorted.forEach(d=>{ if(d.count>0){run++;ls=Math.max(ls,run);}else{run=0;} });
           longestStreak = ls;
 
-          // Current streak — walk backward from the end
-          // Skip trailing zeros (today might not be over yet, allow 1 zero skip)
-          let cs=0, j=sorted.length-1;
-          // Allow today to be 0 (still in progress)
-          if(j>=0 && sorted[j].count===0) j--;
-          while(j>=0 && sorted[j].count>0){ cs++; j--; }
+          // Current streak — walk backward from today's date (filter out future API placeholder dates)
+          const todayStr = new Date().toISOString().split('T')[0];
+          const pastAndPresent = sorted.filter(c => c.date <= todayStr);
+          let cs = 0;
+          let j = pastAndPresent.length - 1;
+          if (j >= 0) {
+            // Allow today's count to be 0 (still in progress) and check yesterday's count
+            if (pastAndPresent[j].count === 0) {
+              j--;
+            }
+            while (j >= 0 && pastAndPresent[j].count > 0) {
+              cs++;
+              j--;
+            }
+          }
           currentStreak = cs;
           
           // Store raw for heatmap
@@ -937,7 +954,6 @@ const GithubStats = React.memo(function GithubStats() {
           const oneYearAgo = new Date();
           oneYearAgo.setDate(today.getDate() - 365);
           const oneYearAgoStr = oneYearAgo.toISOString().split('T')[0];
-          const todayStr = today.toISOString().split('T')[0];
 
           yearlyContributions = sorted
             .filter(d => d.date >= oneYearAgoStr && d.date <= todayStr)
@@ -994,7 +1010,7 @@ const GithubStats = React.memo(function GithubStats() {
       };
       setData(freshData);
       // Save to cache
-      try { localStorage.setItem('gh_stats_v2_' + USERNAME, JSON.stringify({ data: freshData, ts: Date.now() })); } catch(_){}
+      try { localStorage.setItem('gh_stats_v3_' + USERNAME, JSON.stringify({ data: freshData, ts: Date.now() })); } catch(_){}
     } catch(err){
       console.warn('GitHub Stats API failed:', err.message);
     }
@@ -1013,14 +1029,14 @@ const GithubStats = React.memo(function GithubStats() {
     return()=>obs.disconnect();
   },[loaded]);
 
-  const topCards=[
-    { icon:Star,                label:'Stars Earned',  val:data.stars,     color:'#facc15' },
-    { icon:GitCommitHorizontal, label:'Total Commits',  val:data.commits,   color:'#a78bfa' },
-    { icon:GitFork,             label:'Total Forks',   val:data.forks,     color:'#60a5fa' },
-    { icon:Package,             label:'Repositories',  val:data.repos,     color:'#c084fc' },
-    { icon:Users,               label:'Followers',     val:data.followers, color:'#4ade80' },
-    { icon:UserPlus,            label:'Following',     val:data.following, color:'#f472b6' },
-  ];
+  const topCards = useMemo(() => [
+    { icon: Star, label: 'Stars Earned', val: data.stars, color: '#f59e0b', glowColor: 'rgba(245, 158, 11, 0.15)', isStreak: false },
+    { icon: GitCommitHorizontal, label: 'Total Commits', val: data.commits, color: '#3b82f6', glowColor: 'rgba(59, 130, 246, 0.15)', isStreak: false },
+    { icon: Flame, label: 'Current Streak', val: data.currentStreak, color: '#ef4444', glowColor: 'rgba(239, 68, 68, 0.15)', isStreak: true },
+    { icon: GitFork, label: 'Total Forks', val: data.forks, color: '#06b6d4', glowColor: 'rgba(6, 182, 212, 0.15)', isStreak: false },
+    { icon: Package, label: 'Repositories', val: data.repos, color: '#a855f7', glowColor: 'rgba(168, 85, 247, 0.15)', isStreak: false },
+    { icon: Users, label: 'Followers', val: data.followers, color: '#10b981', glowColor: 'rgba(16, 185, 129, 0.15)', isStreak: false },
+  ], [data.stars, data.commits, data.currentStreak, data.forks, data.repos, data.followers]);
 
   const streakCards=[
     { icon:Trophy, label:'Total Contributions', val:data.contributions,  color:'#facc15', pct:Math.min(data.contributions,100) },
@@ -1057,35 +1073,33 @@ const GithubStats = React.memo(function GithubStats() {
         </div>
 
 
+        {/* ── Live status dot label ── */}
+        <div className="live-status-dot-container">
+          <span className="live-status-dot" />
+          <span style={{
+            fontSize: 11,
+            fontFamily: 'Syne, sans-serif',
+            fontWeight: 800,
+            color: 'rgba(255,255,255,0.6)',
+            letterSpacing: '1.5px',
+            textTransform: 'uppercase'
+          }}>
+            LIVE FROM GITHUB API
+          </span>
+        </div>
+
         {/* ── Top stats cards ── */}
         <div className="fade-in gh-stats-grid" style={{ marginBottom: 40 }}>
-          {topCards.map(({ icon:Icon, label, val, color })=>(
-            <Panel key={label} accent={false} style={{ padding:'20px 12px', textAlign:'center' }}>
-              {/* Coloured top bar */}
-              <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:`linear-gradient(90deg,transparent,${color},transparent)`, borderRadius:'20px 20px 0 0' }}/>
-              <div style={{
-                width:40, height:40, borderRadius:12, margin:'0 auto 12px',
-                background:`${color}12`, border:`1px solid ${color}25`,
-                display:'flex', alignItems:'center', justifyContent:'center',
-              }}>
-                <Icon size={18} style={{ color }} />
-              </div>
-              <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize: 24, color:'#fff', lineHeight:1 }}>
-                {val === null || val === undefined ? (
-                  <motion.span
-                    animate={{ opacity: [0.3, 0.7, 0.3] }}
-                    transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
-                  >
-                    ...
-                  </motion.span>
-                ) : (
-                  <CountUp value={val}/>
-                )}
-              </div>
-              <div style={{ fontSize:11, color:'rgba(255,255,255,0.35)', marginTop:6, fontFamily:'Syne,sans-serif', letterSpacing:'0.4px' }}>
-                {label}
-              </div>
-            </Panel>
+          {topCards.map((card) => (
+            <GlowingStatsCard
+              key={card.label}
+              icon={card.icon}
+              label={card.label}
+              value={card.val}
+              color={card.color}
+              glowColor={card.glowColor}
+              isStreak={card.isStreak}
+            />
           ))}
         </div>
 
@@ -1099,7 +1113,7 @@ const GithubStats = React.memo(function GithubStats() {
           width: '100%'
         }}>
           {/* Left — Heatmap */}
-          <div style={{ flex: 1, overflow: 'hidden' }}>
+          <div style={{ flex: 1, overflow: 'hidden', width: '100%', maxWidth: '100%' }}>
             <ContributionHeatmap 
               rawData={data.rawContributions} 
               isMobile={isMobile} 

@@ -1,0 +1,156 @@
+/* GlowingStatsCard styles */
+
+.glowing-stats-card-wrapper {
+  position: relative;
+  border-radius: 28px;
+  height: 180px;
+  overflow: hidden;
+  padding: 1px; /* Creates the border width */
+  background: transparent;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.glowing-stats-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 27px; /* 28px - 1px border */
+  background: rgba(10, 10, 12, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  text-align: center;
+  overflow: hidden;
+  z-index: 2;
+  transition: background-color 0.3s ease;
+}
+
+/* Moving/rotating gradient border */
+.glowing-stats-card-border {
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  padding: 1.5px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    var(--card-accent-color, #fff) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 200%;
+  animation: border-gradient-shift 8s linear infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+}
+
+/* Subtle background glowing shadow */
+.glowing-stats-card-glow {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(
+    circle 100px at 50% 50%,
+    var(--card-glow-color, rgba(255, 255, 255, 0.1)) 0%,
+    transparent 70%
+  );
+  opacity: 0.35;
+  filter: blur(10px);
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 0.4s ease, filter 0.4s ease;
+  animation: float-glow-effect 10s ease-in-out infinite alternate;
+}
+
+/* Hover States */
+.glowing-stats-card-wrapper:hover {
+  transform: translateY(-8px) scale(1.03);
+}
+
+.glowing-stats-card-wrapper:hover .glowing-stats-card-border {
+  opacity: 1;
+}
+
+.glowing-stats-card-wrapper:hover .glowing-stats-card-glow {
+  opacity: 0.85;
+  filter: blur(5px);
+}
+
+.glowing-stats-card-wrapper:hover .glowing-stats-card {
+  background: rgba(15, 15, 20, 0.65);
+}
+
+/* Flame animation for current streak */
+.flame-icon-anim {
+  color: #f97316;
+  filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.5));
+  animation: flame-pulse-anim 1.5s infinite ease-in-out;
+}
+
+/* Live update dot */
+.live-status-dot-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.live-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: status-pulse-anim 2s infinite ease-in-out;
+}
+
+/* Keyframes */
+@keyframes border-gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes float-glow-effect {
+  0% { transform: scale(0.9) translate(-4%, -4%); }
+  100% { transform: scale(1.1) translate(4%, 4%); }
+}
+
+@keyframes flame-pulse-anim {
+  0% { transform: scale(1); filter: drop-shadow(0 0 3px #ef4444); }
+  50% { transform: scale(1.15) translateY(-2px); filter: drop-shadow(0 0 12px #f97316); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 3px #ef4444); }
+}
+
+@keyframes status-pulse-anim {
+  0% { transform: scale(1); opacity: 0.5; box-shadow: 0 0 4px #10b981; }
+  50% { transform: scale(1.25); opacity: 1; box-shadow: 0 0 12px #10b981; }
+  100% { transform: scale(1); opacity: 0.5; box-shadow: 0 0 4px #10b981; }
+}
+
+/* Mobile responsive styles */
+@media (max-width: 640px) {
+  .glowing-stats-card-wrapper {
+    height: auto;
+    border-radius: 20px;
+  }
+  
+  .glowing-stats-card {
+    border-radius: 19px;
+    padding: 16px 12px;
+  }
+  
+  .glowing-stats-card-border {
+    border-radius: 20px;
+  }
+}
