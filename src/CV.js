@@ -32,10 +32,21 @@ const CV = React.memo(function CV() {
   }, []);
 
 
-  const toggleViewer = (e) => {
+  const checkIsMobileDevice = () => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+    const isIPadOS = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /Macintosh/.test(userAgent);
+    return isMobileUA || isIPadOS;
+  };
+
+  const handleViewCV = (e) => {
     if (e) e.preventDefault();
-    setIsViewerOpen(true);
-    document.body.style.overflow = 'hidden';
+    if (checkIsMobileDevice()) {
+      window.open(cvInfo.cvUrl, "_blank", "noopener,noreferrer");
+    } else {
+      setIsViewerOpen(true);
+      document.body.style.overflow = 'hidden';
+    }
   };
 
   const closeViewer = () => {
@@ -126,7 +137,7 @@ const CV = React.memo(function CV() {
               </div>
               
               <div className="premium-actions-footer" onClick={e => e.stopPropagation()}>
-                <button onClick={toggleViewer} className="premium-action-link github" style={{ border: 'none', cursor: 'pointer', flex: isMobile ? '1' : 'initial', justifyContent: 'center' }}>
+                <button onClick={handleViewCV} className="premium-action-link github" style={{ border: 'none', cursor: 'pointer', flex: isMobile ? '1' : 'initial', justifyContent: 'center' }}>
                   <Eye size={13} /> VIEW CV
                 </button>
                 <a href={cvInfo.cvUrl} download className="premium-action-link demo" style={{ flex: isMobile ? '1' : 'initial', justifyContent: 'center' }}>
