@@ -42,6 +42,20 @@ export const PROJECTS_DUMP = [
     "display_order": 6
   },
   {
+    "id": 99,
+    "created_at": "2026-07-11T23:15:23+05:30",
+    "title": "Lumira Health AI",
+    "description": "An AI-powered clinical intelligence platform for remote patient health monitoring and real-time medical risk prediction.",
+    "image": "/Lumira-Health-AI.jpg",
+    "video": null,
+    "github_url": "https://github.com/arupdas0825/Lumira-Health-AI",
+    "live_url": null,
+    "catagory": "Major",
+    "featured": true,
+    "technologies": "TypeScript, Next.js, FastAPI, Python, PyTorch, Gemini API",
+    "display_order": 3
+  },
+  {
     "id": 82,
     "created_at": "2026-06-15T08:52:12.775036+00:00",
     "title": "portfolio-website",

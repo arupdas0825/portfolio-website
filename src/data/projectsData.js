@@ -286,6 +286,60 @@ export const PROJECTS_DATA = {
       github: 'https://github.com/arupdas0825/Dev-Track',
       demo: 'https://dev-track-brown.vercel.app'
     }
+  },
+  'Lumira-Health-AI': {
+    title: 'Lumira Health AI',
+    tagline: 'AI-Powered Remote Health Monitoring & Clinical Decision Support',
+    status: 'Active',
+    year: '2026',
+    timeline: '3 Months (Ongoing)',
+    role: 'Lead AI Engineer & Backend Architect',
+    banner: '/Lumira-Health-AI.jpg',
+    description: 'Lumira Health AI is a state-of-the-art clinical intelligence platform that leverages advanced AI/ML models to monitor patient vitals, predict potential health risks, and assist healthcare professionals with personalized care plans.',
+    fullStack: {
+      languages: ['TypeScript', 'Python', 'Go'],
+      frontend: ['React 19', 'Next.js 15 (App Router)', 'Tailwind CSS', 'Framer Motion'],
+      backend: ['FastAPI', 'Node.js', 'Express'],
+      ai: ['Google Gemini API', 'PyTorch', 'LangChain'],
+      database: ['PostgreSQL', 'Redis'],
+      tools: ['Docker', 'Git', 'GitHub', 'Vercel']
+    },
+    implementationDetails: {
+      architecture: 'Microservices architecture with FastAPI powering the ML model inference and Next.js handling the interactive clinical dashboard.',
+      workflow: 'Real-time telemetry intake from simulated patient IoT devices, analyzed by our risk prediction models.',
+      rendering: 'Server-side rendered dashboard components with dynamic WebSocket streams for real-time vital tracking.',
+      performance: 'Async request handling in FastAPI with model caching and Redis-backed session storage.',
+      responsive: 'Fully responsive medical-grade dashboard ensuring crisp data visualization from desktops to tablet screens.'
+    },
+    planningDetails: {
+      origin: 'Inspired by the need for automated vital monitoring and diagnostic assistance in overwhelmed clinical settings.',
+      problem: 'High caregiver-to-patient ratios lead to delays in identifying critical vital anomalies.',
+      decisions: 'Chose FastAPI for Python-based model execution and Next.js 15 App Router for developer velocity and speed.',
+      priority: 'Achieving sub-100ms vital analysis latency while maintaining high precision.'
+    },
+    futureRoadmap: [
+      { title: 'IoT Integration', description: 'Direct BLE pairing with wearable medical sensors.', status: 'planned' },
+      { title: 'Predictive Alerts v2', description: 'Multi-modal vital forecasting using custom LSTM models.', status: 'in-progress' }
+    ],
+    features: [
+      { icon: '🩺', title: 'Vital Streaming', explanation: 'Real-time telemetry and visualization of patient heart rate, SpO2, and temperature.' },
+      { icon: '🧠', title: 'Risk Prediction', explanation: 'On-the-fly anomaly detection and risk scoring using optimized ML classifiers.' },
+      { icon: '📋', title: 'Care Automation', explanation: 'AI-generated personalized clinical summaries and treatment suggestions.' }
+    ],
+    challenges: {
+      problem: 'Processing high-frequency medical telemetry without performance degradation.',
+      solution: 'Used asynchronous background tasks in Python and buffered streaming writes to Redis.',
+      decision: 'Chose PostgreSQL for transactional integrity and Redis for transient telemetry cache.'
+    },
+    metrics: {
+      precision: '97.4% Classification Accuracy',
+      latency: '< 80ms Vital Analysis',
+      uptime: '99.95% API Uptime'
+    },
+    links: {
+      github: 'https://github.com/arupdas0825/Lumira-Health-AI',
+      demo: null
+    }
   }
 };
 

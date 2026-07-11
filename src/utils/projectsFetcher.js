@@ -28,6 +28,7 @@ export const REPO_IMAGES = {
   'HyperLane': '/HyperLane.jpeg',
   'Space-Combat-Game': '/Space-Combat-Game.png',
   'Dev-Track': '/Dev-Track.png',
+  'Lumira-Health-AI': '/Lumira-Health-AI.jpg',
 };
 
 export const REPO_VIDEOS = {
@@ -116,6 +117,13 @@ const FALLBACK_REPOS = [
     language: 'JavaScript', stargazers_count: 5, forks_count: 0,
     html_url: 'https://github.com/arupdas0825/Space-Combat-Game', homepage: '',
     updated_at: '2024-04-01T00:00:00Z', pushed_at: '2024-04-01T00:00:00Z'
+  },
+  {
+    id: 11, name: 'Lumira-Health-AI', fork: false,
+    description: 'An AI-powered clinical intelligence platform for remote patient health monitoring and real-time medical risk prediction.',
+    language: 'Python', stargazers_count: 5, forks_count: 0,
+    html_url: 'https://github.com/arupdas0825/Lumira-Health-AI', homepage: '',
+    updated_at: '2026-07-11T23:15:23Z', pushed_at: '2026-07-11T23:15:23Z'
   },
 ];
 
