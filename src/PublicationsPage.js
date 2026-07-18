@@ -7,6 +7,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
+import { ScrollAnimatedSection } from './components/ScrollAnimatedSection';
 
 const ALL_PUBLICATIONS = [
   {
@@ -108,7 +109,8 @@ export default function PublicationsPage() {
       </div>
 
       {/* Grid */}
-      <div className="pubpage-grid">
+      <ScrollAnimatedSection intensity="subtle">
+        <div className="pubpage-grid">
         {filteredPubs.map((pub, idx) => (
           <motion.div
             key={pub.id}
@@ -234,6 +236,7 @@ export default function PublicationsPage() {
           </motion.div>
         )}
       </div>
+      </ScrollAnimatedSection>
 
       {/* Footer */}
       <div className="pubpage-footer">

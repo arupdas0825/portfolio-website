@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LucideArrowLeft, LucideExternalLink, LucideMaximize2 } from 'lucide-react';
 import Navbar from './Navbar';
 import { CERTIFICATES_DUMP } from './data/certificatesDump';
+import { ScrollAnimatedSection } from './components/ScrollAnimatedSection';
 
 // Helper to assign vibrant brand colors based on issuer
 const getColorForIssuer = (issuer) => {
@@ -235,7 +236,8 @@ export default function CertificatesPage() {
       </div>
 
       {/* Dynamic Grid */}
-      <div className="certpage-inner" style={{ padding: '0 24px 80px', maxWidth: '1440px', margin: '0 auto' }}>
+      <ScrollAnimatedSection intensity="strong">
+        <div className="certpage-inner" style={{ padding: '0 24px 80px', maxWidth: '1440px', margin: '0 auto' }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -375,6 +377,7 @@ export default function CertificatesPage() {
           </button>
         </div>
       </div>
+      </ScrollAnimatedSection>
     </div>
   );
 }

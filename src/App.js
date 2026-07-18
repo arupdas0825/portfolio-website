@@ -6,6 +6,7 @@ import About          from './About';
 import Starfield       from './Starfield';
 import WelcomeScreen   from './WelcomeScreen';
 import usePlaybackStore from './ai-playback/usePlaybackStore';
+import { ScrollAnimatedSection } from './components/ScrollAnimatedSection';
 import './App.css';
 import './MobileExperience.css';
 
@@ -85,18 +86,58 @@ function PortfolioHome() {
     <>
       <Navbar />
       <div id="home"><Home /></div>
-      <div id="about"><About /></div>
+      <div id="about">
+        <ScrollAnimatedSection intensity="subtle">
+          <About />
+        </ScrollAnimatedSection>
+      </div>
       <Suspense fallback={null}>
-        <div id="techstack"><TechStack /></div>
-        <div id="work"><Work /></div>
-        <div id="internship"><Internship /></div>
-        <div id="publications"><Publications /></div>
-        <div id="certificates"><Certificates featuredOnly={true} /></div>
-        <div id="githubstats"><GithubStats /></div>
+        <div id="techstack">
+          <ScrollAnimatedSection intensity="medium">
+            <TechStack />
+          </ScrollAnimatedSection>
+        </div>
+        <div id="work">
+          <ScrollAnimatedSection intensity="medium">
+            <Work />
+          </ScrollAnimatedSection>
+        </div>
+        <div id="internship">
+          <ScrollAnimatedSection intensity="subtle">
+            <Internship />
+          </ScrollAnimatedSection>
+        </div>
+        <div id="publications">
+          <ScrollAnimatedSection intensity="subtle">
+            <Publications />
+          </ScrollAnimatedSection>
+        </div>
+        <div id="certificates">
+          <ScrollAnimatedSection intensity="strong">
+            <Certificates featuredOnly={true} />
+          </ScrollAnimatedSection>
+        </div>
+        <div id="githubstats">
+          <ScrollAnimatedSection intensity="medium">
+            <GithubStats />
+          </ScrollAnimatedSection>
+        </div>
         <div id="gallery"><Gallery /></div>
-        <div id="services"><Services /></div>
-        <div id="cv"><CV /></div>
-        <div id="contact"><Contact /></div>
+        <div id="services">
+          <ScrollAnimatedSection intensity="medium">
+            <Services />
+          </ScrollAnimatedSection>
+        </div>
+        <div id="cv">
+          <ScrollAnimatedSection intensity="subtle">
+            <CV />
+          </ScrollAnimatedSection>
+        </div>
+        <div id="contact">
+          <ScrollAnimatedSection intensity="medium">
+            <Contact />
+          </ScrollAnimatedSection>
+        </div>
       </Suspense>
       <footer className="site-footer">
         <span>© 2025 <a href="/">Arup Das</a>. Built with 💜 React &amp; Tailwind.</span>

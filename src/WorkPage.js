@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import ProjectDetails from './components/ProjectDetails';
 import Navbar from './Navbar';
+import { ScrollAnimatedSection } from './components/ScrollAnimatedSection';
 import { fetchAndMergeProjects, REPO_VIDEOS, REPO_HOMEPAGES, getRepoImage, langColors } from './utils/projectsFetcher';
 
 const GITHUB_USERNAME = 'arupdas0825';
@@ -440,71 +441,77 @@ export default function WorkPage() {
           <AnimatePresence mode="wait">
             {/* Category 1: Major Projects */}
             {categorized.major.length > 0 && (
-              <div className="work-category-section" style={{ marginTop: '32px' }}>
-                <div className="work-category-header">
-                  <h3 className="work-category-title">
-                    ✦ Major <span>Projects</span>
-                    <span className="work-category-count">{categorized.major.length}</span>
-                  </h3>
-                  <div className="work-category-line" />
+              <ScrollAnimatedSection intensity="medium">
+                <div className="work-category-section" style={{ marginTop: '32px' }}>
+                  <div className="work-category-header">
+                    <h3 className="work-category-title">
+                      ✦ Major <span>Projects</span>
+                      <span className="work-category-count">{categorized.major.length}</span>
+                    </h3>
+                    <div className="work-category-line" />
+                  </div>
+                  <div className="projects-grid">
+                    {categorized.major.map((repo, idx) => (
+                      <MajorProjectCard
+                        key={repo.id}
+                        repo={repo}
+                        idx={idx}
+                        onClick={() => setSelected(repo)}
+                      />
+                    ))}
+                  </div>
                 </div>
-                <div className="projects-grid">
-                  {categorized.major.map((repo, idx) => (
-                    <MajorProjectCard
-                      key={repo.id}
-                      repo={repo}
-                      idx={idx}
-                      onClick={() => setSelected(repo)}
-                    />
-                  ))}
-                </div>
-              </div>
+              </ScrollAnimatedSection>
             )}
 
             {/* Category 2: Secondary Projects */}
             {categorized.secondary.length > 0 && (
-              <div className="work-category-section">
-                <div className="work-category-header">
-                  <h3 className="work-category-title">
-                    ✦ Secondary <span>Architectures</span>
-                    <span className="work-category-count">{categorized.secondary.length}</span>
-                  </h3>
-                  <div className="work-category-line" />
+              <ScrollAnimatedSection intensity="medium">
+                <div className="work-category-section">
+                  <div className="work-category-header">
+                    <h3 className="work-category-title">
+                      ✦ Secondary <span>Architectures</span>
+                      <span className="work-category-count">{categorized.secondary.length}</span>
+                    </h3>
+                    <div className="work-category-line" />
+                  </div>
+                  <div className="secondary-projects-grid">
+                    {categorized.secondary.map((repo, idx) => (
+                      <SecondaryProjectCard
+                        key={repo.id}
+                        repo={repo}
+                        idx={idx}
+                        onClick={() => setSelected(repo)}
+                      />
+                    ))}
+                  </div>
                 </div>
-                <div className="secondary-projects-grid">
-                  {categorized.secondary.map((repo, idx) => (
-                    <SecondaryProjectCard
-                      key={repo.id}
-                      repo={repo}
-                      idx={idx}
-                      onClick={() => setSelected(repo)}
-                    />
-                  ))}
-                </div>
-              </div>
+              </ScrollAnimatedSection>
             )}
 
             {/* Category 3: College Projects */}
             {categorized.college.length > 0 && (
-              <div className="work-category-section">
-                <div className="work-category-header">
-                  <h3 className="work-category-title">
-                    ✦ Academic <span>Projects</span>
-                    <span className="work-category-count">{categorized.college.length}</span>
-                  </h3>
-                  <div className="work-category-line" />
+              <ScrollAnimatedSection intensity="subtle">
+                <div className="work-category-section">
+                  <div className="work-category-header">
+                    <h3 className="work-category-title">
+                      ✦ Academic <span>Projects</span>
+                      <span className="work-category-count">{categorized.college.length}</span>
+                    </h3>
+                    <div className="work-category-line" />
+                  </div>
+                  <div className="college-projects-grid">
+                    {categorized.college.map((repo, idx) => (
+                      <CollegeProjectCard
+                        key={repo.id}
+                        repo={repo}
+                        idx={idx}
+                        onClick={() => setSelected(repo)}
+                      />
+                    ))}
+                  </div>
                 </div>
-                <div className="college-projects-grid">
-                  {categorized.college.map((repo, idx) => (
-                    <CollegeProjectCard
-                      key={repo.id}
-                      repo={repo}
-                      idx={idx}
-                      onClick={() => setSelected(repo)}
-                    />
-                  ))}
-                </div>
-              </div>
+              </ScrollAnimatedSection>
             )}
           </AnimatePresence>
 
