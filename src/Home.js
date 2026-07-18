@@ -76,6 +76,12 @@ export default function Home() {
 
   return (
     <section className='home-section'>
+      {/* ── Background Depth & Cinematic Grid ── */}
+      <div className='hero-bg-depth'>
+        <div className='hero-perspective-grid' />
+        <div className='hero-ambient-mesh-1' />
+      </div>
+
       {/* ── LEFT: all original text & buttons ── */}
       <div className='hero-left fade-in' ref={addRef}>
         <div className='hero-badge'><span className='badge-dot' />Senior AI & Full-Stack Architect</div>
@@ -86,9 +92,28 @@ export default function Home() {
           <span className='hero-cursor'>|</span>
         </div>
         <p className='hero-desc'>
-          Engineering next-generation AI platforms and high-performance digital architectures. 
-          Focusing on cinematic user experiences and scalable technical excellence.
+          Engineering AI-powered clinical and developer platforms—from Studytra (Gemini-integrated counseling for thousands of students) to Lumira Health AI and DevTrack. Backed by 6+ industry certifications from Anthropic and Google, building high-performance, scalable full-stack architectures.
         </p>
+
+        {/* ── Stats / Trust Bar ── */}
+        <div className='hero-stats-bar'>
+          <div className='hero-stat-pill'>
+            <span className='hero-stat-val'>15+</span>
+            <span>Projects Shipped</span>
+          </div>
+          <div className='hero-stat-pill'>
+            <span className='hero-stat-val'>6+</span>
+            <span>Certifications</span>
+          </div>
+          <div className='hero-stat-pill'>
+            <span className='hero-stat-val'>20+</span>
+            <span>AI / Tech Stack</span>
+          </div>
+          <div className='hero-stat-pill'>
+            <span className='hero-stat-val'>2027</span>
+            <span>B.Tech CSE (AI/ML)</span>
+          </div>
+        </div>
 
         <div className='hero-location'>
           <span>
@@ -122,30 +147,55 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── RIGHT: Spline 3D Scene ── */}
+      {/* ── RIGHT: Spline 3D Scene + Violet Theme Rim & Grounding ── */}
       <div className='hero-visual fade-in' ref={addRef} style={{ animationDelay: '0.2s' }}>
         {/* Ambient glow behind the 3D scene */}
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'radial-gradient(ellipse 80% 80% at 60% 50%, rgba(139,92,246,0.13) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 80% 80% at 60% 50%, rgba(139,92,246,0.18) 0%, transparent 70%)',
           pointerEvents: 'none',
           zIndex: 0,
         }} />
         <div style={{
           width: '100%',
-          height: isMobile ? '340px' : '520px',
+          height: isMobile ? '360px' : '540px',
           position: 'relative',
           overflow: 'hidden',
           zIndex: 1,
         }}>
-          <SplineScene
-            scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-            style={{ width: '100%', height: '100%' }}
-          />
+          {/* Grounding contact shadow & platform plane beneath robot */}
+          <div className='hero-robot-ground' />
+
+          {/* Scaled/translated Spline wrapper to prevent leg cropping at bottom */}
+          <div style={{
+            width: '100%',
+            height: '100%',
+            transform: isMobile ? 'scale(0.94) translateY(-10px)' : 'scale(0.95) translateY(-16px)',
+            transformOrigin: 'center center',
+            filter: 'drop-shadow(0 0 24px rgba(139, 92, 246, 0.38)) contrast(1.03)',
+          }}>
+            <SplineScene
+              scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+              style={{ width: '100%', height: '100%' }}
+            />
+          </div>
+
+          {/* Violet/Purple Rim Light post-process overlay */}
+          <div className='hero-robot-glow-rim' />
+
+          {/* Bottom vignette fade so feet meet the bottom smoothly */}
+          <div className='hero-visual-bottom-fade' />
         </div>
       </div>
 
+      {/* ── Scroll Down Cue ── */}
+      <a href='#about' className='hero-scroll-cue'>
+        <div className='scroll-mouse'>
+          <div className='scroll-wheel' />
+        </div>
+        <span className='scroll-text'>Scroll to Explore</span>
+      </a>
     </section>
   );
 }

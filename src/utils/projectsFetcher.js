@@ -138,11 +138,8 @@ export const getRepoImage = (repo) => {
 };
 
 export const fetchAndMergeProjects = async () => {
-  console.log('[Projects Fetcher] Starting project aggregation...');
-
   // 1. Fetch local Projects Dump
   const dbProjects = PROJECTS_DUMP || [];
-  console.log(`[Projects Fetcher] Loaded ${dbProjects.length} records from local dump.`);
 
   // 2. Fetch GitHub Repositories
   let githubRepos = [];
@@ -155,7 +152,6 @@ export const fetchAndMergeProjects = async () => {
       const { data, ts } = JSON.parse(cached);
       if (Date.now() - ts < CACHE_TTL && Array.isArray(data) && data.length > 0) {
         githubRepos = data;
-        console.log(`[Projects Fetcher] Loaded ${githubRepos.length} repositories from localStorage cache.`);
       }
     }
   } catch (_) {}
@@ -170,7 +166,6 @@ export const fetchAndMergeProjects = async () => {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
         githubRepos = data.filter(r => !r.fork);
-        console.log(`[Projects Fetcher] Fetched ${githubRepos.length} own repositories from GitHub API.`);
         try {
           localStorage.setItem(CACHE_KEY, JSON.stringify({ data: githubRepos, ts: Date.now() }));
         } catch (_) {}
@@ -178,7 +173,6 @@ export const fetchAndMergeProjects = async () => {
         throw new Error('Empty GitHub API response');
       }
     } catch (err) {
-      console.warn('[Projects Fetcher] GitHub API failed, using fallback repos:', err.message);
       githubRepos = FALLBACK_REPOS;
     }
   }
@@ -187,8 +181,6 @@ export const fetchAndMergeProjects = async () => {
   const filteredGitHubRepos = githubRepos.filter(
     r => r.name.toLowerCase() !== GITHUB_USERNAME.toLowerCase()
   );
-
-  console.log(`[Projects Fetcher] Total own GitHub repositories to process: ${filteredGitHubRepos.length}`);
 
   // Helper to extract repo name from GitHub URL
   const getRepoNameFromUrl = (url) => {
@@ -305,19 +297,7 @@ export const fetchAndMergeProjects = async () => {
     }
 
     mergedRepos.push(mergedRepo);
-
-    // Dynamic Debug Logging
-    console.log(`[Projects Fetcher] Category assigned: "${mergedRepo.category}" | Language detected: "${mergedRepo.language}" for repo "${repo.name}"`);
   });
-
-  // 4. Check for missing repositories
-  const missingRepos = dbProjects.filter(p => !matchedDbIds.has(p.id));
-  if (missingRepos.length > 0) {
-    console.warn(`[Projects Fetcher] ${missingRepos.length} CMS projects not matched to active GitHub repositories:`);
-    missingRepos.forEach(p => {
-      console.warn(`  - "${p.title}" (GitHub URL: ${p.github_url})`);
-    });
-  }
 
   return mergedRepos;
 };
