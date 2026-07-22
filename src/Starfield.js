@@ -1,111 +1,115 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-export default function Starfield() {
-  const containerRef = useRef(null);
-  const particlesRef = useRef([]);
-  const rafRef = useRef(null);
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== 'undefined' && window.innerWidth < 768
-  );
+const Starfield = React.memo(function Starfield() {
+  const canvasRef = useRef(null);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize, { passive: true });
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-  useEffect(() => {
-    // Generate particles: 120-150 on Desktop, 40-60 on Mobile
-    const count = isMobile ? 50 : 135;
-    const particles = [];
-    const container = containerRef.current;
-    if (!container) return;
+    const ctx = canvas.getContext('2d', { alpha: true });
+    if (!ctx) return;
 
-    // Clear existing
-    container.innerHTML = '';
+    let animId = null;
+    let width = 0;
+    let height = 0;
+    let particles = [];
 
+    const isMobile = window.innerWidth < 768;
+    const isLowEnd = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || isMobile;
+    const count = isLowEnd ? 40 : 110;
+
+    const resize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.scale(dpr, dpr);
+    };
+
+    resize();
+
+    // Create particle array
     for (let i = 0; i < count; i++) {
-      const el = document.createElement('div');
-      
       const layer = i < count * 0.5 ? 0 : i < count * 0.8 ? 1 : 2;
-      
-      const size = layer === 0 ? Math.random() * 1.5 + 0.5
-                 : layer === 1 ? Math.random() * 2.0 + 1.5
-                 : Math.random() * 3.0 + 3.0;
+      const size = layer === 0 ? Math.random() * 1.2 + 0.5
+                 : layer === 1 ? Math.random() * 1.8 + 1.2
+                 : Math.random() * 2.5 + 2.0;
 
-      const opacity = layer === 0 ? Math.random() * 0.15 + 0.1
-                    : layer === 1 ? Math.random() * 0.25 + 0.15
-                    : Math.random() * 0.35 + 0.2;
+      const alpha = layer === 0 ? Math.random() * 0.12 + 0.08
+                  : layer === 1 ? Math.random() * 0.22 + 0.12
+                  : Math.random() * 0.32 + 0.18;
 
-      // Vertical drift speed
-      const speed = layer === 0 ? Math.random() * 0.4 + 0.2
-                  : layer === 1 ? Math.random() * 0.8 + 0.5
-                  : Math.random() * 1.5 + 1.0;
-
-      const x = Math.random() * 100; // vw
-      const startY = Math.random() * 100; // vh
-
-      el.style.position = 'absolute';
-      el.style.left = `${x}vw`;
-      el.style.top = '0px';
-      el.style.width = `${size}px`;
-      el.style.height = `${size}px`;
-      el.style.backgroundColor = 'var(--theme-primary)';
-      el.style.borderRadius = '50%';
-      el.style.opacity = opacity;
-      el.style.willChange = 'transform';
-      
-      // Initial transform
-      el.style.transform = `translate3d(0, ${startY}vh, 0)`;
-
-      container.appendChild(el);
+      const speed = layer === 0 ? Math.random() * 0.3 + 0.15
+                  : layer === 1 ? Math.random() * 0.6 + 0.35
+                  : Math.random() * 1.1 + 0.7;
 
       particles.push({
-        el,
-        y: startY,
+        x: Math.random() * width,
+        y: Math.random() * height,
+        size,
+        alpha,
         speed,
       });
     }
 
-    particlesRef.current = particles;
+    window.addEventListener('resize', resize, { passive: true });
 
     let lastTime = performance.now();
 
-    const animate = (time) => {
-      // Calculate delta to maintain speed across different refresh rates
-      const delta = (time - lastTime) / 16.66;
+    const render = (time) => {
+      if (document.hidden) {
+        animId = requestAnimationFrame(render);
+        return;
+      }
+
+      const dt = Math.min((time - lastTime) / 16.66, 3);
       lastTime = time;
 
+      ctx.clearRect(0, 0, width, height);
+
+      // Primary color: rgba(139, 92, 246)
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
-        p.y -= p.speed * 0.05 * delta; 
-        
-        // Wrap around when floating past top
+        p.y -= p.speed * 0.45 * dt;
+
         if (p.y < -10) {
-          p.y = 110;
+          p.y = height + 10;
+          p.x = Math.random() * width;
         }
-        p.el.style.transform = `translate3d(0, ${p.y}vh, 0)`;
+
+        ctx.fillStyle = `rgba(139, 92, 246, ${p.alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
       }
-      rafRef.current = requestAnimationFrame(animate);
+
+      animId = requestAnimationFrame(render);
     };
 
-    rafRef.current = requestAnimationFrame(animate);
+    animId = requestAnimationFrame(render);
 
     return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (animId) cancelAnimationFrame(animId);
+      window.removeEventListener('resize', resize);
     };
-  }, [isMobile]);
+  }, []);
 
   return (
-    <div 
-      ref={containerRef}
+    <canvas
+      ref={canvasRef}
       style={{
         position: 'fixed',
-        inset: '-10vh -10vw',
+        inset: 0,
+        width: '100vw',
+        height: '100vh',
         zIndex: 0,
         pointerEvents: 'none',
-        overflow: 'hidden'
-      }} 
+        overflow: 'hidden',
+      }}
     />
   );
-}
+});
+
+export default Starfield;

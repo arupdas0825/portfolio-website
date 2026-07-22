@@ -1,5 +1,5 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar         from './Navbar';
 import Home           from './Home';
 import About          from './About';
@@ -29,15 +29,37 @@ const PhotographyGallery = lazy(() => import('./PhotographyGallery'));
 const PublicationsPage = lazy(() => import('./PublicationsPage'));
 const AIPlaybackAssistant = lazy(() => import('./ai-playback/AIPlaybackAssistant'));
 
-
-
-
 const IS_TOUCH = typeof window !== 'undefined' &&
   (window.matchMedia('(pointer: coarse)').matches ||
    'ontouchstart' in window ||
    navigator.maxTouchPoints > 0);
 
-function MobileHeader() {
+function LazyMountSection({ children, rootMargin = '300px' }) {
+  const [shouldMount, setShouldMount] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (shouldMount) return;
+    const el = ref.current;
+    if (!el) return;
+
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldMount(true);
+          obs.disconnect();
+        }
+      },
+      { rootMargin }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [shouldMount, rootMargin]);
+
+  return <div ref={ref}>{shouldMount ? children : <div style={{ minHeight: '180px' }} />}</div>;
+}
+
+const MobileHeader = React.memo(function MobileHeader() {
   const playback = usePlaybackStore();
   if (!IS_TOUCH) return null;
 
@@ -77,11 +99,9 @@ function MobileHeader() {
       </div>
     </div>
   );
-}
+});
 
-
-
-function PortfolioHome() {
+const PortfolioHome = React.memo(function PortfolioHome() {
   return (
     <>
       <Navbar />
@@ -93,50 +113,72 @@ function PortfolioHome() {
       </div>
       <Suspense fallback={null}>
         <div id="techstack">
-          <ScrollAnimatedSection intensity="medium">
-            <TechStack />
-          </ScrollAnimatedSection>
+          <LazyMountSection>
+            <ScrollAnimatedSection intensity="medium">
+              <TechStack />
+            </ScrollAnimatedSection>
+          </LazyMountSection>
         </div>
         <div id="work">
-          <ScrollAnimatedSection intensity="medium">
-            <Work />
-          </ScrollAnimatedSection>
+          <LazyMountSection>
+            <ScrollAnimatedSection intensity="medium">
+              <Work />
+            </ScrollAnimatedSection>
+          </LazyMountSection>
         </div>
         <div id="internship">
-          <ScrollAnimatedSection intensity="subtle">
-            <Internship />
-          </ScrollAnimatedSection>
+          <LazyMountSection>
+            <ScrollAnimatedSection intensity="subtle">
+              <Internship />
+            </ScrollAnimatedSection>
+          </LazyMountSection>
         </div>
         <div id="publications">
-          <ScrollAnimatedSection intensity="subtle">
-            <Publications />
-          </ScrollAnimatedSection>
+          <LazyMountSection>
+            <ScrollAnimatedSection intensity="subtle">
+              <Publications />
+            </ScrollAnimatedSection>
+          </LazyMountSection>
         </div>
         <div id="certificates">
-          <ScrollAnimatedSection intensity="strong">
-            <Certificates featuredOnly={true} />
-          </ScrollAnimatedSection>
+          <LazyMountSection>
+            <ScrollAnimatedSection intensity="strong">
+              <Certificates featuredOnly={true} />
+            </ScrollAnimatedSection>
+          </LazyMountSection>
         </div>
         <div id="githubstats">
-          <ScrollAnimatedSection intensity="medium">
-            <GithubStats />
-          </ScrollAnimatedSection>
+          <LazyMountSection>
+            <ScrollAnimatedSection intensity="medium">
+              <GithubStats />
+            </ScrollAnimatedSection>
+          </LazyMountSection>
         </div>
-        <div id="gallery"><Gallery /></div>
+        <div id="gallery">
+          <LazyMountSection>
+            <Gallery />
+          </LazyMountSection>
+        </div>
         <div id="services">
-          <ScrollAnimatedSection intensity="medium">
-            <Services />
-          </ScrollAnimatedSection>
+          <LazyMountSection>
+            <ScrollAnimatedSection intensity="medium">
+              <Services />
+            </ScrollAnimatedSection>
+          </LazyMountSection>
         </div>
         <div id="cv">
-          <ScrollAnimatedSection intensity="subtle">
-            <CV />
-          </ScrollAnimatedSection>
+          <LazyMountSection>
+            <ScrollAnimatedSection intensity="subtle">
+              <CV />
+            </ScrollAnimatedSection>
+          </LazyMountSection>
         </div>
         <div id="contact">
-          <ScrollAnimatedSection intensity="medium">
-            <Contact />
-          </ScrollAnimatedSection>
+          <LazyMountSection>
+            <ScrollAnimatedSection intensity="medium">
+              <Contact />
+            </ScrollAnimatedSection>
+          </LazyMountSection>
         </div>
       </Suspense>
       <footer className="site-footer">
@@ -145,11 +187,9 @@ function PortfolioHome() {
       </footer>
     </>
   );
-}
+});
 
 function AppContent() {
-  const navigate = useNavigate();
-
   // Skip welcome if already seen this session (refresh-safe)
   const [stage, setStage] = useState(() => {
     const seen = sessionStorage.getItem('seenWelcome');
@@ -163,7 +203,6 @@ function AppContent() {
 
   return (
     <div className="app-container" style={{ position: 'relative', width: '100%', height: '100%' }}>
-      
       {/* ── STAGE 1: Welcome Intro (Overlay) ── */}
       {stage === 'welcome' && (
         <WelcomeScreen onEnter={handleWelcomeDone} />
@@ -200,7 +239,6 @@ function AppContent() {
             </Routes>
 
             {/* ── AI Playback Assistant (floating overlay) ── */}
-
             <AIPlaybackAssistant />
           </Suspense>
         </div>

@@ -47,7 +47,12 @@ const CursorParticles = () => {
 
     /* ── RAF render loop ── */
     const tick = (now) => {
-      const dt = now - lastFrameTime.current;
+      if (document.hidden) {
+        animId.current = requestAnimationFrame(tick);
+        return;
+      }
+
+      const dt = Math.min(now - lastFrameTime.current, 100);
       lastFrameTime.current = now;
 
       /* Spawn */
@@ -91,7 +96,7 @@ const CursorParticles = () => {
 
     return () => {
       window.removeEventListener('mousemove', onMove);
-      cancelAnimationFrame(animId.current);
+      if (animId.current) cancelAnimationFrame(animId.current);
     };
   }, []);
 

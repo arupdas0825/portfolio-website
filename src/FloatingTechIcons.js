@@ -61,6 +61,7 @@ function generateKeyframes(cfg) {
 function FloatingIcon({ Icon, label, color, config, index }) {
   const [hovered, setHovered] = useState(false);
   const iconRef = useRef(null);
+  const innerRef = useRef(null);
 
   // Spring-based magnetic values
   const magnetX = useMotionValue(0);
@@ -68,20 +69,20 @@ function FloatingIcon({ Icon, label, color, config, index }) {
   const springX = useSpring(magnetX, { stiffness: 200, damping: 20 });
   const springY = useSpring(magnetY, { stiffness: 200, damping: 20 });
 
-  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
-
-  const kf = generateKeyframes(config);
+  const kf = useMemo(() => generateKeyframes(config), [config]);
 
   const handleMouseMove = useCallback((e) => {
-    if (!iconRef.current) return;
+    if (!iconRef.current || !innerRef.current) return;
     const rect = iconRef.current.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
     const dx = (e.clientX - cx) / (rect.width / 2);
     const dy = (e.clientY - cy) / (rect.height / 2);
 
-    // 3D tilt
-    setTilt({ rotateX: -dy * 28, rotateY: dx * 28 });
+    // 3D tilt without React re-render
+    const rotX = -dy * 28;
+    const rotY = dx * 28;
+    innerRef.current.style.transform = `perspective(600px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
 
     // Magnetic pull toward cursor
     magnetX.set(dx * 12);
@@ -90,7 +91,9 @@ function FloatingIcon({ Icon, label, color, config, index }) {
 
   const handleMouseLeave = useCallback(() => {
     setHovered(false);
-    setTilt({ rotateX: 0, rotateY: 0 });
+    if (innerRef.current) {
+      innerRef.current.style.transform = 'perspective(600px) rotateX(0deg) rotateY(0deg)';
+    }
     magnetX.set(0);
     magnetY.set(0);
   }, [magnetX, magnetY]);
@@ -136,9 +139,10 @@ function FloatingIcon({ Icon, label, color, config, index }) {
         }}
       >
         <div
+          ref={innerRef}
           className="floating-icon-inner"
           style={{
-            transform: `perspective(600px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
+            transform: 'perspective(600px) rotateX(0deg) rotateY(0deg)',
             boxShadow: hovered
               ? `0 0 30px ${color}88, 0 0 60px ${color}44, 0 0 90px ${color}22, 0 10px 40px rgba(0,0,0,0.5)`
               : `0 0 12px ${color}22, 0 4px 16px rgba(0,0,0,0.3)`,
@@ -166,14 +170,14 @@ function FloatingIcon({ Icon, label, color, config, index }) {
   );
 }
 
-export default function FloatingTechIcons() {
+export default React.memo(function FloatingTechIcons() {
   const [isMobile, setIsMobile] = useState(false);
   const blackholeRef = useRef(null);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
-    window.addEventListener('resize', check);
+    window.addEventListener('resize', check, { passive: true });
     return () => window.removeEventListener('resize', check);
   }, []);
 
@@ -188,7 +192,7 @@ export default function FloatingTechIcons() {
       blackholeRef.current.style.transform =
         `translate(-50%, -50%) translate(${dx * 6}px, ${dy * 4}px)`;
     };
-    window.addEventListener('mousemove', handleMouse);
+    window.addEventListener('mousemove', handleMouse, { passive: true });
     return () => window.removeEventListener('mousemove', handleMouse);
   }, []);
 

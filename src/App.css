@@ -6226,5 +6226,38 @@ a.contact-detail-val-v2:hover { color: var(--theme-light); }
   }
 }
 
+/* ─── Production-Grade Performance & GPU Acceleration Overrides ─── */
+.home-section,
+.page-section,
+.work-card,
+.cert-card,
+.premium-project-card {
+  contain: content;
+  transform: translateZ(0);
+}
+
+/* Fallback for touch & low-power devices: replace heavy composite backdrop-filters */
+@media (max-width: 768px), (pointer: coarse) {
+  .work-category-tabs,
+  .mobile-header-glass,
+  .frosted-blur,
+  .site-nav {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(10, 8, 22, 0.95) !important;
+  }
+}
+
+/* Reduced Motion Safety */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
 
 
