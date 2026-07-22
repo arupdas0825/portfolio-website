@@ -135,22 +135,21 @@ function OrbitingImageCard({ imageConfig, onSelect }) {
             width: isMobile ? '200px' : '290px',
             height: isMobile ? '140px' : '200px',
             borderRadius: '24px',
-            background: 'rgba(255, 255, 255, 0.05)',
+            background: 'rgba(12, 9, 24, 0.92)',
             border: hovered ? '2px solid #00f2fe' : '1px solid rgba(255, 255, 255, 0.15)',
             boxShadow: hovered 
-              ? '0 0 35px rgba(0, 242, 254, 0.6), inset 0 0 15px rgba(0, 242, 254, 0.3)' 
-              : '0 15px 35px rgba(0, 0, 0, 0.5)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            transition: 'all 0.35s cubic-bezier(0.22, 1, 0.36, 1)',
-            transform: hovered ? 'scale(1.15)' : 'scale(1)',
+              ? '0 0 30px rgba(0, 242, 254, 0.5)' 
+              : '0 10px 25px rgba(0, 0, 0, 0.4)',
+            transition: 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease, box-shadow 0.3s ease',
+            transform: hovered ? 'scale(1.12)' : 'scale(1)',
             cursor: 'pointer',
             padding: isMobile ? '4px' : '6px',
             boxSizing: 'border-box',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            willChange: 'transform'
           }}
         >
           <div style={{
@@ -197,47 +196,45 @@ function OrbitingImageCard({ imageConfig, onSelect }) {
   );
 }
 
-// Particle Sphere and Orbiting Images Combined Scene
+// Particle Sphere and Orbiting Images Combined Scene (High Performance Instanced Points)
 function ParticleGalleryScene({ photosList, isMobile, onSelect }) {
   const groupRef = useRef();
 
-  // Settings matching user's request
-  const PARTICLE_COUNT = isMobile ? 300 : 750; // reduced particle count
-  const PARTICLE_SIZE_MIN = 0.005; // smaller particle size
-  const PARTICLE_SIZE_MAX = 0.015; // smaller particle size
+  const PARTICLE_COUNT = isMobile ? 250 : 500;
   const SPHERE_RADIUS = isMobile ? 6 : 9;
   const POSITION_RANDOMNESS = isMobile ? 2.5 : 4;
-  const ROTATION_SPEED_Y = 0.001; // slow continuous orbit rotation
+  const ROTATION_SPEED_Y = 0.001;
 
-  // Generate particles distributed on Fibonacci sphere
-  const particles = useMemo(() => {
-    const list = [];
+  // Single Instanced Points Geometry (1 draw call for all particles)
+  const particlesGeometry = useMemo(() => {
+    const positions = new Float32Array(PARTICLE_COUNT * 3);
+    const colors = new Float32Array(PARTICLE_COUNT * 3);
     const colorPalette = [
-      new THREE.Color('#00f2fe'), // cyan
-      new THREE.Color('#3b82f6'), // blue
-      new THREE.Color('#8a5cf6'), // purple
+      new THREE.Color('#00f2fe'),
+      new THREE.Color('#3b82f6'),
+      new THREE.Color('#8a5cf6'),
     ];
 
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       const phi = Math.acos(-1 + (2 * i) / PARTICLE_COUNT);
       const theta = Math.sqrt(PARTICLE_COUNT * Math.PI) * phi;
-
       const radiusVariation = SPHERE_RADIUS + (Math.random() - 0.5) * POSITION_RANDOMNESS;
 
-      const x = radiusVariation * Math.cos(theta) * Math.sin(phi);
-      const y = radiusVariation * Math.cos(phi);
-      const z = radiusVariation * Math.sin(theta) * Math.sin(phi);
+      positions[i * 3] = radiusVariation * Math.cos(theta) * Math.sin(phi);
+      positions[i * 3 + 1] = radiusVariation * Math.cos(phi);
+      positions[i * 3 + 2] = radiusVariation * Math.sin(theta) * Math.sin(phi);
 
-      const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
-
-      list.push({
-        position: [x, y, z],
-        scale: Math.random() * (PARTICLE_SIZE_MAX - PARTICLE_SIZE_MIN) + PARTICLE_SIZE_MIN,
-        color: color
-      });
+      const c = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+      colors[i * 3] = c.r;
+      colors[i * 3 + 1] = c.g;
+      colors[i * 3 + 2] = c.b;
     }
-    return list;
-  }, [PARTICLE_COUNT, SPHERE_RADIUS, POSITION_RANDOMNESS, PARTICLE_SIZE_MIN, PARTICLE_SIZE_MAX]);
+
+    const geom = new THREE.BufferGeometry();
+    geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    return geom;
+  }, [PARTICLE_COUNT, SPHERE_RADIUS, POSITION_RANDOMNESS]);
 
   // Generate orbiting images positions facing outward
   const orbitingImages = useMemo(() => {
@@ -261,9 +258,6 @@ function ParticleGalleryScene({ photosList, isMobile, onSelect }) {
       matrix.lookAt(position, position.clone().add(outwardDirection), new THREE.Vector3(0, 1, 0));
       euler.setFromRotationMatrix(matrix);
 
-      // Face the correct direction without flipping upside down
-      // euler.z += Math.PI;
-
       images.push({
         photo: photosList[i],
         position: [x, y, z],
@@ -284,13 +278,16 @@ function ParticleGalleryScene({ photosList, isMobile, onSelect }) {
 
   return (
     <group ref={groupRef}>
-      {/* 3D Particle Starfield */}
-      {particles.map((particle, index) => (
-        <mesh key={`part-${index}`} position={particle.position} scale={particle.scale}>
-          <sphereGeometry args={[1, 6, 6]} />
-          <meshBasicMaterial color={particle.color} transparent opacity={0.8} />
-        </mesh>
-      ))}
+      {/* 1 WebGL Draw Call Instanced Particle Starfield */}
+      <points geometry={particlesGeometry}>
+        <pointsMaterial
+          size={isMobile ? 0.1 : 0.15}
+          vertexColors
+          transparent
+          opacity={0.8}
+          sizeAttenuation
+        />
+      </points>
 
       {/* Orbiting Images */}
       {orbitingImages.map((image, index) => (
@@ -309,6 +306,20 @@ export default function Gallery() {
   const [photosList, setPhotosList] = useState([]);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const canvasContainerRef = useRef(null);
+  const [isInView, setIsInView] = useState(false);
+
+  // Pause WebGL rendering loop when section is not in viewport
+  useEffect(() => {
+    const el = canvasContainerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInView(entry.isIntersecting),
+      { threshold: 0.05 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   // Load photos database
   useEffect(() => {
@@ -405,18 +416,19 @@ export default function Gallery() {
           </h2>
           <div className="section-line" />
           <p className="section-sub">
-            Drag to orbit the 3D sphere. Scroll to zoom. Click any photo to inspect details.
+            Drag to orbit the 3D gallery. Click any photo to inspect full details.
           </p>
         </motion.div>
       </div>
 
       {/* ── 3D CANVAS WRAPPER ── */}
-      <div className="canvas-container">
+      <div className="canvas-container" ref={canvasContainerRef}>
         <Suspense fallback={null}>
           <Canvas
+            frameloop={isInView ? "always" : "never"}
             camera={{ position: [-10, 1.5, 10], fov: 50 }}
-            gl={{ antialias: true, alpha: true }}
-            dpr={[1, 2]}
+            gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+            dpr={[1, 1.5]}
           >
             <ambientLight intensity={0.6} />
             <pointLight position={[10, 10, 10]} intensity={1.2} />
@@ -428,11 +440,10 @@ export default function Gallery() {
             />
 
             <OrbitControls 
-              enablePan={true} 
-              enableZoom={true} 
+              enablePan={false} 
+              enableZoom={false} 
               enableRotate={true} 
-              minDistance={4} 
-              maxDistance={22} 
+              rotateSpeed={0.5}
             />
           </Canvas>
         </Suspense>
