@@ -34,31 +34,6 @@ const IS_TOUCH = typeof window !== 'undefined' &&
    'ontouchstart' in window ||
    navigator.maxTouchPoints > 0);
 
-function LazyMountSection({ children, rootMargin = '300px' }) {
-  const [shouldMount, setShouldMount] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    if (shouldMount) return;
-    const el = ref.current;
-    if (!el) return;
-
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setShouldMount(true);
-          obs.disconnect();
-        }
-      },
-      { rootMargin }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [shouldMount, rootMargin]);
-
-  return <div ref={ref}>{shouldMount ? children : <div style={{ minHeight: '180px' }} />}</div>;
-}
-
 const MobileHeader = React.memo(function MobileHeader() {
   const playback = usePlaybackStore();
   if (!IS_TOUCH) return null;
@@ -113,72 +88,52 @@ const PortfolioHome = React.memo(function PortfolioHome() {
       </div>
       <Suspense fallback={null}>
         <div id="techstack">
-          <LazyMountSection>
-            <ScrollAnimatedSection intensity="medium">
-              <TechStack />
-            </ScrollAnimatedSection>
-          </LazyMountSection>
+          <ScrollAnimatedSection intensity="medium">
+            <TechStack />
+          </ScrollAnimatedSection>
         </div>
         <div id="work">
-          <LazyMountSection>
-            <ScrollAnimatedSection intensity="medium">
-              <Work />
-            </ScrollAnimatedSection>
-          </LazyMountSection>
+          <ScrollAnimatedSection intensity="medium">
+            <Work />
+          </ScrollAnimatedSection>
         </div>
         <div id="internship">
-          <LazyMountSection>
-            <ScrollAnimatedSection intensity="subtle">
-              <Internship />
-            </ScrollAnimatedSection>
-          </LazyMountSection>
+          <ScrollAnimatedSection intensity="subtle">
+            <Internship />
+          </ScrollAnimatedSection>
         </div>
         <div id="publications">
-          <LazyMountSection>
-            <ScrollAnimatedSection intensity="subtle">
-              <Publications />
-            </ScrollAnimatedSection>
-          </LazyMountSection>
+          <ScrollAnimatedSection intensity="subtle">
+            <Publications />
+          </ScrollAnimatedSection>
         </div>
         <div id="certificates">
-          <LazyMountSection>
-            <ScrollAnimatedSection intensity="strong">
-              <Certificates featuredOnly={true} />
-            </ScrollAnimatedSection>
-          </LazyMountSection>
+          <ScrollAnimatedSection intensity="strong">
+            <Certificates featuredOnly={true} />
+          </ScrollAnimatedSection>
         </div>
         <div id="githubstats">
-          <LazyMountSection>
-            <ScrollAnimatedSection intensity="medium">
-              <GithubStats />
-            </ScrollAnimatedSection>
-          </LazyMountSection>
+          <ScrollAnimatedSection intensity="medium">
+            <GithubStats />
+          </ScrollAnimatedSection>
         </div>
         <div id="gallery">
-          <LazyMountSection>
-            <Gallery />
-          </LazyMountSection>
+          <Gallery />
         </div>
         <div id="services">
-          <LazyMountSection>
-            <ScrollAnimatedSection intensity="medium">
-              <Services />
-            </ScrollAnimatedSection>
-          </LazyMountSection>
+          <ScrollAnimatedSection intensity="medium">
+            <Services />
+          </ScrollAnimatedSection>
         </div>
         <div id="cv">
-          <LazyMountSection>
-            <ScrollAnimatedSection intensity="subtle">
-              <CV />
-            </ScrollAnimatedSection>
-          </LazyMountSection>
+          <ScrollAnimatedSection intensity="subtle">
+            <CV />
+          </ScrollAnimatedSection>
         </div>
         <div id="contact">
-          <LazyMountSection>
-            <ScrollAnimatedSection intensity="medium">
-              <Contact />
-            </ScrollAnimatedSection>
-          </LazyMountSection>
+          <ScrollAnimatedSection intensity="medium">
+            <Contact />
+          </ScrollAnimatedSection>
         </div>
       </Suspense>
       <footer className="site-footer">

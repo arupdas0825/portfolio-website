@@ -107,11 +107,9 @@ const ProjectDetails = ({ repo, onClose }) => {
             </div>
           </header>
 
-          {/* ISOLATED SCROLL AREA - Prevent Lenis Scroll Chaining */}
           <div 
             className="pd-pro-scroll-container" 
             ref={scrollContainerRef}
-            data-lenis-prevent="true"
           >
             
             {/* HERO SECTION */}

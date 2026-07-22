@@ -65,24 +65,7 @@ body {
   border-radius: 3px;
 }
 
-/* ============================================================
-   LENIS SMOOTH SCROLL BOILERPLATE
-   ============================================================ */
-html.lenis, html.lenis body {
-  height: auto;
-}
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-.lenis.lenis-scrolling iframe {
-  pointer-events: none;
-}
+
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
