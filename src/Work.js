@@ -386,13 +386,13 @@ const Work = () => {
   useEffect(() => {
     if (!titleRef.current) return;
     gsap.fromTo(titleRef.current,
-      { y: 50, opacity: 0 },
+      { y: 16, opacity: 0 },
       {
-        y: 0, opacity: 1, duration: 0.8,
-        ease: 'power3.out',
+        y: 0, opacity: 1, duration: 0.35,
+        ease: 'power2.out',
         scrollTrigger: {
           trigger: titleRef.current,
-          start: 'top 85%',
+          start: 'top 98%',
           once: true,
         },
       }
@@ -453,7 +453,7 @@ const Work = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }),
-      { threshold: 0.08 }
+      { threshold: 0.01, rootMargin: '200px 0px 50px 0px' }
     );
     fadeRefs.current.forEach(el => el && observer.observe(el));
     return () => observer.disconnect();

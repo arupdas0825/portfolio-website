@@ -12,15 +12,15 @@ export default function Internship() {
   useEffect(() => {
     if (!titleRef.current) return;
     gsap.fromTo(titleRef.current,
-      { y: 30, opacity: 0 },
+      { y: 16, opacity: 0 },
       { 
         y: 0, 
         opacity: 1, 
-        duration: 0.8, 
-        ease: 'power3.out',
+        duration: 0.35, 
+        ease: 'power2.out',
         scrollTrigger: { 
           trigger: titleRef.current, 
-          start: 'top 90%', 
+          start: 'top 98%', 
           once: true 
         } 
       }

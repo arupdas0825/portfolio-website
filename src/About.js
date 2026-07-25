@@ -11,20 +11,20 @@ export default function About() {
   const [profile] = useState({
     bio1: 'I am a detail-oriented Computer Science & Engineering student at Brainware University, specialising in Artificial Intelligence and Machine Learning. Based in Kolkata, I am passionate about bridging the gap between robust software architecture and intelligent system design.',
     bio2: 'With a strong foundation in Python, Java, C/C++, and scalable backend databases, I focus on building stable applications. My technical toolkit is complemented by a creative background in Photography and Professional Video Editing.',
-    photoUrl: '/arup.jpg'
+    photoUrl: '/arup.png'
   });
 
   // ── GSAP ScrollTrigger on section heading ──────────────────────────────
   useEffect(() => {
     if (!titleRef.current) return;
     gsap.fromTo(titleRef.current,
-      { y: 50, opacity: 0 },
+      { y: 16, opacity: 0 },
       {
-        y: 0, opacity: 1, duration: 0.8,
-        ease: 'power3.out',
+        y: 0, opacity: 1, duration: 0.35,
+        ease: 'power2.out',
         scrollTrigger: {
           trigger: titleRef.current,
-          start: 'top 85%',
+          start: 'top 98%',
           once: true,
         },
       }
@@ -92,7 +92,7 @@ export default function About() {
                 className="about-photo-img"
                 onError={e => {
                   e.target.onerror = null;
-                  e.target.src = '/arup.jpg';
+                  e.target.src = '/arup.png';
                 }}
               />
             </div>

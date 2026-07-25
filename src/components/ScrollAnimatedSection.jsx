@@ -7,17 +7,17 @@ export const ScrollAnimatedSection = React.memo(function ScrollAnimatedSection({
   intensity = "medium", // "subtle" | "medium" | "strong"
 }) {
   const presets = {
-    subtle: { y: 24 },
-    medium: { y: 36 },
-    strong: { y: 48 },
-  }[intensity] || { y: 36 };
+    subtle: { y: 12 },
+    medium: { y: 16 },
+    strong: { y: 20 },
+  }[intensity] || { y: 16 };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: presets.y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      viewport={{ once: true, margin: "150px 0px 50px 0px" }}
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       className={className}
     >
       {children}

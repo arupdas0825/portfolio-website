@@ -340,6 +340,57 @@ export const PROJECTS_DATA = {
       github: 'https://github.com/arupdas0825/Lumira-Health-AI',
       demo: null
     }
+  },
+  'TaskForge': {
+    title: 'TaskForge AI',
+    tagline: 'Modern AI-Powered Productivity Platform',
+    status: 'Active',
+    year: '2026',
+    timeline: '2 Months',
+    role: 'Lead Full-Stack Engineer',
+    banner: '/TaskForge.png',
+    description: 'TaskForge AI is a modern AI-powered productivity platform inspired by Notion, TickTick, and Todoist. It features smart task management, AI-driven automation, and intuitive workflows.',
+    fullStack: {
+      languages: ['JavaScript', 'TypeScript', 'HTML5', 'CSS3'],
+      frontend: ['React', 'Tailwind CSS', 'Framer Motion'],
+      backend: ['Node.js', 'Express'],
+      ai: ['Google Gemini API'],
+      tools: ['Git', 'GitHub', 'Vercel']
+    },
+    implementationDetails: {
+      architecture: 'Modular React component hierarchy integrated with RESTful API endpoints for AI task parsing.',
+      workflow: 'Agile development iteration with automated component testing.',
+      rendering: 'Client-side reactive rendering with dynamic modal management and animations.',
+      performance: 'Optimized state rendering and lightweight asset delivery for instant response.',
+      responsive: 'Fluid grid layout designed for desktop productivity workstations and mobile screens.'
+    },
+    planningDetails: {
+      origin: 'Conceived to revolutionize personal and team task management with intelligent automation.',
+      problem: 'Traditional task apps lack smart AI prioritization and dynamic prompt-to-task parsing.',
+      decisions: 'Chose React and Tailwind CSS for rapid UI development and fluid interactive animations.',
+      priority: 'Delivering a crisp, responsive, user-friendly interface.'
+    },
+    futureRoadmap: [
+      { title: 'Real-time Sync', description: 'Multi-device WebSocket synchronization.', status: 'planned' },
+      { title: 'Team Workspaces', description: 'Shared task boards and role permissions.', status: 'upcoming' }
+    ],
+    features: [
+      { icon: '⚡', title: 'Smart Tasking', explanation: 'Instant AI task breakdown and priority estimation.' },
+      { icon: '🎨', title: 'Sleek Dashboard', explanation: 'Intuitive modern UI with dark-mode aesthetic.' }
+    ],
+    challenges: {
+      problem: 'Designing an intuitive UI for complex AI-driven task workflows.',
+      solution: 'Used modular UI components and responsive state flows.',
+      decision: 'Selected Gemini API for fast, context-aware prompt parsing.'
+    },
+    metrics: {
+      precision: '99% Uptime',
+      latency: '< 100ms Action Latency'
+    },
+    links: {
+      github: 'https://github.com/arupdas0825/TaskForge',
+      demo: null
+    }
   }
 };
 

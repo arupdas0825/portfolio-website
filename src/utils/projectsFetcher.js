@@ -29,6 +29,8 @@ export const REPO_IMAGES = {
   'Space-Combat-Game': '/Space-Combat-Game.png',
   'Dev-Track': '/Dev-Track.png',
   'Lumira-Health-AI': '/Lumira-Health-AI.jpg',
+  'TaskForge': '/TaskForge.png',
+  'taskforge': '/TaskForge.png',
 };
 
 export const REPO_VIDEOS = {

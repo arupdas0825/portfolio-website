@@ -208,5 +208,19 @@ export const PROJECTS_DUMP = [
     "featured": true,
     "technologies": "TypeScript, Next.js, React, Tailwind CSS, Google Gemini API, GitHub API, Recharts, Lucide Icons, Vercel",
     "display_order": 7
+  },
+  {
+    "id": 101,
+    "created_at": "2026-07-25T00:00:00.000000+00:00",
+    "title": "TaskForge",
+    "description": "TaskForge AI is a modern AI-powered productivity platform inspired by Notion, TickTick, and Todoist. It features smart task management, AI-driven automation, and intuitive workflows.",
+    "image": "/TaskForge.png",
+    "video": null,
+    "github_url": "https://github.com/arupdas0825/TaskForge",
+    "live_url": null,
+    "catagory": "Major",
+    "featured": true,
+    "technologies": "JavaScript, React, Node.js, Express, Gemini AI, Tailwind CSS",
+    "display_order": 4
   }
 ];

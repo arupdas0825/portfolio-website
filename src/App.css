@@ -520,7 +520,7 @@ body::before {
 }
 
 /* ===== FADE IN ANIMATION ===== */
-.fade-in { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.fade-in { opacity: 0; transform: translateY(12px); transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform, opacity; }
 .fade-in.visible { opacity: 1; transform: translateY(0); }
 
 /* ===== BUTTONS ===== */
@@ -587,6 +587,33 @@ body::before {
   font-family: 'Syne', sans-serif;
   font-size: clamp(2.8rem, 5vw, 4.2rem);
   font-weight: 800; line-height: 1.1; color: var(--white); margin-bottom: 10px;
+}
+.hero-name-particle-container {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  height: 175px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  overflow: visible;
+}
+.hero-name-particle-canvas {
+  display: block;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+@media (max-width: 768px) {
+  .hero-name-particle-container {
+    height: 145px;
+    max-width: 100%;
+  }
+}
+@media (max-width: 480px) {
+  .hero-name-particle-container {
+    height: 125px;
+  }
 }
 .hero-role {
   font-family: 'Syne', sans-serif;

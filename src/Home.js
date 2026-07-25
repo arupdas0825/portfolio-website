@@ -6,6 +6,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import SplineScene from './components/SplineScene';
+import ParticleText from './components/ParticleText';
 
 // Mobile detection — safe at module level in CRA (browser env)
 const IS_TOUCH = typeof window !== 'undefined' &&
@@ -86,7 +87,7 @@ export default function Home() {
       <div className='hero-left fade-in' ref={addRef} style={{ position: 'relative', zIndex: 20 }}>
         <div className='hero-badge'><span className='badge-dot' />Senior AI & Full-Stack Architect</div>
         <div className='hero-code-tag'>&lt; SYSTEM ARCHITECT /&gt;</div>
-        <h1 className='hero-name'>Hi, I'm Arup Das</h1>
+        <ParticleText />
         <div className='hero-role-wrap'>
           <span className='hero-role-text'>{typedText}</span>
           <span className='hero-cursor'>|</span>

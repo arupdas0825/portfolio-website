@@ -4,7 +4,7 @@ export const PROFILE_DUMP = [
     "full_name": "Arup Das",
     "title": "Computer Science & Engineering Student",
     "primary_bio": "I am a detail-oriented Computer Science & Engineering student at Brainware University, specialising in Artificial Intelligence and Machine Learning. Based in Kolkata, I am passionate about bridging the gap between robust software architecture and intelligent system design.",
-    "profile_image_url": "/arup.jpg",
+    "profile_image_url": "/arup.png",
     "location": "Kolkata, West Bengal, India",
     "email": "dasarup0804@gmail.com",
     "phone": "",
