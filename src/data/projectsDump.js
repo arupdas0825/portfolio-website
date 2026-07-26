@@ -222,5 +222,19 @@ export const PROJECTS_DUMP = [
     "featured": true,
     "technologies": "JavaScript, React, Node.js, Express, Gemini AI, Tailwind CSS",
     "display_order": 4
+  },
+  {
+    "id": 102,
+    "created_at": "2026-07-26T00:00:00.000000+00:00",
+    "title": "LedgerWise",
+    "description": "LedgerWise — An offline-first personal finance and budget tracking app built with React, Firebase, and Dexie.",
+    "image": "/LedgerWise.png",
+    "video": null,
+    "github_url": "https://github.com/arupdas0825/LedgerWise",
+    "live_url": null,
+    "catagory": "Major",
+    "featured": true,
+    "technologies": "JavaScript, React, Firebase, Dexie.js, Tailwind CSS",
+    "display_order": 5
   }
 ];

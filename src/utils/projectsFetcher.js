@@ -31,6 +31,9 @@ export const REPO_IMAGES = {
   'Lumira-Health-AI': '/Lumira-Health-AI.jpg',
   'TaskForge': '/TaskForge.png',
   'taskforge': '/TaskForge.png',
+  'LedgerWise': '/LedgerWise.png',
+  'ledgerwise': '/LedgerWise.png',
+  'LadgerWise': '/LadgerWise.png',
 };
 
 export const REPO_VIDEOS = {
@@ -126,6 +129,13 @@ const FALLBACK_REPOS = [
     language: 'Python', stargazers_count: 5, forks_count: 0,
     html_url: 'https://github.com/arupdas0825/Lumira-Health-AI', homepage: '',
     updated_at: '2026-07-11T23:15:23Z', pushed_at: '2026-07-11T23:15:23Z'
+  },
+  {
+    id: 12, name: 'LedgerWise', fork: false,
+    description: 'LedgerWise — An offline-first personal finance and budget tracking app built with React, Firebase, and Dexie.',
+    language: 'JavaScript', stargazers_count: 1, forks_count: 0,
+    html_url: 'https://github.com/arupdas0825/LedgerWise', homepage: '',
+    updated_at: '2024-08-15T00:00:00Z', pushed_at: '2024-08-15T00:00:00Z'
   },
 ];
 

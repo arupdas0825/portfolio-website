@@ -391,6 +391,56 @@ export const PROJECTS_DATA = {
       github: 'https://github.com/arupdas0825/TaskForge',
       demo: null
     }
+  },
+  'LedgerWise': {
+    title: 'LedgerWise',
+    tagline: 'Offline-First Personal Finance & Budget Tracking',
+    status: 'Completed',
+    year: '2024',
+    timeline: '2 Months',
+    role: 'Lead Full-Stack Engineer',
+    banner: '/LedgerWise.png',
+    description: 'LedgerWise — An offline-first personal finance and budget tracking app built with React, Firebase, and Dexie.',
+    fullStack: {
+      languages: ['JavaScript', 'HTML5', 'CSS3'],
+      frontend: ['React', 'Tailwind CSS', 'Dexie.js'],
+      backend: ['Firebase Auth', 'Firestore Sync'],
+      tools: ['Git', 'GitHub']
+    },
+    implementationDetails: {
+      architecture: 'Offline-first architecture powered by Dexie IndexedDB with cloud sync via Firebase.',
+      workflow: 'Component-driven layout with dynamic budget calculations and reporting.',
+      rendering: 'Client-side reactive rendering.',
+      performance: 'Sub-50ms local database queries and instant offline capabilities.',
+      responsive: 'Fluid grid layout designed for mobile and desktop finance management.'
+    },
+    planningDetails: {
+      origin: 'Built to manage personal finances reliably even without an active internet connection.',
+      problem: 'Most budget apps require continuous internet and suffer latency during transaction logging.',
+      decisions: 'Chose Dexie IndexedDB for robust local storage with background Firebase synchronization.',
+      priority: 'Fast offline transaction entry and clear visual financial charts.'
+    },
+    futureRoadmap: [
+      { title: 'Multi-Currency', description: 'Support for real-time exchange rates and multiple currencies.', status: 'planned' },
+      { title: 'Export Reports', description: 'PDF and CSV report export functionality.', status: 'upcoming' }
+    ],
+    features: [
+      { icon: '💳', title: 'Offline-First', explanation: 'Instant transaction logging with local Dexie storage.' },
+      { icon: '📊', title: 'Budget Analytics', explanation: 'Visual breakdown of monthly income, expenses, and savings.' }
+    ],
+    challenges: {
+      problem: 'Handling conflict resolution when syncing offline IndexedDB data to Firebase Cloud.',
+      solution: 'Implemented timestamp-based optimistic sync resolution.',
+      decision: 'Selected Dexie.js for lightweight, intuitive IndexedDB management.'
+    },
+    metrics: {
+      precision: '100% Offline Access',
+      latency: '< 20ms Local Database Query'
+    },
+    links: {
+      github: 'https://github.com/arupdas0825/LedgerWise',
+      demo: null
+    }
   }
 };
 

@@ -27,6 +27,9 @@ const REPO_IMAGES = {
   'HyperLane': '/HyperLane.jpeg',
   'Space-Combat-Game': '/Space-Combat-Game.png',
   'Dev-Track': '/Dev-Track.png',
+  'LedgerWise': '/LedgerWise.png',
+  'ledgerwise': '/LedgerWise.png',
+  'LadgerWise': '/LadgerWise.png',
 };
 
 const REPO_VIDEOS = {
