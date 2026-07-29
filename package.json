@@ -41,7 +41,8 @@
       "^react-router/dom$": "<rootDir>/node_modules/react-router/dist/development/dom-export.js",
       "^react-router$": "<rootDir>/node_modules/react-router/dist/development/index.js",
       "^gsap/ScrollTrigger$": "<rootDir>/node_modules/gsap/dist/ScrollTrigger.js",
-      "^gsap$": "<rootDir>/node_modules/gsap/dist/gsap.js"
+      "^gsap$": "<rootDir>/node_modules/gsap/dist/gsap.js",
+      "^@splinetool/react-spline$": "<rootDir>/node_modules/@splinetool/react-spline/dist/react-spline.js"
     }
   },
   "browserslist": {
