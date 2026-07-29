@@ -27,19 +27,39 @@ function useTypewriter(words, ts = 80, ds = 40, pt = 1800) {
   const [disp, setDisp] = useState('');
   const [wi, setWi]     = useState(0);
   const [del, setDel]   = useState(false);
+
   useEffect(() => {
+    let timerId;
+    let pauseTimerId;
     const cur = words[wi % words.length];
-    const t = setTimeout(() => {
-      if (!del) {
-        setDisp(cur.slice(0, disp.length + 1));
-        if (disp.length + 1 === cur.length) setTimeout(() => setDel(true), pt);
+
+    if (!del) {
+      if (disp.length < cur.length) {
+        timerId = setTimeout(() => {
+          setDisp(cur.slice(0, disp.length + 1));
+        }, ts);
       } else {
-        setDisp(cur.slice(0, disp.length - 1));
-        if (disp.length - 1 === 0) { setDel(false); setWi(i => (i + 1) % words.length); }
+        pauseTimerId = setTimeout(() => {
+          setDel(true);
+        }, pt);
       }
-    }, del ? ds : ts);
-    return () => clearTimeout(t);
+    } else {
+      if (disp.length > 0) {
+        timerId = setTimeout(() => {
+          setDisp(cur.slice(0, disp.length - 1));
+        }, ds);
+      } else {
+        setDel(false);
+        setWi(i => (i + 1) % words.length);
+      }
+    }
+
+    return () => {
+      clearTimeout(timerId);
+      clearTimeout(pauseTimerId);
+    };
   }, [disp, del, wi, words, ts, ds, pt]);
+
   return disp;
 }
 

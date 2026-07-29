@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" fill="none">
+  <rect width="800" height="600" fill="#120c24"/>
+  <path d="M400 270 C380 270, 360 285, 360 305 C360 325, 380 340, 400 340 C420 340, 440 325, 440 305 C440 285, 420 270, 400 270 Z" fill="#8a5cf6" opacity="0.4"/>
+  <text x="400" y="380" text-anchor="middle" fill="#a78bfa" font-family="sans-serif" font-size="16" letter-spacing="1">ARUP DAS PORTFOLIO</text>
+</svg>

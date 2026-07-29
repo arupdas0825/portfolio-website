@@ -13,7 +13,7 @@ const Starfield = React.memo(function Starfield() {
     let animId = null;
     let width = 0;
     let height = 0;
-    let particles = [];
+    const layers = [[], [], []];
 
     const isMobile = window.innerWidth < 768;
     const isLowEnd = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || isMobile;
@@ -31,29 +31,30 @@ const Starfield = React.memo(function Starfield() {
 
     resize();
 
-    // Create particle array
+    // Create particle layers with fixed alpha per layer for 0 fillStyle mutations in render loop
     for (let i = 0; i < count; i++) {
-      const layer = i < count * 0.5 ? 0 : i < count * 0.8 ? 1 : 2;
-      const size = layer === 0 ? Math.random() * 1.2 + 0.5
-                 : layer === 1 ? Math.random() * 1.8 + 1.2
+      const layerIdx = i < count * 0.5 ? 0 : i < count * 0.8 ? 1 : 2;
+      const size = layerIdx === 0 ? Math.random() * 1.2 + 0.5
+                 : layerIdx === 1 ? Math.random() * 1.8 + 1.2
                  : Math.random() * 2.5 + 2.0;
 
-      const alpha = layer === 0 ? Math.random() * 0.12 + 0.08
-                  : layer === 1 ? Math.random() * 0.22 + 0.12
-                  : Math.random() * 0.32 + 0.18;
-
-      const speed = layer === 0 ? Math.random() * 0.3 + 0.15
-                  : layer === 1 ? Math.random() * 0.6 + 0.35
+      const speed = layerIdx === 0 ? Math.random() * 0.3 + 0.15
+                  : layerIdx === 1 ? Math.random() * 0.6 + 0.35
                   : Math.random() * 1.1 + 0.7;
 
-      particles.push({
+      layers[layerIdx].push({
         x: Math.random() * width,
         y: Math.random() * height,
         size,
-        alpha,
         speed,
       });
     }
+
+    const layerStyles = [
+      'rgba(139, 92, 246, 0.14)',
+      'rgba(139, 92, 246, 0.22)',
+      'rgba(139, 92, 246, 0.32)'
+    ];
 
     window.addEventListener('resize', resize, { passive: true });
 
@@ -70,19 +71,23 @@ const Starfield = React.memo(function Starfield() {
 
       ctx.clearRect(0, 0, width, height);
 
-      // Primary color: rgba(139, 92, 246)
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-        p.y -= p.speed * 0.45 * dt;
-
-        if (p.y < -10) {
-          p.y = height + 10;
-          p.x = Math.random() * width;
-        }
-
-        ctx.fillStyle = `rgba(139, 92, 246, ${p.alpha})`;
+      // Render 3 batched draw calls per frame
+      for (let l = 0; l < 3; l++) {
+        const group = layers[l];
+        ctx.fillStyle = layerStyles[l];
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        for (let i = 0; i < group.length; i++) {
+          const p = group[i];
+          p.y -= p.speed * 0.45 * dt;
+
+          if (p.y < -10) {
+            p.y = height + 10;
+            p.x = Math.random() * width;
+          }
+
+          ctx.moveTo(p.x + p.size, p.y);
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        }
         ctx.fill();
       }
 

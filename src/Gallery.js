@@ -112,13 +112,6 @@ function OrbitingImageCard({ imageConfig, onSelect }) {
   const [hovered, setHovered] = useState(false);
   const { photo, position, rotation, isMobile } = imageConfig;
 
-  useEffect(() => {
-    document.body.style.cursor = hovered ? 'pointer' : 'auto';
-    return () => {
-      document.body.style.cursor = 'auto';
-    };
-  }, [hovered]);
-
   return (
     <group position={position} rotation={rotation}>
       <Html 

@@ -12,7 +12,7 @@ const CV = React.memo(function CV() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isExpanded, setIsExpanded] = useState(false);
   const [cvInfo, setCvInfo] = useState({
-    cvUrl: '/ARUP DAS CV.pdf',
+    cvUrl: '/ARUP-DAS-CV.pdf',
     version: '1.0'
   });
 
@@ -103,7 +103,7 @@ const CV = React.memo(function CV() {
                 <div 
                   className="premium-image" 
                   style={{ 
-                    background: `url('/cv image.png') center/cover no-repeat`,
+                    background: `url('/cv-image.png') center/cover no-repeat`,
                     height: '100%',
                     width: '100%'
                   }} 

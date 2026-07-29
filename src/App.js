@@ -44,7 +44,7 @@ const MobileHeader = React.memo(function MobileHeader() {
         {/* Logo Section */}
         <div className="mobile-logo-wrap" onClick={() => window.location.reload()}>
           <img 
-            src="/ad logo.jpeg" 
+            src="/ad-logo.jpeg" 
             alt="AD Logo" 
             width={22} 
             height={22} 

@@ -267,6 +267,16 @@ const CoverflowCarousel = ({ repos, onCardClick }) => {
     return arr;
   }, [total, activeIndex]);
 
+  const handleCardClick = useCallback((position, repo) => {
+    if (position === 'center') {
+      onCardClick && onCardClick(repo);
+    } else if (position === 'left' || position === 'far-left') {
+      goPrev();
+    } else {
+      goNext();
+    }
+  }, [onCardClick, goPrev, goNext]);
+
   if (total === 0) return null;
 
   return (
@@ -287,15 +297,7 @@ const CoverflowCarousel = ({ repos, onCardClick }) => {
             repo={repo}
             position={position}
             isMobile={isMobile}
-            onClick={() => {
-              if (position === 'center') {
-                onCardClick && onCardClick(repo);
-              } else if (position === 'left' || position === 'far-left') {
-                goPrev();
-              } else {
-                goNext();
-              }
-            }}
+            onClick={() => handleCardClick(position, repo)}
           />
         ))}
       </div>

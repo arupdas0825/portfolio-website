@@ -3,7 +3,7 @@ import React, { useRef, useEffect } from 'react';
 const ParticleText = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
-  const mouse = useRef({ x: -1000, y: -1000, radius: 130 });
+  const mouse = useRef({ x: -1000, y: -1000, radius: 120 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -12,50 +12,47 @@ const ParticleText = () => {
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
     let particlesArray = [];
+    let particlesByColor = {};
     let animationFrameId;
+    let isVisible = true;
 
     class Particle {
       constructor(x, y, color) {
         this.x = x;
         this.y = y;
         this.color = color;
-        this.size = 1.25;
+        this.size = 1.3;
         this.baseX = x;
         this.baseY = y;
-        this.density = Math.random() * 25 + 8;
-      }
-
-      draw() {
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
+        this.density = Math.random() * 22 + 8;
       }
 
       update() {
-        let dx = mouse.current.x - this.x;
-        let dy = mouse.current.y - this.y;
-        let distance = Math.sqrt(dx * dx + dy * dy);
-        let forceDirectionX = dx / (distance || 1);
-        let forceDirectionY = dy / (distance || 1);
-        let maxDistance = mouse.current.radius;
-        let force = (maxDistance - distance) / maxDistance;
-        if (force < 0) force = 0;
+        const dx = mouse.current.x - this.x;
+        const dy = mouse.current.y - this.y;
+        const distSq = dx * dx + dy * dy;
+        const maxDist = mouse.current.radius;
+        const maxDistSq = maxDist * maxDist;
 
-        let directionX = forceDirectionX * force * this.density;
-        let directionY = forceDirectionY * force * this.density;
-
-        if (distance < maxDistance) {
+        if (distSq < maxDistSq) {
+          const distance = Math.sqrt(distSq) || 1;
+          const force = (maxDist - distance) / maxDist;
+          const forceDirectionX = dx / distance;
+          const forceDirectionY = dy / distance;
+          const directionX = forceDirectionX * force * this.density;
+          const directionY = forceDirectionY * force * this.density;
           this.x -= directionX;
           this.y -= directionY;
         } else {
-          if (this.x !== this.baseX) {
-            let dx = this.x - this.baseX;
-            this.x -= dx / 10;
+          if (Math.abs(this.x - this.baseX) > 0.05) {
+            this.x -= (this.x - this.baseX) * 0.12;
+          } else {
+            this.x = this.baseX;
           }
-          if (this.y !== this.baseY) {
-            let dy = this.y - this.baseY;
-            this.y -= dy / 10;
+          if (Math.abs(this.y - this.baseY) > 0.05) {
+            this.y -= (this.y - this.baseY) * 0.12;
+          } else {
+            this.y = this.baseY;
           }
         }
       }
@@ -64,13 +61,15 @@ const ParticleText = () => {
     function init() {
       if (!container || !canvas) return;
       const rect = container.getBoundingClientRect();
-      const width = rect.width || 700;
-      const height = rect.height || 170;
-      const isSmall = width < 540;
+      const width = Math.floor(rect.width) || 700;
+      const height = Math.floor(rect.height) || 170;
+      if (width <= 0 || height <= 0) return;
 
+      const isSmall = width < 540;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
+
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
 
@@ -78,16 +77,15 @@ const ParticleText = () => {
       ctx.scale(dpr, dpr);
 
       particlesArray = [];
+      particlesByColor = {};
 
-      // 2-line layout matching original large Hero typography
       const lines = ["Hi, I'm Arup", "Das"];
-      
       let fontSize = isSmall ? Math.min(width * 0.12, 42) : Math.min(width * 0.11, 64);
-      fontSize = Math.max(fontSize, 30);
+      fontSize = Math.max(fontSize, 28);
 
       ctx.font = `800 ${fontSize}px "Syne", "Outfit", "Inter", sans-serif`;
 
-      while (ctx.measureText("Hi, I'm Arup").width > width - 20 && fontSize > 24) {
+      while (ctx.measureText("Hi, I'm Arup").width > width - 20 && fontSize > 22) {
         fontSize -= 2;
         ctx.font = `800 ${fontSize}px "Syne", "Outfit", "Inter", sans-serif`;
       }
@@ -110,37 +108,75 @@ const ParticleText = () => {
         ctx.fillText(line, 0, startY + index * lineHeight);
       });
 
-      const textCoordinates = ctx.getImageData(0, 0, width * dpr, height * dpr);
+      const textCoordinates = ctx.getImageData(0, 0, canvas.width, canvas.height);
       ctx.clearRect(0, 0, width, height);
 
-      // Sub-pixel step for 100% solid, pixel-free, butter-smooth text
-      const step = isSmall ? 1.4 : 1.1;
-      for (let y = 0; y < height * dpr; y += step * dpr) {
-        for (let x = 0; x < width * dpr; x += step * dpr) {
-          const alphaIndex = (Math.floor(y) * Math.floor(width * dpr) + Math.floor(x)) * 4 + 3;
-          if (textCoordinates.data[alphaIndex] > 90) {
-            const r = textCoordinates.data[alphaIndex - 3];
-            const g = textCoordinates.data[alphaIndex - 2];
-            const b = textCoordinates.data[alphaIndex - 1];
+      const imgW = textCoordinates.width;
+      const imgH = textCoordinates.height;
+      const imgData = textCoordinates.data;
+      const step = isSmall ? 1.5 : 1.3;
+      const stepPx = Math.max(1, Math.round(step * dpr));
+
+      for (let y = 0; y < imgH; y += stepPx) {
+        for (let x = 0; x < imgW; x += stepPx) {
+          const alphaIndex = (y * imgW + x) * 4 + 3;
+          if (imgData[alphaIndex] > 60) {
+            const r = imgData[alphaIndex - 3];
+            const g = imgData[alphaIndex - 2];
+            const b = imgData[alphaIndex - 1];
             const color = `rgb(${r},${g},${b})`;
-            particlesArray.push(new Particle(x / dpr, y / dpr, color));
+            const p = new Particle(x / dpr, y / dpr, color);
+            particlesArray.push(p);
+            if (!particlesByColor[color]) {
+              particlesByColor[color] = [];
+            }
+            particlesByColor[color].push(p);
           }
         }
       }
     }
 
     function animate() {
+      if (!isVisible || document.hidden) {
+        animationFrameId = requestAnimationFrame(animate);
+        return;
+      }
+
       const rect = container.getBoundingClientRect();
       const width = rect.width || 700;
       const height = rect.height || 170;
 
       ctx.clearRect(0, 0, width, height);
-      for (let i = 0; i < particlesArray.length; i++) {
-        particlesArray[i].draw();
-        particlesArray[i].update();
+
+      for (const color in particlesByColor) {
+        const group = particlesByColor[color];
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        for (let i = 0; i < group.length; i++) {
+          const p = group[i];
+          ctx.moveTo(p.x + p.size, p.y);
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          p.update();
+        }
+        ctx.fill();
       }
+
       animationFrameId = requestAnimationFrame(animate);
     }
+
+    // Observer to re-run init when container resizes or becomes visible
+    const resizeObserver = new ResizeObserver(() => {
+      init();
+    });
+    resizeObserver.observe(container);
+
+    const intersectionObserver = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (isVisible && particlesArray.length === 0) {
+        init();
+      }
+    }, { threshold: 0.05 });
+    intersectionObserver.observe(container);
 
     const updateMousePos = (clientX, clientY) => {
       const rect = canvas.getBoundingClientRect();
@@ -163,8 +199,8 @@ const ParticleText = () => {
       }
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('resize', init);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('resize', init, { passive: true });
     container.addEventListener('mouseleave', handleMouseLeave);
     container.addEventListener('touchmove', handleTouchMove, { passive: true });
     container.addEventListener('touchend', handleMouseLeave);
@@ -175,9 +211,19 @@ const ParticleText = () => {
       init();
     }
 
+    // Retry init after 400ms to guarantee layout post intro screen
+    const timer = setTimeout(() => {
+      if (particlesArray.length === 0) {
+        init();
+      }
+    }, 400);
+
     animate();
 
     return () => {
+      clearTimeout(timer);
+      resizeObserver.disconnect();
+      intersectionObserver.disconnect();
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', init);
       if (container) {

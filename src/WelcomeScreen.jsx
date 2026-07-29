@@ -76,7 +76,7 @@ export default function WelcomeScreen({ onEnter }) {
               }}
             >
               <img 
-                src="/ad logo.jpeg" 
+                src="/ad-logo.jpeg" 
                 alt="AD Logo" 
                 className="ws-logo-icon" 
                 style={{ borderRadius: '50%', objectFit: 'contain' }} 

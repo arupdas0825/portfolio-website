@@ -35,6 +35,15 @@
       "react-app/jest"
     ]
   },
+  "jest": {
+    "moduleNameMapper": {
+      "^react-router-dom$": "<rootDir>/node_modules/react-router-dom/dist/index.js",
+      "^react-router/dom$": "<rootDir>/node_modules/react-router/dist/development/dom-export.js",
+      "^react-router$": "<rootDir>/node_modules/react-router/dist/development/index.js",
+      "^gsap/ScrollTrigger$": "<rootDir>/node_modules/gsap/dist/ScrollTrigger.js",
+      "^gsap$": "<rootDir>/node_modules/gsap/dist/gsap.js"
+    }
+  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -61,6 +70,7 @@
     "typescript": "^4.9.5",
     "ajv-keywords@5": {
       "ajv": "^8.20.0"
-    }
+    },
+    "three": "$three"
   }
 }

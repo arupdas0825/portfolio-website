@@ -155,7 +155,7 @@ export default function Navbar() {
       <div className="desktop-nav-wrapper">
         <div className="brand-dock" onClick={() => window.location.reload()} title="Refresh Page">
         <img 
-          src="/ad logo.jpeg" 
+          src="/ad-logo.jpeg" 
           alt="AD Logo" 
           width={26} 
           height={26} 
