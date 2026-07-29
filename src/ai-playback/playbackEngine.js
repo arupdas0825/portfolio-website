@@ -218,8 +218,9 @@ class SpeechEngine {
   }
 
   _loadVoices() {
+    if (!this.synth) return;
     const load = () => {
-      this.voices = this.synth.getVoices();
+      this.voices = this.synth?.getVoices?.() || [];
       // Prefer high-quality English voices
       const preferred = [
         'Google UK English Female',
@@ -232,16 +233,16 @@ class SpeechEngine {
         'Moira',
       ];
       for (const name of preferred) {
-        const v = this.voices.find(v => v.name.includes(name));
+        const v = this.voices.find(v => v.name?.includes(name));
         if (v) { this.selectedVoice = v; break; }
       }
       if (!this.selectedVoice && this.voices.length > 0) {
         // Fallback: first English voice
-        this.selectedVoice = this.voices.find(v => v.lang.startsWith('en')) || this.voices[0];
+        this.selectedVoice = this.voices.find(v => v.lang?.startsWith('en')) || this.voices[0];
       }
     };
     load();
-    if (this.voices.length === 0) {
+    if (this.voices.length === 0 && this.synth?.addEventListener) {
       this.synth.addEventListener('voiceschanged', load);
     }
   }
