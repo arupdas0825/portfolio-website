@@ -293,29 +293,33 @@ class SpeechEngine {
       };
 
       this.currentUtterance = utterance;
-      this.synth.speak(utterance);
+      if (this.synth) {
+        this.synth.speak(utterance);
+      } else {
+        resolve();
+      }
     });
   }
 
   pause() {
-    this.synth.pause();
+    this.synth?.pause?.();
   }
 
   resume() {
-    this.synth.resume();
+    this.synth?.resume?.();
   }
 
   stop() {
-    this.synth.cancel();
+    this.synth?.cancel?.();
     this.currentUtterance = null;
   }
 
   get isSpeaking() {
-    return this.synth.speaking;
+    return Boolean(this.synth?.speaking);
   }
 
   get isPaused() {
-    return this.synth.paused;
+    return Boolean(this.synth?.paused);
   }
 }
 
