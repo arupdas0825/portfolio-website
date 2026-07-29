@@ -35,3 +35,9 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: jest.fn(),
   })),
 });
+
+jest.mock('@splinetool/react-spline', () => {
+  return function DummySpline() {
+    return <div data-testid="spline-mock" />;
+  };
+});
