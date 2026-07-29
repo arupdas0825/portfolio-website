@@ -59,7 +59,7 @@ const ParticleText = () => {
     }
 
     function init() {
-      if (!container || !canvas) return;
+      if (!container || !canvas || !ctx) return;
       const rect = container.getBoundingClientRect();
       const width = Math.floor(rect.width) || 700;
       const height = Math.floor(rect.height) || 170;
@@ -137,7 +137,7 @@ const ParticleText = () => {
     }
 
     function animate() {
-      if (!isVisible || document.hidden) {
+      if (!ctx || !isVisible || document.hidden) {
         animationFrameId = requestAnimationFrame(animate);
         return;
       }
