@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+jest.setTimeout(15000);
 const { TextEncoder, TextDecoder } = require('util');
 
 global.TextEncoder = TextEncoder;

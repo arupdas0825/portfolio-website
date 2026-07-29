@@ -9,7 +9,12 @@ const ParticleText = () => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
     if (!canvas || !container) return;
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    let ctx = null;
+    try {
+      ctx = canvas.getContext ? canvas.getContext('2d', { willReadFrequently: true }) : null;
+    } catch (e) {
+      ctx = null;
+    }
 
     let particlesArray = [];
     let particlesByColor = {};
