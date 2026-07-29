@@ -38,6 +38,6 @@ Object.defineProperty(window, 'matchMedia', {
 
 jest.mock('@splinetool/react-spline', () => {
   return function DummySpline() {
-    return <div data-testid="spline-mock" />;
+    return null;
   };
-});
+}, { virtual: true });
