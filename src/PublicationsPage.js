@@ -45,9 +45,9 @@ const ALL_PUBLICATIONS = [
 const FILTERS = ["All", "AI", "NLP", "FinTech", "Web App", "Security"];
 
 const IS_TOUCH = typeof window !== 'undefined' &&
-  (window.matchMedia('(pointer: coarse)').matches ||
+  (window.matchMedia?.('(pointer: coarse)')?.matches ||
    'ontouchstart' in window ||
-   navigator.maxTouchPoints > 0);
+   (navigator.maxTouchPoints && navigator.maxTouchPoints > 0));
 
 export default function PublicationsPage() {
   const navigate = useNavigate();

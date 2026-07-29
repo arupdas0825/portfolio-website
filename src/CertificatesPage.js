@@ -29,9 +29,9 @@ const getColorForIssuer = (issuer) => {
 
 
 const IS_TOUCH = typeof window !== 'undefined' &&
-  (window.matchMedia('(pointer: coarse)').matches ||
+  (window.matchMedia?.('(pointer: coarse)')?.matches ||
    'ontouchstart' in window ||
-   navigator.maxTouchPoints > 0);
+   (navigator.maxTouchPoints && navigator.maxTouchPoints > 0));
 
 // Cyber-holographic empty state component for incoming certifications
 function CertificatesEmptyState({ category }) {

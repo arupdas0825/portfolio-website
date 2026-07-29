@@ -6,9 +6,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 const IS_TOUCH = typeof window !== 'undefined' &&
-  (window.matchMedia('(pointer: coarse)').matches ||
+  (window.matchMedia?.('(pointer: coarse)')?.matches ||
    'ontouchstart' in window ||
-   navigator.maxTouchPoints > 0);
+   (navigator.maxTouchPoints && navigator.maxTouchPoints > 0));
 
 const services = [
   {

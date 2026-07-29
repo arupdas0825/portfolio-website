@@ -19,9 +19,9 @@ import usePlaybackStore from './usePlaybackStore';
 import './AIPlayback.css';
 
 const IS_TOUCH = typeof window !== 'undefined' &&
-  (window.matchMedia('(pointer: coarse)').matches ||
+  (window.matchMedia?.('(pointer: coarse)')?.matches ||
    'ontouchstart' in window ||
-   navigator.maxTouchPoints > 0);
+   (navigator.maxTouchPoints && navigator.maxTouchPoints > 0));
 
 // ── AI Orb Component ──────────────────────────────────────────────────────
 function AIOrb({ isActive, isPlaying, isPaused, size = 48 }) {

@@ -10,9 +10,9 @@ import ParticleText from './components/ParticleText';
 
 // Mobile detection — safe at module level in CRA (browser env)
 const IS_TOUCH = typeof window !== 'undefined' &&
-  (window.matchMedia('(pointer: coarse)').matches ||
+  (window.matchMedia?.('(pointer: coarse)')?.matches ||
    'ontouchstart' in window ||
-   navigator.maxTouchPoints > 0);
+   (navigator.maxTouchPoints && navigator.maxTouchPoints > 0));
 
 
 

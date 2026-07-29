@@ -393,9 +393,9 @@ export default function WorkPage() {
   const hasContent = categorized.major.length > 0 || categorized.secondary.length > 0 || categorized.college.length > 0;
 
   const IS_TOUCH = typeof window !== 'undefined' &&
-    (window.matchMedia('(pointer: coarse)').matches ||
+    (window.matchMedia?.('(pointer: coarse)')?.matches ||
      'ontouchstart' in window ||
-     navigator.maxTouchPoints > 0);
+     (navigator.maxTouchPoints && navigator.maxTouchPoints > 0));
 
   return (
     <div className="workpage-root" style={{ paddingBottom: IS_TOUCH ? '100px' : '0px', minHeight: '100vh', background: '#04020a' }}>

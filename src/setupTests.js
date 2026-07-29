@@ -21,10 +21,9 @@ global.IntersectionObserver = class IntersectionObserver {
   disconnect() {}
 };
 
-// Polyfill matchMedia
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn().mockImplementation(query => ({
+// Polyfill matchMedia for JSDOM
+window.matchMedia = window.matchMedia || function (query) {
+  return {
     matches: false,
     media: query,
     onchange: null,
@@ -33,8 +32,8 @@ Object.defineProperty(window, 'matchMedia', {
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
     dispatchEvent: jest.fn(),
-  })),
-});
+  };
+};
 
 jest.mock('@splinetool/react-spline', () => {
   return function DummySpline() {

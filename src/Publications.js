@@ -42,9 +42,9 @@ const ALL_PUBLICATIONS = [
 const FILTERS = ["All", "AI", "ML", "Web", "NLP", "FinTech"];
 
 const IS_TOUCH = typeof window !== 'undefined' &&
-  (window.matchMedia('(pointer: coarse)').matches ||
+  (window.matchMedia?.('(pointer: coarse)')?.matches ||
    'ontouchstart' in window ||
-   navigator.maxTouchPoints > 0);
+   (navigator.maxTouchPoints && navigator.maxTouchPoints > 0));
 
 export default function Publications({ featuredOnly = false }) {
   const [activeFilter, setActiveFilter] = useState("All");

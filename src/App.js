@@ -30,9 +30,9 @@ const PublicationsPage = lazy(() => import('./PublicationsPage'));
 const AIPlaybackAssistant = lazy(() => import('./ai-playback/AIPlaybackAssistant'));
 
 const IS_TOUCH = typeof window !== 'undefined' &&
-  (window.matchMedia('(pointer: coarse)').matches ||
+  (window.matchMedia?.('(pointer: coarse)')?.matches ||
    'ontouchstart' in window ||
-   navigator.maxTouchPoints > 0);
+   (navigator.maxTouchPoints && navigator.maxTouchPoints > 0));
 
 const MobileHeader = React.memo(function MobileHeader() {
   const playback = usePlaybackStore();
