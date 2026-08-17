@@ -236,5 +236,33 @@ export const PROJECTS_DUMP = [
     "featured": true,
     "technologies": "JavaScript, React, Firebase, Dexie.js, Tailwind CSS",
     "display_order": 5
+  },
+  {
+    "id": 103,
+    "created_at": "2026-08-01T00:00:00.000000+00:00",
+    "title": "CodeFolio",
+    "description": "Codefolio: An AI-powered Developer Intelligence Platform that transforms GitHub activity into actionable insights, developer scores, growth analytics, and personalized career recommendations.",
+    "image": "/CodeFolio.png",
+    "video": null,
+    "github_url": "https://github.com/arupdas0825/CodeFolio",
+    "live_url": null,
+    "catagory": "Major",
+    "featured": true,
+    "technologies": "TypeScript, React, Next.js, Node.js, Express, Gemini AI, Tailwind CSS",
+    "display_order": 2
+  },
+  {
+    "id": 104,
+    "created_at": "2026-08-01T00:00:00.000000+00:00",
+    "title": "Meridian",
+    "description": "Plan smart. Manage money. Get things done. Explore Europe. A unified PWA combining productivity, personal finance, and travel planning into one seamless application.",
+    "image": "/Meridian.png",
+    "video": null,
+    "github_url": "https://github.com/arupdas0825/Meridian",
+    "live_url": null,
+    "catagory": "Major",
+    "featured": true,
+    "technologies": "JavaScript, React, PWA, Tailwind CSS",
+    "display_order": 3
   }
 ];

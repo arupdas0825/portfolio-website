@@ -34,6 +34,10 @@ export const REPO_IMAGES = {
   'LedgerWise': '/LedgerWise.png',
   'ledgerwise': '/LedgerWise.png',
   'LadgerWise': '/LadgerWise.png',
+  'CodeFolio': '/CodeFolio.png',
+  'codefolio': '/CodeFolio.png',
+  'Meridian': '/Meridian.png',
+  'meridian': '/Meridian.png',
 };
 
 export const REPO_VIDEOS = {
@@ -136,6 +140,20 @@ const FALLBACK_REPOS = [
     language: 'JavaScript', stargazers_count: 1, forks_count: 0,
     html_url: 'https://github.com/arupdas0825/LedgerWise', homepage: '',
     updated_at: '2024-08-15T00:00:00Z', pushed_at: '2024-08-15T00:00:00Z'
+  },
+  {
+    id: 13, name: 'CodeFolio', fork: false,
+    description: 'Codefolio: An AI-powered Developer Intelligence Platform that transforms GitHub activity into actionable insights, developer scores, growth analytics, and personalized career recommendations.',
+    language: 'TypeScript', stargazers_count: 23, forks_count: 6,
+    html_url: 'https://github.com/arupdas0825/CodeFolio', homepage: '',
+    updated_at: '2026-08-01T00:00:00Z', pushed_at: '2026-08-01T00:00:00Z'
+  },
+  {
+    id: 14, name: 'Meridian', fork: false,
+    description: 'Plan smart. Manage money. Get things done. Explore Europe. A unified PWA combining productivity, personal finance, and travel planning into one seamless app.',
+    language: 'JavaScript', stargazers_count: 2, forks_count: 1,
+    html_url: 'https://github.com/arupdas0825/Meridian', homepage: '',
+    updated_at: '2026-08-01T00:00:00Z', pushed_at: '2026-08-01T00:00:00Z'
   },
 ];
 

@@ -441,6 +441,106 @@ export const PROJECTS_DATA = {
       github: 'https://github.com/arupdas0825/LedgerWise',
       demo: null
     }
+  },
+  'CodeFolio': {
+    title: 'CodeFolio',
+    tagline: 'AI-Powered Developer Intelligence Platform',
+    status: 'Completed',
+    year: '2026',
+    timeline: '3 Months',
+    role: 'Lead Full-Stack Engineer',
+    banner: '/CodeFolio.png',
+    description: 'Codefolio: An AI-powered Developer Intelligence Platform that transforms GitHub activity into actionable insights, developer scores, growth analytics, and personalized career recommendations.',
+    fullStack: {
+      languages: ['TypeScript', 'JavaScript'],
+      frontend: ['React 19', 'Next.js 15 (App Router)', 'Tailwind CSS', 'Framer Motion'],
+      ai: ['Google Gemini API', 'LangChain'],
+      apis: ['GitHub API'],
+      tools: ['Git', 'GitHub', 'Vercel']
+    },
+    implementationDetails: {
+      architecture: 'Next.js App Router architecture combined with client-side dashboard layouts and interactive charting elements.',
+      workflow: 'Leverages the GitHub API to fetch commit history, language distributions, and pull request activity dynamically.',
+      rendering: 'Hybrid rendering model utilizing Server Components for initial shell load and Client Components for dynamic data fetching and visualizations.',
+      performance: 'Aggressive caching of API responses and optimized payload delivery to minimize network latency.',
+      responsive: 'Highly adaptive responsive layout built with Tailwind CSS, providing a premium desktop and mobile dashboard experience.'
+    },
+    planningDetails: {
+      origin: 'Conceived from the challenge of objectively measuring developer productivity and growth trends across various projects.',
+      problem: 'Fragmented data makes it hard to track long-term coding velocity and learning progress.',
+      decisions: 'Chose TypeScript for type safety and Next.js 15 for optimal performance and built-in API routing capabilities.',
+      priority: 'Focused on low-latency data aggregation and secure OAuth connection to GitHub.'
+    },
+    futureRoadmap: [
+      { title: 'Team Analytics', description: 'Aggregated analytics for collaborative development teams.', status: 'planned' },
+      { title: 'Enterprise SSO', description: 'Integration with major enterprise identity providers.', status: 'research' }
+    ],
+    features: [
+      { icon: '📊', title: 'Activity Insights', explanation: 'Visualizing commit activity, peak hours, and consistency trends.' },
+      { icon: '🎯', title: 'Developer Scores', explanation: 'Algorithmic assessment of contributions and impact.' }
+    ],
+    challenges: {
+      problem: 'Navigating GitHub API rate limits when fetching deep analytics for multiple active repositories.',
+      solution: 'Implemented a local database cache layer and optimized GraphQL queries to bundle resource requests.',
+      decision: 'Selected Redis for intermediate query caching.'
+    },
+    metrics: {
+      precision: '98% Accuracy',
+      uptime: '99.9% Platform Uptime',
+      latency: '< 200ms API Response'
+    },
+    links: {
+      github: 'https://github.com/arupdas0825/CodeFolio',
+      demo: null
+    }
+  },
+  'Meridian': {
+    title: 'Meridian',
+    tagline: 'Unified Productivity, Finance & Travel Planning PWA',
+    status: 'Completed',
+    year: '2026',
+    timeline: '2 Months',
+    role: 'Lead Full-Stack Engineer',
+    banner: '/Meridian.png',
+    description: 'Plan smart. Manage money. Get things done. Explore Europe. A unified PWA combining productivity, personal finance, and travel planning into one seamless application.',
+    fullStack: {
+      languages: ['JavaScript', 'HTML5', 'CSS3'],
+      frontend: ['React', 'Tailwind CSS', 'PWA Service Worker'],
+      tools: ['Git', 'GitHub']
+    },
+    implementationDetails: {
+      architecture: 'Progressive Web App with offline-first service worker data caching.',
+      workflow: 'Modular layout combining budgeting tools, interactive travel itineraries, and task management.',
+      rendering: 'Client-side reactive rendering with instant interactive state updates.',
+      performance: 'Fast offline startup and lightweight asset delivery.',
+      responsive: 'Fluid grid layout designed for mobile and desktop workstations.'
+    },
+    planningDetails: {
+      origin: 'Designed as a single unified platform for daily productivity, budgeting, and trip planning.',
+      problem: 'Juggling separate apps for tasks, finance, and travel itineraries causes friction.',
+      decisions: 'Built as a Progressive Web App (PWA) for native-like cross-platform installation.',
+      priority: 'Seamless offline support and fluid user experience.'
+    },
+    futureRoadmap: [
+      { title: 'Flight & Hotel Tracking', description: 'Real-time flight status and accommodation booking integration.', status: 'planned' }
+    ],
+    features: [
+      { icon: '✈️', title: 'Travel Planner', explanation: 'Interactive trip itinerary creation and budget allocation.' },
+      { icon: '💡', title: 'Smart Budgeting', explanation: 'Unified expense tracking with automated monthly insights.' }
+    ],
+    challenges: {
+      problem: 'Managing state synchronization across productivity and finance modules offline.',
+      solution: 'Implemented IndexedDB storage with background cloud sync.',
+      decision: 'Selected React PWA for maximum cross-platform compatibility.'
+    },
+    metrics: {
+      precision: '100% Offline Access',
+      latency: '< 30ms Local State Sync'
+    },
+    links: {
+      github: 'https://github.com/arupdas0825/Meridian',
+      demo: null
+    }
   }
 };
 
@@ -448,7 +548,11 @@ export const PROJECTS_DATA = {
  * Fallback generator for repos not explicitly defined in PROJECTS_DATA.
  */
 export const getProjectMetadata = (repo) => {
+  if (!repo || !repo.name) return {};
   if (PROJECTS_DATA[repo.name]) return PROJECTS_DATA[repo.name];
+  const repoNameLower = repo.name.toLowerCase();
+  const matchKey = Object.keys(PROJECTS_DATA).find(k => k.toLowerCase() === repoNameLower);
+  if (matchKey) return PROJECTS_DATA[matchKey];
 
   return {
     title: repo.name.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),

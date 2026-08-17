@@ -30,6 +30,10 @@ const REPO_IMAGES = {
   'LedgerWise': '/LedgerWise.png',
   'ledgerwise': '/LedgerWise.png',
   'LadgerWise': '/LadgerWise.png',
+  'CodeFolio': '/CodeFolio.png',
+  'codefolio': '/CodeFolio.png',
+  'Meridian': '/Meridian.png',
+  'meridian': '/Meridian.png',
 };
 
 const REPO_VIDEOS = {
