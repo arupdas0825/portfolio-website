@@ -128,8 +128,8 @@ export const MajorProjectCard = React.memo(({ repo, idx, isMobile, onClick }) =>
         </div>
         <div className="premium-actions-footer" onClick={e => e.stopPropagation()}>
           <a href={repo.html_url} target="_blank" rel="noreferrer" className="premium-action-link github"><LucideGithub size={13} /> Code</a>
-          {(repo.homepage || REPO_HOMEPAGES[repo.name]) && (
-            <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="premium-action-link demo"><LucideExternalLink size={13} /> Demo</a>
+          {(REPO_HOMEPAGES[repo.name] || repo.homepage) && (
+            <a href={REPO_HOMEPAGES[repo.name] || repo.homepage} target="_blank" rel="noreferrer" className="premium-action-link demo"><LucideExternalLink size={13} /> Demo</a>
           )}
         </div>
       </div>
@@ -216,8 +216,8 @@ export const SecondaryProjectCard = React.memo(({ repo, idx, onClick }) => {
         <p className="secondary-desc">{repo.description || 'No description provided.'}</p>
         <div className="premium-actions-footer" onClick={e => e.stopPropagation()} style={{ marginTop: 'auto', paddingTop: 8 }}>
           <a href={repo.html_url} target="_blank" rel="noreferrer" className="premium-action-link github" style={{ padding: '6px 14px', fontSize: '0.75rem' }}><LucideGithub size={12} /> Code</a>
-          {(repo.homepage || REPO_HOMEPAGES[repo.name]) && (
-            <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="premium-action-link demo" style={{ padding: '6px 14px', fontSize: '0.75rem' }}><LucideExternalLink size={12} /> Demo</a>
+          {(REPO_HOMEPAGES[repo.name] || repo.homepage) && (
+            <a href={REPO_HOMEPAGES[repo.name] || repo.homepage} target="_blank" rel="noreferrer" className="premium-action-link demo" style={{ padding: '6px 14px', fontSize: '0.75rem' }}><LucideExternalLink size={12} /> Demo</a>
           )}
         </div>
       </div>
@@ -322,8 +322,8 @@ export const CollegeProjectCard = React.memo(({ repo, idx, onClick }) => {
           )}
           <div className="college-links" onClick={e => e.stopPropagation()}>
             <a href={repo.html_url} target="_blank" rel="noreferrer" className="premium-action-link github" style={{ padding: '6px 12px', fontSize: '0.72rem', gap: '5px' }} title="Code"><LucideGithub size={11} /> Code</a>
-            {(repo.homepage || REPO_HOMEPAGES[repo.name]) && (
-              <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="premium-action-link demo" style={{ padding: '6px 12px', fontSize: '0.72rem', gap: '5px' }} title="Live Demo"><LucideExternalLink size={11} /> Demo</a>
+            {(REPO_HOMEPAGES[repo.name] || repo.homepage) && (
+              <a href={REPO_HOMEPAGES[repo.name] || repo.homepage} target="_blank" rel="noreferrer" className="premium-action-link demo" style={{ padding: '6px 12px', fontSize: '0.72rem', gap: '5px' }} title="Live Demo"><LucideExternalLink size={11} /> Demo</a>
             )}
           </div>
         </div>

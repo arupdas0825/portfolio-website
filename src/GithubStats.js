@@ -859,7 +859,7 @@ const GithubStats = React.memo(function GithubStats() {
   }, []);
 
   const fetchData = useCallback(async () => {
-    const CACHE_KEY = 'gh_stats_v3_' + USERNAME;
+    const CACHE_KEY = 'gh_stats_v4_' + USERNAME;
     const CACHE_TTL = 60 * 60 * 1000;
 
     // Check cache first
@@ -924,9 +924,33 @@ const GithubStats = React.memo(function GithubStats() {
           // Sort by date ascending (oldest first)
           const sorted = [...cd.contributions].sort((a,b)=>a.date.localeCompare(b.date));
 
-          // Longest streak — simple forward scan
-          let ls=0, run=0;
-          sorted.forEach(d=>{ if(d.count>0){run++;ls=Math.max(ls,run);}else{run=0;} });
+          // Longest streak — calculate longest consecutive contribution-day sequence
+          let ls = 0;
+          let run = 0;
+          let prevDate = null;
+
+          sorted.forEach(d => {
+            if (d.count > 0) {
+              if (prevDate) {
+                const prev = new Date(prevDate);
+                const curr = new Date(d.date);
+                const diffTime = curr.getTime() - prev.getTime();
+                const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays === 1) {
+                  run++;
+                } else {
+                  run = 1;
+                }
+              } else {
+                run = 1;
+              }
+              prevDate = d.date;
+              if (run > ls) ls = run;
+            } else {
+              run = 0;
+              prevDate = null;
+            }
+          });
           longestStreak = ls;
 
           // Current streak — walk backward from today's date (filter out future API placeholder dates)
@@ -962,7 +986,7 @@ const GithubStats = React.memo(function GithubStats() {
       } catch(e){ console.error('Contrib API error:', e); }
 
       /* 4b — Fallback: calculate streak from GitHub Events (last 90 days) */
-      if(currentStreak === 0){
+      if(currentStreak === 0 || longestStreak === 0){
         try {
           const events = await fetch(
             `https://api.github.com/users/${USERNAME}/events/public?per_page=100`
@@ -987,10 +1011,30 @@ const GithubStats = React.memo(function GithubStats() {
               else if(d===0){ continue; } // skip today if no activity yet
               else { break; }
             }
-            currentStreak = cs;
+            if (currentStreak === 0) currentStreak = cs;
 
-            // Longest from events (rough estimate)
-            if(longestStreak===0) longestStreak = Math.max(cs, 5);
+            // Longest streak from events
+            const sortedDates = Array.from(activeDates).sort();
+            let eventLs = 0;
+            let eventRun = 0;
+            let lastD = null;
+            sortedDates.forEach(dateStr => {
+              if (lastD) {
+                const prev = new Date(lastD);
+                const curr = new Date(dateStr);
+                const diffDays = Math.round((curr - prev) / (1000 * 60 * 60 * 24));
+                if (diffDays === 1) {
+                  eventRun++;
+                } else {
+                  eventRun = 1;
+                }
+              } else {
+                eventRun = 1;
+              }
+              lastD = dateStr;
+              if (eventRun > eventLs) eventLs = eventRun;
+            });
+            if(longestStreak === 0) longestStreak = Math.max(eventLs, cs, 5);
           }
         } catch(e){ console.error('Events API error:', e); }
       }
@@ -1010,7 +1054,7 @@ const GithubStats = React.memo(function GithubStats() {
       };
       setData(freshData);
       // Save to cache
-      try { localStorage.setItem('gh_stats_v3_' + USERNAME, JSON.stringify({ data: freshData, ts: Date.now() })); } catch(_){}
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ data: freshData, ts: Date.now() })); } catch(_){}
     } catch(err){
       console.warn('GitHub Stats API failed:', err.message);
     }
@@ -1032,11 +1076,11 @@ const GithubStats = React.memo(function GithubStats() {
   const topCards = useMemo(() => [
     { icon: Star, label: 'Stars Earned', val: data.stars, color: '#f59e0b', glowColor: 'rgba(245, 158, 11, 0.15)', isStreak: false },
     { icon: GitCommitHorizontal, label: 'Total Commits', val: data.commits, color: '#3b82f6', glowColor: 'rgba(59, 130, 246, 0.15)', isStreak: false },
-    { icon: Flame, label: 'Current Streak', val: data.currentStreak, color: '#ef4444', glowColor: 'rgba(239, 68, 68, 0.15)', isStreak: true },
+    { icon: Flame, label: 'Longest Streak', val: data.longestStreak, color: '#ef4444', glowColor: 'rgba(239, 68, 68, 0.15)', isStreak: true },
     { icon: GitFork, label: 'Total Forks', val: data.forks, color: '#06b6d4', glowColor: 'rgba(6, 182, 212, 0.15)', isStreak: false },
     { icon: Package, label: 'Repositories', val: data.repos, color: '#a855f7', glowColor: 'rgba(168, 85, 247, 0.15)', isStreak: false },
     { icon: Users, label: 'Followers', val: data.followers, color: '#10b981', glowColor: 'rgba(16, 185, 129, 0.15)', isStreak: false },
-  ], [data.stars, data.commits, data.currentStreak, data.forks, data.repos, data.followers]);
+  ], [data.stars, data.commits, data.longestStreak, data.forks, data.repos, data.followers]);
 
   const streakCards=[
     { icon:Trophy, label:'Total Contributions', val:data.contributions,  color:'#facc15', pct:Math.min(data.contributions,100) },

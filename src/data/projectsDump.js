@@ -63,7 +63,7 @@ export const PROJECTS_DUMP = [
     "image": "/portfolio-website.jpeg",
     "video": null,
     "github_url": "https://github.com/arupdas0825/portfolio-website",
-    "live_url": "https://arupdas.com",
+    "live_url": "https://arup-portfolio-seven.vercel.app/",
     "catagory": "Major",
     "featured": true,
     "technologies": "JavaScript (ES15), CSS3, HTML5, React 19, Next.js (SSG), Vanilla CSS, TailwindCSS, CSS Modules, Framer Motion, GSAP",

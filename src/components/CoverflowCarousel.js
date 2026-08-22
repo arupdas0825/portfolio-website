@@ -47,6 +47,7 @@ const REPO_VIDEOS = {
 const REPO_HOMEPAGES = {
   'scientific-calculator': 'https://arupdas0825.github.io/scientific-calculator/scientific-complex-calculator.html',
   'sentiment-analysis-project': 'https://sentiment-analysis-project-zvtb4q6vncknfc5qvkb63w.streamlit.app/',
+  'portfolio-website': 'https://arup-portfolio-seven.vercel.app/',
   'Dev-Track': 'https://dev-track-brown.vercel.app',
 };
 
@@ -154,8 +155,8 @@ const CoverflowCard = React.memo(({ repo, position, onClick, isMobile }) => {
           <a href={repo.html_url} target="_blank" rel="noreferrer" className="cf-card__action cf-card__action--github">
             <LucideGithub size={13} /> Code
           </a>
-          {(repo.homepage || REPO_HOMEPAGES[repo.name]) && (
-            <a href={repo.homepage || REPO_HOMEPAGES[repo.name]} target="_blank" rel="noreferrer" className="cf-card__action cf-card__action--demo">
+          {(REPO_HOMEPAGES[repo.name] || repo.homepage) && (
+            <a href={REPO_HOMEPAGES[repo.name] || repo.homepage} target="_blank" rel="noreferrer" className="cf-card__action cf-card__action--demo">
               <LucideExternalLink size={13} /> Demo
             </a>
           )}

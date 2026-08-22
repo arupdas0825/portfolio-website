@@ -52,7 +52,7 @@ export const REPO_HOMEPAGES = {
   'scientific-calculator': 'https://arupdas0825.github.io/scientific-calculator/scientific-complex-calculator.html',
   'sentiment-analysis-project': 'https://sentiment-analysis-project-zvtb4q6vncknfc5qvkb63w.streamlit.app/',
   'quiz-web': 'https://quiz-web-demo.vercel.app',
-  'portfolio-website': 'https://arup-portfolio08.netlify.app',
+  'portfolio-website': 'https://arup-portfolio-seven.vercel.app/',
   'Dev-Track': 'https://dev-track-brown.vercel.app',
 };
 
@@ -96,7 +96,7 @@ const FALLBACK_REPOS = [
     id: 6, name: 'portfolio-website', fork: false,
     description: 'A premium interactive portfolio blending Artificial Intelligence, software engineering, and cinematic photography. Built with React, Tailwind CSS.',
     language: 'JavaScript', stargazers_count: 3, forks_count: 0,
-    html_url: 'https://github.com/arupdas0825/portfolio-website', homepage: 'https://arup-portfolio08.netlify.app',
+    html_url: 'https://github.com/arupdas0825/portfolio-website', homepage: 'https://arup-portfolio-seven.vercel.app/',
     updated_at: '2025-01-01T00:00:00Z', pushed_at: '2025-01-01T00:00:00Z'
   },
   {
@@ -173,7 +173,7 @@ export const fetchAndMergeProjects = async () => {
 
   // 2. Fetch GitHub Repositories
   let githubRepos = [];
-  const CACHE_KEY = `gh_repos_${GITHUB_USERNAME}`;
+  const CACHE_KEY = `gh_repos_v2_${GITHUB_USERNAME}`;
   const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
   try {
@@ -278,13 +278,15 @@ export const fetchAndMergeProjects = async () => {
       mergedRepo.description = repo.description || '';
     }
 
-    // Homepage matching
-    if (dbMatch && dbMatch.live_url) {
+    // Homepage matching - explicit REPO_HOMEPAGES takes top priority
+    if (REPO_HOMEPAGES[repo.name]) {
+      mergedRepo.homepage = REPO_HOMEPAGES[repo.name];
+    } else if (dbMatch && dbMatch.live_url) {
       mergedRepo.homepage = dbMatch.live_url;
     } else if (repo.homepage) {
       mergedRepo.homepage = repo.homepage;
     } else {
-      mergedRepo.homepage = REPO_HOMEPAGES[repo.name] || '';
+      mergedRepo.homepage = '';
     }
 
     // Image matching

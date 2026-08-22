@@ -119,7 +119,7 @@ export const PROJECTS_DATA = {
     },
     links: {
       github: 'https://github.com/arupdas0825/portfolio-website',
-      demo: 'https://arupdas.com'
+      demo: 'https://arup-portfolio-seven.vercel.app/'
     }
   },
   'studytra': {
