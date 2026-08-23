@@ -585,35 +585,22 @@ body::before {
 
 .hero-name {
   font-family: 'Syne', sans-serif;
-  font-size: clamp(2.8rem, 5vw, 4.2rem);
-  font-weight: 800; line-height: 1.1; color: var(--white); margin-bottom: 10px;
+  font-size: clamp(2.6rem, 5.2vw, 4.4rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #ffffff;
+  margin-bottom: 14px;
+  letter-spacing: -0.02em;
+  text-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
 }
-.hero-name-particle-container {
-  position: relative;
-  width: 100%;
-  max-width: 720px;
-  height: 175px;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  overflow: visible;
-}
-.hero-name-particle-canvas {
-  display: block;
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-}
-@media (max-width: 768px) {
-  .hero-name-particle-container {
-    height: 145px;
-    max-width: 100%;
-  }
-}
-@media (max-width: 480px) {
-  .hero-name-particle-container {
-    height: 125px;
-  }
+
+.hero-name-gradient {
+  background: linear-gradient(135deg, #00f2fe 0%, #38bdf8 45%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  text-shadow: none;
+  filter: drop-shadow(0 0 25px rgba(0, 242, 254, 0.35));
 }
 .hero-role {
   font-family: 'Syne', sans-serif;
