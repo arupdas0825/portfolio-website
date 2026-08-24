@@ -38,6 +38,10 @@ export const REPO_IMAGES = {
   'codefolio': '/CodeFolio.png',
   'Meridian': '/Meridian.png',
   'meridian': '/Meridian.png',
+  'AtmosBridge': '/AtmosBridge.jpeg',
+  'atmosbridge': '/AtmosBridge.jpeg',
+  'Atmos-Bridge': '/AtmosBridge.jpeg',
+  'atmos-bridge': '/AtmosBridge.jpeg',
 };
 
 export const REPO_VIDEOS = {
@@ -57,6 +61,13 @@ export const REPO_HOMEPAGES = {
 };
 
 const FALLBACK_REPOS = [
+  {
+    id: 15, name: 'AtmosBridge', fork: false,
+    description: 'AtmosBridge — AI-powered climate intelligence platform for detecting hyperlocal pollution, forecasting air-quality risks, and enabling cross-border climate action across BRICS.',
+    language: 'JavaScript', stargazers_count: 3, forks_count: 2,
+    html_url: 'https://github.com/arupdas0825/AtmosBridge', homepage: '',
+    updated_at: '2026-08-25T00:00:00Z', pushed_at: '2026-08-25T00:00:00Z'
+  },
   {
     id: 1, name: 'LocalCare-Finder-Android', fork: false,
     description: 'LocalCare Finder — Find nearby hospitals, pharmacies & blood banks across India instantly. Built with Kotlin, Google Maps, Flask & OpenStreetMap API.',

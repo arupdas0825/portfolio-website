@@ -34,6 +34,10 @@ const REPO_IMAGES = {
   'codefolio': '/CodeFolio.png',
   'Meridian': '/Meridian.png',
   'meridian': '/Meridian.png',
+  'AtmosBridge': '/AtmosBridge.jpeg',
+  'atmosbridge': '/AtmosBridge.jpeg',
+  'Atmos-Bridge': '/AtmosBridge.jpeg',
+  'atmos-bridge': '/AtmosBridge.jpeg',
 };
 
 const REPO_VIDEOS = {
