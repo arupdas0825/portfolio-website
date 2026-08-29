@@ -211,14 +211,6 @@ const getRepeatedItems = (items, minCount = 14) => {
 
 export default function TechStack() {
   const titleRef = useRef(null);
-  const [isMobile, setIsMobile] = React.useState(false);
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   useEffect(() => {
     if (!titleRef.current) return;
@@ -263,9 +255,9 @@ export default function TechStack() {
             const isReverse = category.direction === 'left-to-right';
 
             return (
-              <div key={category.category} style={{ width: '100%', overflow: 'hidden' }}>
+              <div key={category.category} className="tech-category-block" style={{ width: '100%' }}>
                 {/* Category Header — Portfolio Style */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
                   <div style={{
                     width: 3, height: 24,
                     background: category.color,
@@ -286,19 +278,26 @@ export default function TechStack() {
                   </h3>
                 </div>
 
-                {/* Seamless Infinite Auto-Scrolling Marquee Track */}
-                <div className="tech-marquee-wrapper">
+                {/* ── DESKTOP VIEW: Original Static Grid ── */}
+                <div className="tech-desktop-grid">
+                  {category.items.map((item) => (
+                    <TechIcon key={item.name} src={item.icon} name={item.name} />
+                  ))}
+                </div>
+
+                {/* ── MOBILE VIEW: Infinite Auto-Scrolling Marquee ── */}
+                <div className="tech-mobile-marquee tech-marquee-wrapper">
                   <div className={`tech-marquee-track ${isReverse ? 'scroll-right' : 'scroll-left'}`}>
                     {/* Primary Track */}
                     <div className="tech-marquee-group">
                       {repeatedGroup.map((item) => (
-                        <TechIcon key={`g1-${item.uniqueKey}`} src={item.icon} name={item.name} />
+                        <TechIcon key={`m1-${item.uniqueKey}`} src={item.icon} name={item.name} />
                       ))}
                     </div>
                     {/* Seamless Clone Track */}
                     <div className="tech-marquee-group" aria-hidden="true">
                       {repeatedGroup.map((item) => (
-                        <TechIcon key={`g2-${item.uniqueKey}`} src={item.icon} name={item.name} />
+                        <TechIcon key={`m2-${item.uniqueKey}`} src={item.icon} name={item.name} />
                       ))}
                     </div>
                   </div>
@@ -306,7 +305,7 @@ export default function TechStack() {
 
                 {/* Badges Row (for DS/ML) */}
                 {category.badges && (
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingLeft: isMobile ? 0 : 4, marginTop: 14 }}>
+                  <div className="tech-badges-row">
                     {category.badges.map((badge) => (
                       <TechBadge key={badge.name} name={badge.name} color={badge.color} />
                     ))}
@@ -321,7 +320,42 @@ export default function TechStack() {
 
       <style dangerouslySetInnerHTML={{
         __html: `
-        /* ── Marquee Outer Wrapper ── */
+        /* ── Responsive View Switching ── */
+        .tech-desktop-grid {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 16px;
+          padding-left: 40px;
+        }
+
+        .tech-mobile-marquee {
+          display: none;
+        }
+
+        .tech-badges-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          padding-left: 40px;
+          margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+          .tech-desktop-grid {
+            display: none !important;
+          }
+
+          .tech-mobile-marquee {
+            display: block !important;
+          }
+
+          .tech-badges-row {
+            padding-left: 0 !important;
+            margin-top: 14px !important;
+          }
+        }
+
+        /* ── Marquee Outer Wrapper (Mobile) ── */
         .tech-marquee-wrapper {
           position: relative;
           width: 100%;
@@ -341,39 +375,20 @@ export default function TechStack() {
         }
 
         .tech-marquee-track.scroll-left {
-          animation: techMarqueeScrollLeft 32s linear infinite;
+          animation: techMarqueeScrollLeft 24s linear infinite;
         }
 
         .tech-marquee-track.scroll-right {
-          animation: techMarqueeScrollRight 32s linear infinite;
-        }
-
-        @media (hover: hover) and (pointer: fine) {
-          .tech-marquee-wrapper:hover .tech-marquee-track {
-            animation-play-state: paused;
-          }
+          animation: techMarqueeScrollRight 24s linear infinite;
         }
 
         /* ── Marquee Group ── */
         .tech-marquee-group {
           display: flex;
           align-items: center;
-          gap: 16px;
-          padding-right: 16px;
+          gap: 12px;
+          padding-right: 12px;
           flex-shrink: 0;
-        }
-
-        @media (max-width: 768px) {
-          .tech-marquee-group {
-            gap: 12px;
-            padding-right: 12px;
-          }
-          .tech-marquee-track.scroll-left {
-            animation-duration: 26s;
-          }
-          .tech-marquee-track.scroll-right {
-            animation-duration: 26s;
-          }
         }
 
         /* ── Seamless GPU Transform Keyframes ── */

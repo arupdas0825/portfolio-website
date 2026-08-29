@@ -6273,8 +6273,42 @@ a.contact-detail-val-v2:hover { color: var(--theme-light); }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   TECH STACK SEAMLESS INFINITE MARQUEE ANIMATIONS
+   TECH STACK: DESKTOP STATIC GRID + MOBILE INFINITE MARQUEE
    ═══════════════════════════════════════════════════════════════════════ */
+.tech-desktop-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-left: 40px;
+}
+
+.tech-mobile-marquee {
+  display: none;
+}
+
+.tech-badges-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-left: 40px;
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .tech-desktop-grid {
+    display: none !important;
+  }
+
+  .tech-mobile-marquee {
+    display: block !important;
+  }
+
+  .tech-badges-row {
+    padding-left: 0 !important;
+    margin-top: 14px !important;
+  }
+}
+
 .tech-marquee-wrapper {
   position: relative;
   width: 100%;
@@ -6293,32 +6327,19 @@ a.contact-detail-val-v2:hover { color: var(--theme-light); }
 }
 
 .tech-marquee-track.scroll-left {
-  animation: techMarqueeScrollLeft 30s linear infinite !important;
+  animation: techMarqueeScrollLeft 24s linear infinite !important;
 }
 
 .tech-marquee-track.scroll-right {
-  animation: techMarqueeScrollRight 30s linear infinite !important;
+  animation: techMarqueeScrollRight 24s linear infinite !important;
 }
 
 .tech-marquee-group {
   display: flex !important;
   align-items: center;
-  gap: 16px;
-  padding-right: 16px;
+  gap: 12px;
+  padding-right: 12px;
   flex-shrink: 0 !important;
-}
-
-@media (max-width: 768px) {
-  .tech-marquee-group {
-    gap: 12px;
-    padding-right: 12px;
-  }
-  .tech-marquee-track.scroll-left {
-    animation: techMarqueeScrollLeft 24s linear infinite !important;
-  }
-  .tech-marquee-track.scroll-right {
-    animation: techMarqueeScrollRight 24s linear infinite !important;
-  }
 }
 
 @keyframes techMarqueeScrollLeft {
@@ -6338,6 +6359,7 @@ a.contact-detail-val-v2:hover { color: var(--theme-light); }
     transform: translate3d(0, 0, 0);
   }
 }
+
 
 
 
