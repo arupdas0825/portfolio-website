@@ -17,9 +17,9 @@ const IS_TOUCH = typeof window !== 'undefined' &&
 
 
 const ROLES = [
-  'AI / ML Developer', 'React Developer', 'Android App Developer',
-  'Full Stack Developer', 'Open Source Contributor',
-  'Photographer & Videographer', 'Problem Solver', 'B.Tech CSE (AIML) Student',
+  'AI & ML Researcher', 'Full Stack Developer', 'Android App Developer',
+  'Photographer & Creator', 'Open Source Contributor',
+  'Problem Solver', 'B.Tech CSE (AIML) Scholar',
 ];
 
 function useTypewriter(words, ts = 80, ds = 40, pt = 1800) {
@@ -104,8 +104,8 @@ export default function Home() {
 
       {/* ── LEFT: all original text & buttons ── */}
       <div className='hero-left fade-in' ref={addRef} style={{ position: 'relative', zIndex: 20 }}>
-        <div className='hero-badge'><span className='badge-dot' />Senior AI & Full-Stack Architect</div>
-        <div className='hero-code-tag'>&lt; SYSTEM ARCHITECT /&gt;</div>
+        <div className='hero-badge'><span className='badge-dot' />Developer, AI/ML Researcher &amp; Creator</div>
+        <div className='hero-code-tag'>&lt; DEVELOPER &amp; CREATOR /&gt;</div>
         <h1 className='hero-name'>
           Hi, I'm <span className='hero-name-gradient'>Arup Das</span>
         </h1>

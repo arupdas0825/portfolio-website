@@ -9,6 +9,7 @@ const navLinks = [
   { id:'internship', label:'Internship', icon:'🚀' },
   { id:'publications', label:'Publications', icon:'📚' },
   { id:'certificates', label:'Certificates', icon:'📜' },
+  { id:'blog',        label:'Blog',         icon:'✍️' },
   { id:'gallery',   label:'Photography', icon:'📷' },
   { id:'services',  label:'Services',    icon:'⚙️' },
   { id:'cv',        label:'CV',          icon:'📄' },

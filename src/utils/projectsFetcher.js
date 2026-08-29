@@ -1,4 +1,4 @@
-import { PROJECTS_DUMP } from '../data/projectsDump';
+import { PROJECTS_DATA } from '../data/projectsData';
 import projectsConfig from '../content/projects/projects-config.json';
 
 const GITHUB_USERNAME = 'arupdas0825';
@@ -179,10 +179,7 @@ export const getRepoImage = (repo) => {
 };
 
 export const fetchAndMergeProjects = async () => {
-  // 1. Fetch local Projects Dump
-  const dbProjects = PROJECTS_DUMP || [];
-
-  // 2. Fetch GitHub Repositories
+  // 1. Fetch GitHub Repositories
   let githubRepos = [];
   const CACHE_KEY = `gh_repos_v2_${GITHUB_USERNAME}`;
   const CACHE_TTL = 60 * 60 * 1000; // 1 hour
@@ -223,14 +220,6 @@ export const fetchAndMergeProjects = async () => {
     r => r.name.toLowerCase() !== GITHUB_USERNAME.toLowerCase()
   );
 
-  // Helper to extract repo name from GitHub URL
-  const getRepoNameFromUrl = (url) => {
-    if (!url) return '';
-    const cleanUrl = url.trim().replace(/\/$/, '');
-    const parts = cleanUrl.split('/');
-    return parts[parts.length - 1] || '';
-  };
-
   // Helper to check if description is a placeholder
   const isPlaceholderDescription = (desc) => {
     if (!desc) return true;
@@ -251,23 +240,12 @@ export const fetchAndMergeProjects = async () => {
   };
 
   const mergedRepos = [];
-  const matchedDbIds = new Set();
 
-  // 3. Merge Loop
+  // 2. Merge Loop
   filteredGitHubRepos.forEach(repo => {
     const repoNameLower = repo.name.toLowerCase();
-
-    // Match strategy: check if github_url matches repo name, or title clean-matches repo name
-    const dbMatch = dbProjects.find(p => {
-      if (!p.github_url) return false;
-      const dbRepoName = getRepoNameFromUrl(p.github_url).toLowerCase();
-      const dbTitleClean = p.title ? p.title.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
-      const repoNameClean = repo.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-      return (
-        dbRepoName === repoNameLower ||
-        repoNameClean === dbTitleClean
-      );
-    });
+    const dataKey = Object.keys(PROJECTS_DATA).find(k => k.toLowerCase() === repoNameLower);
+    const projData = dataKey ? PROJECTS_DATA[dataKey] : null;
 
     let mergedRepo = {
       id: repo.id,
@@ -276,15 +254,14 @@ export const fetchAndMergeProjects = async () => {
       pushed_at: repo.pushed_at,
       updated_at: repo.updated_at,
       topics: repo.topics || [],
-      // Live metadata is the single source of truth
       stargazers_count: repo.stargazers_count,
       forks_count: repo.forks_count,
       language: repo.language || 'JavaScript',
     };
 
     // Description matching
-    if (dbMatch && dbMatch.description && !isPlaceholderDescription(dbMatch.description)) {
-      mergedRepo.description = dbMatch.description;
+    if (projData && projData.description && !isPlaceholderDescription(projData.description)) {
+      mergedRepo.description = projData.description;
     } else {
       mergedRepo.description = repo.description || '';
     }
@@ -292,8 +269,8 @@ export const fetchAndMergeProjects = async () => {
     // Homepage matching - explicit REPO_HOMEPAGES takes top priority
     if (REPO_HOMEPAGES[repo.name]) {
       mergedRepo.homepage = REPO_HOMEPAGES[repo.name];
-    } else if (dbMatch && dbMatch.live_url) {
-      mergedRepo.homepage = dbMatch.live_url;
+    } else if (projData && projData.links && projData.links.demo) {
+      mergedRepo.homepage = projData.links.demo;
     } else if (repo.homepage) {
       mergedRepo.homepage = repo.homepage;
     } else {
@@ -301,43 +278,25 @@ export const fetchAndMergeProjects = async () => {
     }
 
     // Image matching
-    if (dbMatch && (dbMatch.image || dbMatch.image_url)) {
-      mergedRepo.image = dbMatch.image || dbMatch.image_url;
+    if (projData && projData.banner) {
+      mergedRepo.image = projData.banner;
     } else {
       mergedRepo.image = getRepoImage(repo);
     }
 
     // Video matching
-    if (dbMatch && dbMatch.video) {
-      mergedRepo.video = dbMatch.video;
-    } else {
-      mergedRepo.video = REPO_VIDEOS[repo.name] || null;
-    }
+    mergedRepo.video = REPO_VIDEOS[repo.name] || null;
 
     // Category mapping
-    let category = 'Secondary';
-    if (dbMatch && dbMatch.catagory) {
-      category = dbMatch.catagory;
-    } else if (dbMatch && dbMatch.category) {
-      category = dbMatch.category;
-    } else {
-      category = getCategoryFromLocalConfig(repo.name);
-    }
-
+    let category = getCategoryFromLocalConfig(repo.name);
     if (category === 'college' || category === 'Academic') {
       category = 'Academic';
     }
     mergedRepo.category = category;
 
     // Display order and featured status
-    if (dbMatch) {
-      mergedRepo.display_order = dbMatch.display_order !== undefined ? dbMatch.display_order : 999;
-      mergedRepo.featured = !!dbMatch.featured;
-      matchedDbIds.add(dbMatch.id);
-    } else {
-      mergedRepo.display_order = 999;
-      mergedRepo.featured = projectsConfig.major.some(n => n.toLowerCase() === repoNameLower);
-    }
+    mergedRepo.display_order = 999;
+    mergedRepo.featured = projectsConfig.major.some(n => n.toLowerCase() === repoNameLower);
 
     mergedRepos.push(mergedRepo);
   });

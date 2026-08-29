@@ -10,7 +10,6 @@ import {
   LucideFocus,
   LucideSparkles
 } from 'lucide-react';
-import { PHOTOGRAPHY_DUMP } from './data/photographyDump';
 import { MultiFolderGallery } from './components/ui/interactive-folder-gallery';
 import './Gallery.css';
 
@@ -129,44 +128,8 @@ const fallbackPhotos = [
 ];
 
 export default function Gallery() {
-  const [photosList, setPhotosList] = useState([]);
+  const [photosList] = useState(fallbackPhotos);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
-
-  // Load photos database
-  useEffect(() => {
-    const data = PHOTOGRAPHY_DUMP ? PHOTOGRAPHY_DUMP.filter(p => p.image) : [];
-    if (data && data.length > 0) {
-      const mapped = data.map(p => {
-        let exif = {};
-        let desc = p.description || '';
-        if (p.description) {
-          try {
-            exif = JSON.parse(p.description);
-            desc = exif.desc || '';
-          } catch (e) {
-            desc = p.description;
-          }
-        }
-        return {
-          id: p.id,
-          image: p.image || p.image_url,
-          src: p.image || p.image_url,
-          title: p.title || 'Untitled Capture',
-          desc: desc || `Captured in ${exif.location || p.location || 'India'} using ${exif.camera || p.camera || 'professional camera'}.`,
-          category: p.category || 'Landscape Photography',
-          location: exif.location || p.location || 'Kolkata, India',
-          camera: exif.camera || p.camera || 'Sony A7IV',
-          lens: exif.lens || p.lens || 'Prime Lens',
-          iso: exif.iso || p.iso || '100',
-          shutterSpeed: exif.shutterSpeed || exif.shutter_speed || p.shutter_speed || '1/250s',
-          aperture: exif.aperture || p.aperture || 'f/2.8'
-        };
-      });
-      setPhotosList(mapped);
-    } else {
-      setPhotosList(fallbackPhotos);
-    }
-  }, []);
 
   // 3 folders: Folder 1 (6 photos), Folder 2 (next 5 photos), Folder 3 (0 photos)
   const folders = useMemo(() => {

@@ -94,7 +94,7 @@ export default function WelcomeScreen({ onEnter }) {
                 transform: 'translateZ(0)'
               }}
             >
-              Welcome to <span className="gradient-text">My Portfolio</span>
+              Welcome to <span className="gradient-text">My Personal Website</span>
             </motion.h1>
 
             {/* 3. MUTED SUBTEXT */}
@@ -108,7 +108,7 @@ export default function WelcomeScreen({ onEnter }) {
                 transform: 'translateZ(0)'
               }}
             >
-              AI Developer • Full Stack Engineer
+              Developer • AI/ML Researcher • Creator
             </motion.p>
 
           </div>

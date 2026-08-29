@@ -4,7 +4,97 @@ import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { LucideExternalLink, LucideMaximize2 } from 'lucide-react';
-import { CERTIFICATES_DUMP } from './data/certificatesDump';
+
+export const ALL_CERTIFICATES = [
+  {
+    id: 48,
+    title: "“The Prompters” at TEXIBITION 2K26",
+    issuer: "Brainware University Tech Club",
+    year: "2026",
+    category: "Academic Certifications",
+    image: "/certificate.jpeg",
+    credential_id: "https://github.com/arupdas0825",
+    tags: "Generative AI, Prompt Engineering, Tech Club",
+    display_order: 1
+  },
+  {
+    id: 49,
+    title: "Class Representative Certificate",
+    issuer: "Brainware University",
+    year: "2025",
+    category: "Academic Certifications",
+    image: "/CR-Certificate.jpeg",
+    credential_id: "https://github.com/arupdas0825",
+    tags: "Leadership, Administration, Coordination, Communication",
+    display_order: 2
+  },
+  {
+    id: 42,
+    title: "Certificate of Completion: AI Fluency Framework & Foundations",
+    issuer: "Anthropic",
+    year: "2026",
+    category: "Professional Experience",
+    image: "/claude-certificate.png",
+    credential_id: "https://verify.skilljar.com/c/4vqqntrfh6kc",
+    tags: "AI, Claude, Anthropic, AI Literacy",
+    display_order: 1
+  },
+  {
+    id: 43,
+    title: "Responsive Web Design",
+    issuer: "freeCodeCamp",
+    year: "2025",
+    category: "Professional Experience",
+    image: "/Responsive-Web-Design-Certificate.png",
+    credential_id: "https://freecodecamp.org/certification/arupdas0825/responsive-web-design-v9",
+    tags: "HTML, CSS, Responsive Design, Frontend Development, Web Design",
+    display_order: 2
+  },
+  {
+    id: 44,
+    title: "Certificate of Completion: Claude 101",
+    issuer: "Anthropic",
+    year: "2026",
+    category: "Professional Experience",
+    image: "/claude-101-certificate.png",
+    credential_id: "https://verify.skilljar.com/c/i4m9mvyxk776",
+    tags: "Anthropic, Claude, AI, Prompt Engineering",
+    display_order: 3
+  },
+  {
+    id: 45,
+    title: "Google Analytics Certification",
+    issuer: "Google",
+    year: "2026",
+    category: "Professional Experience",
+    image: "/google-analytics-certificate.png",
+    credential_id: "https://skillshop.credential.net/65949db9-feb1-4c87-9fc6-f2832084f257",
+    tags: "Google Analytics, GA4, Data Analytics, Performance Measurement",
+    display_order: 4
+  },
+  {
+    id: 46,
+    title: "Google Ads Creative Certification",
+    issuer: "Google",
+    year: "2026",
+    category: "Professional Experience",
+    image: "/google-ads-creative-certificate.png",
+    credential_id: "https://skillshop.credential.net/71e6f295-1723-407c-abd4-51a9dd074a17",
+    tags: "Google Ads, Creative Design, Digital Marketing, Campaign Optimization",
+    display_order: 5
+  },
+  {
+    id: 47,
+    title: "AI-Powered Performance Ads Certification",
+    issuer: "Google",
+    year: "2026",
+    category: "Professional Experience",
+    image: "/AI-Powered-Performance-Ads-Certification.png",
+    credential_id: "https://skillshop.credential.net/4db155a5-fe1a-491a-97ed-3b7738cbd730",
+    tags: "AI Ads, Performance Max, Google Ads, Campaign Automation, ROI Optimization",
+    display_order: 6
+  }
+];
 
 // Helper to assign vibrant brand colors based on issuer
 const getColorForIssuer = (issuer) => {
@@ -137,9 +227,9 @@ export default function Certificates() {
     );
   }, []);
 
-  // Load certificates from local dump
+  // Load certificates
   useEffect(() => {
-    const data = CERTIFICATES_DUMP;
+    const data = ALL_CERTIFICATES;
     if (data) {
       const mapped = data
         .filter(c => c.title) // filter out invalid null entries
@@ -233,7 +323,7 @@ export default function Certificates() {
         </h2>
         <div className="section-line" />
         <p className="section-sub">
-          Continuous learning, industry credentials, and academic achievements showcased in a futuristic portfolio hub.
+          Continuous learning, industry credentials, and academic achievements across AI, software engineering, and modern technologies.
         </p>
 
         {/* Dynamic Category Tabs */}

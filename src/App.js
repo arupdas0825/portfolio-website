@@ -21,6 +21,8 @@ const GithubStats = lazy(() => import('./GithubStats'));
 const Gallery = lazy(() => import('./Gallery'));
 const Services = lazy(() => import('./Services'));
 const CV = lazy(() => import('./CV'));
+const Blog = lazy(() => import('./Blog'));
+const BlogPage = lazy(() => import('./BlogPage'));
 const Contact = lazy(() => import('./Contact'));
 const CustomCursor = lazy(() => import('./CustomCursor'));
 const WorkPage = lazy(() => import('./WorkPage'));
@@ -112,6 +114,11 @@ const PortfolioHome = React.memo(function PortfolioHome() {
             <Certificates featuredOnly={true} />
           </ScrollAnimatedSection>
         </div>
+        <div id="blog">
+          <ScrollAnimatedSection intensity="medium">
+            <Blog featuredOnly={true} />
+          </ScrollAnimatedSection>
+        </div>
         <div id="githubstats">
           <ScrollAnimatedSection intensity="medium">
             <GithubStats />
@@ -137,7 +144,7 @@ const PortfolioHome = React.memo(function PortfolioHome() {
         </div>
       </Suspense>
       <footer className="site-footer">
-        <span>© 2025 <a href="/">Arup Das</a>. Built with 💜 React &amp; Tailwind.</span>
+        <span>© 2025 <a href="/">Arup Das</a> · Developer, AI/ML Researcher &amp; Creator. Built with 💜 React &amp; Tailwind.</span>
         <span>B.Tech CSE (AIML) · Brainware University · Kolkata</span>
       </footer>
     </>
@@ -191,6 +198,8 @@ function AppContent() {
               <Route path="/photography-gallery" element={<PhotographyGallery />} />
               <Route path="/publications" element={<PublicationsPage />} />
               <Route path="/certificates" element={<CertificatesPage />} />
+              <Route path="/blog" element={<BlogPage />} />
+              <Route path="/blog/:postSlug" element={<BlogPage />} />
             </Routes>
 
             {/* ── AI Playback Assistant (floating overlay) ── */}

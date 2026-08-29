@@ -9,8 +9,8 @@ export default function About() {
   const sectionRef = useRef(null);
   const titleRef = useRef(null);
   const [profile] = useState({
-    bio1: 'I am a detail-oriented Computer Science & Engineering student at Brainware University, specialising in Artificial Intelligence and Machine Learning. Based in Kolkata, I am passionate about bridging the gap between robust software architecture and intelligent system design.',
-    bio2: 'With a strong foundation in Python, Java, C/C++, and scalable backend databases, I focus on building stable applications. My technical toolkit is complemented by a creative background in Photography and Professional Video Editing.',
+    bio1: 'I am a Computer Science & Engineering scholar at Brainware University, specializing in Artificial Intelligence and Machine Learning. Based in Kolkata, I operate at the intersection of intelligent systems research, scalable software engineering, and creative visual storytelling.',
+    bio2: 'With deep interests spanning deep learning architectures, full-stack systems, and Android development, I approach software with rigorous engineering and aesthetic precision. Outside the compiler, I am an avid photographer, visual creator, and open-source contributor exploring technology from every angle.',
     photoUrl: '/arup.png'
   });
 
@@ -128,7 +128,7 @@ export default function About() {
           }}
         >
           <div style={{ transform: 'translateZ(40px)' }}>
-            <span className="section-label">— WHO AM I —</span>
+            <span className="section-label">— PERSONAL &amp; PROFESSIONAL PROFILE —</span>
             <h2 className="section-title" ref={titleRef}>About <span>Me</span></h2>
             <div className="section-line" style={{ marginLeft: 0 }} />
             <p className="section-sub about-sub">

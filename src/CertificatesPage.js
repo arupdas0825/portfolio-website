@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LucideArrowLeft, LucideExternalLink, LucideMaximize2 } from 'lucide-react';
 import Navbar from './Navbar';
-import { CERTIFICATES_DUMP } from './data/certificatesDump';
+import { ALL_CERTIFICATES } from './Certificates';
 import { ScrollAnimatedSection } from './components/ScrollAnimatedSection';
 
 // Helper to assign vibrant brand colors based on issuer
@@ -120,9 +120,9 @@ export default function CertificatesPage() {
     window.scrollTo(0, 0); 
   }, []);
 
-  // Load certificates from local dump
+  // Load certificates
   useEffect(() => {
-    const data = CERTIFICATES_DUMP;
+    const data = ALL_CERTIFICATES;
     if (data) {
       const mapped = data
         .filter(c => c.title) // filter out invalid null entries

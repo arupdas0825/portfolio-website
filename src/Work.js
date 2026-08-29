@@ -464,7 +464,7 @@ const Work = () => {
   return (
     <section id="work" className="page-section">
       <div className="section-inner">
-        <span className="section-label fade-in" ref={addRef}>✦ CURATED PORTFOLIO SHOWCASE ✦</span>
+        <span className="section-label fade-in" ref={addRef}>✦ FEATURED WORK &amp; PROJECTS ✦</span>
         <h2 className="section-title fade-in" ref={r => { addRef(r); titleRef.current = r; }}>Featured <span>Work</span></h2>
         <div className="section-line fade-in" ref={addRef} />
         <p className="section-sub fade-in" ref={addRef}>

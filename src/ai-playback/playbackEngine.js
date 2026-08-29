@@ -13,7 +13,7 @@ const SECTION_CONFIG = [
     icon: '🏠',
     priority: 1,
     getNarration: (content) => {
-      return `Welcome to Arup Das's portfolio — a digital experience designed to showcase the intersection of engineering excellence and creative vision. ${content.name || 'Arup'} is a B.Tech Computer Science student specializing in Artificial Intelligence and Machine Learning at Brainware University, Kolkata. What you're about to see is not just a portfolio — it's a statement. A statement about what happens when you combine modern frontend engineering, deep AI knowledge, and a photographer's eye for detail. Let's take a closer look.`;
+      return `Welcome to Arup Das's personal website — a digital space designed to showcase the intersection of engineering excellence, machine learning research, and creative vision. ${content.name || 'Arup'} is a B.Tech Computer Science scholar specializing in Artificial Intelligence and Machine Learning at Brainware University, Kolkata. What you're about to explore is a comprehensive look into his work as a developer, researcher, photographer, and creator. Let's take a closer look.`;
     },
   },
   {
@@ -92,10 +92,19 @@ const SECTION_CONFIG = [
     },
   },
   {
+    id: 'blog',
+    label: 'Blog & Insights',
+    icon: '✍️',
+    priority: 8,
+    getNarration: (content) => {
+      return `Here in the Articles and Insights section, Arup shares his technical thinking and architectural discoveries. Covering topics from production deep learning deployment and edge neural networks on Android, to 3D canvas engineering with Spline, and how photography informs interface design. These writings reflect a developer who doesn't just build, but actively analyzes, synthesizes, and contributes knowledge back to the engineering community.`;
+    },
+  },
+  {
     id: 'gallery',
     label: 'Photography',
     icon: '📸',
-    priority: 8,
+    priority: 9,
     getNarration: (content) => {
       return `And now for something completely different — Arup's cinematic photography. This is where the creative side truly shines. Each photograph here tells a story — from the golden haze of a morning commute in Kolkata, to the iconic Hooghly River sunset, to intimate macro captures that reveal hidden beauty in everyday moments. This isn't casual hobby photography — it's intentional visual storytelling. And here's the connection: the same eye for composition, color theory, and emotional impact that goes into these photographs is exactly what makes his UI designs feel polished and premium. Photography and frontend development share more DNA than most people realize.`;
     },
@@ -104,7 +113,7 @@ const SECTION_CONFIG = [
     id: 'services',
     label: 'Services',
     icon: '🛠️',
-    priority: 9,
+    priority: 10,
     getNarration: (content) => {
       return `Here's what Arup brings to the table as a professional. Web Development with React and Tailwind, AI and Machine Learning solutions using cutting-edge models, Mobile App Development with Kotlin and local databases, Creative Direction combining photography with UI/UX design, Data Analysis with Python's scientific stack, and robust Backend Systems architecture. What makes this service offering unique is the combination — most developers specialize in one or two areas. Arup offers a full spectrum from creative design to backend infrastructure, making him a versatile asset for any team or project.`;
     },
@@ -113,9 +122,9 @@ const SECTION_CONFIG = [
     id: 'contact',
     label: 'Contact',
     icon: '📬',
-    priority: 10,
+    priority: 11,
     getNarration: (content) => {
-      return `We've reached the end of our journey through Arup's portfolio. If what you've seen resonates — whether it's the technical depth, the creative vision, or the consistent execution — the next step is simple: reach out. Arup is available for internships, collaborations, freelance projects, and full-time opportunities. Based in Kolkata, India, but working globally through the power of the internet. Thank you for taking this AI-guided tour. This portfolio is a living, breathing digital presence — constantly evolving, always pushing boundaries. Until next time.`;
+      return `We've reached the end of our journey through Arup's personal website. If what you've seen resonates — whether it's the technical depth, the creative vision, or the consistent execution — the next step is simple: reach out. Arup is available for internships, collaborations, research projects, freelance initiatives, and full-time opportunities. Based in Kolkata, India, but working globally through the power of the internet. Thank you for taking this AI-guided tour. This website is a living, breathing digital presence — constantly evolving, always pushing boundaries. Until next time.`;
     },
   },
 ];
