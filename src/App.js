@@ -114,11 +114,6 @@ const PortfolioHome = React.memo(function PortfolioHome() {
             <Certificates featuredOnly={true} />
           </ScrollAnimatedSection>
         </div>
-        <div id="blog">
-          <ScrollAnimatedSection intensity="medium">
-            <Blog featuredOnly={true} />
-          </ScrollAnimatedSection>
-        </div>
         <div id="githubstats">
           <ScrollAnimatedSection intensity="medium">
             <GithubStats />
@@ -198,6 +193,8 @@ function AppContent() {
               <Route path="/photography-gallery" element={<PhotographyGallery />} />
               <Route path="/publications" element={<PublicationsPage />} />
               <Route path="/certificates" element={<CertificatesPage />} />
+              <Route path="/blogs" element={<BlogPage />} />
+              <Route path="/blogs/:postSlug" element={<BlogPage />} />
               <Route path="/blog" element={<BlogPage />} />
               <Route path="/blog/:postSlug" element={<BlogPage />} />
             </Routes>

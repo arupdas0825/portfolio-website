@@ -1,12 +1,11 @@
-/**
- * BlogPage.js — /blog & /blog/:postSlug route
- * Dedicated page displaying all articles, research notes, and creative engineering thoughts.
- * Matches existing personal website design system (PublicationsPage.js & WorkPage.js pattern).
- */
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Clock, Calendar, Search, Tag, X, User, ArrowRight, Share2, Check } from 'lucide-react';
+import {
+  ArrowLeft, Clock, Calendar, Search, Tag, User,
+  ArrowRight, Share2, Check, BookOpen, Sparkles,
+  ChevronRight, Bookmark
+} from 'lucide-react';
 import Navbar from './Navbar';
 import { ScrollAnimatedSection } from './components/ScrollAnimatedSection';
 import { BLOG_POSTS, BLOG_CATEGORIES } from './data/blogData';
@@ -16,49 +15,119 @@ const IS_TOUCH = typeof window !== 'undefined' &&
    'ontouchstart' in window ||
    (navigator.maxTouchPoints && navigator.maxTouchPoints > 0));
 
+// Markdown-like content renderer for rich article typography
+function ArticleBody({ content }) {
+  if (!content) return null;
+
+  const paragraphs = content.split('\n\n');
+
+  return (
+    <div className="blog-article-content">
+      {paragraphs.map((para, pIdx) => {
+        const trimmed = para.trim();
+
+        // H3 Header
+        if (trimmed.startsWith('### ')) {
+          return (
+            <h3 key={pIdx} className="blog-content-h3">
+              <span className="blog-content-h3-bar" />
+              {trimmed.replace('### ', '')}
+            </h3>
+          );
+        }
+
+        // H2 Header
+        if (trimmed.startsWith('## ')) {
+          return (
+            <h2 key={pIdx} className="blog-content-h2">
+              {trimmed.replace('## ', '')}
+            </h2>
+          );
+        }
+
+        // Bullet lists
+        if (trimmed.includes('\n- ') || trimmed.startsWith('- ')) {
+          const items = trimmed.split('\n').filter(l => l.trim().startsWith('- '));
+          return (
+            <ul key={pIdx} className="blog-content-list">
+              {items.map((item, iIdx) => {
+                const itemText = item.replace(/^- /, '');
+                // Handle bold inside bullet
+                const parts = itemText.split(/(\*\*.*?\*\*)/g);
+                return (
+                  <li key={iIdx} className="blog-content-list-item">
+                    <span className="blog-list-bullet" />
+                    <span>
+                      {parts.map((part, pPartIdx) => {
+                        if (part.startsWith('**') && part.endsWith('**')) {
+                          return <strong key={pPartIdx} className="blog-content-strong">{part.slice(2, -2)}</strong>;
+                        }
+                        return part;
+                      })}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          );
+        }
+
+        // Standard Paragraph with bold and inline code parsing
+        const parts = trimmed.split(/(\*\*.*?\*\*|`.*?`)/g);
+        return (
+          <p key={pIdx} className="blog-content-p">
+            {parts.map((part, partIdx) => {
+              if (part.startsWith('**') && part.endsWith('**')) {
+                return <strong key={partIdx} className="blog-content-strong">{part.slice(2, -2)}</strong>;
+              }
+              if (part.startsWith('`') && part.endsWith('`')) {
+                return <code key={partIdx} className="blog-content-code">{part.slice(1, -1)}</code>;
+              }
+              return part;
+            })}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function BlogPage() {
   const navigate = useNavigate();
   const { postSlug } = useParams();
 
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedPost, setSelectedPost] = useState(null);
   const [copied, setCopied] = useState(false);
 
+  // Scroll to top whenever slug or route changes
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  // Handle postSlug param if navigated directly to /blog/:postSlug
-  useEffect(() => {
-    if (postSlug) {
-      const found = BLOG_POSTS.find(p => p.slug === postSlug || p.id === postSlug);
-      if (found) {
-        setSelectedPost(found);
-      }
-    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [postSlug]);
 
-  const handleEsc = useCallback((e) => {
-    if (e.key === 'Escape') {
-      setSelectedPost(null);
-      if (postSlug) navigate('/blog');
-    }
-  }, [postSlug, navigate]);
+  // Find active article if postSlug is in URL
+  const activePost = useMemo(() => {
+    if (!postSlug) return null;
+    return BLOG_POSTS.find(p => p.slug === postSlug || p.id === postSlug) || null;
+  }, [postSlug]);
 
-  useEffect(() => {
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
-  }, [handleEsc]);
+  // Filtered posts for listing page
+  const filteredPosts = useMemo(() => {
+    return BLOG_POSTS.filter(post => {
+      const matchesCategory = activeCategory === "All" || post.category === activeCategory;
+      const matchesSearch =
+        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+      return matchesCategory && matchesSearch;
+    });
+  }, [activeCategory, searchQuery]);
 
-  const handleSelectPost = (post) => {
-    setSelectedPost(post);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedPost(null);
-    if (postSlug) navigate('/blog');
-  };
+  // Related articles for single post view
+  const relatedPosts = useMemo(() => {
+    if (!activePost) return [];
+    return BLOG_POSTS.filter(p => p.id !== activePost.id).slice(0, 2);
+  }, [activePost]);
 
   const handleShare = (post) => {
     if (navigator.share) {
@@ -74,15 +143,311 @@ export default function BlogPage() {
     }
   };
 
-  const filteredPosts = BLOG_POSTS.filter(post => {
-    const matchesCategory = activeCategory === "All" || post.category === activeCategory;
-    const matchesSearch =
-      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchesCategory && matchesSearch;
-  });
+  // ══════════════════════════════════════════════════════════════════════
+  // VIEW 1: DEDICATED INDIVIDUAL BLOG POST VIEW
+  // ══════════════════════════════════════════════════════════════════════
+  if (activePost) {
+    return (
+      <div className="pubpage-root" style={{ minHeight: '100vh', paddingBottom: IS_TOUCH ? '120px' : '80px' }}>
+        <Navbar />
 
+        <div style={{ maxWidth: '860px', margin: '0 auto', padding: '0 20px' }}>
+          {/* Breadcrumb Navigation Bar */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '12px',
+            marginBottom: '28px',
+            paddingTop: '20px'
+          }}>
+            <button
+              className="pubpage-back"
+              onClick={() => navigate('/blogs')}
+              style={{ margin: 0 }}
+            >
+              <ArrowLeft size={16} />
+              Back to All Articles
+            </button>
+
+            <button
+              onClick={() => handleShare(activePost)}
+              className="blog-share-btn"
+              title="Share this article"
+            >
+              {copied ? (
+                <>
+                  <Check size={15} color="#4ade80" />
+                  <span style={{ color: '#4ade80' }}>Link Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Share2 size={15} />
+                  <span>Share</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Article Header & Meta */}
+          <motion.header
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            style={{ marginBottom: '32px' }}
+          >
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '10px',
+              marginBottom: '18px'
+            }}>
+              <span style={{
+                padding: '5px 14px',
+                borderRadius: '20px',
+                background: 'rgba(138, 92, 246, 0.15)',
+                border: `1px solid ${activePost.color || '#8a5cf6'}80`,
+                color: activePost.color || '#c084fc',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                letterSpacing: '0.04em'
+              }}>
+                {activePost.category}
+              </span>
+              <span style={{ color: 'rgba(255,255,255,0.3)' }}>•</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)' }}>
+                <Calendar size={14} /> {activePost.date}
+              </span>
+              <span style={{ color: 'rgba(255,255,255,0.3)' }}>•</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)' }}>
+                <Clock size={14} /> {activePost.readTime}
+              </span>
+            </div>
+
+            <h1 style={{
+              fontFamily: 'Syne, sans-serif',
+              fontSize: 'clamp(1.85rem, 4vw, 2.75rem)',
+              fontWeight: 800,
+              color: '#ffffff',
+              lineHeight: 1.25,
+              marginBottom: '20px',
+              letterSpacing: '-0.02em'
+            }}>
+              {activePost.title}
+            </h1>
+
+            <p style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: '1.1rem',
+              color: 'rgba(226, 217, 243, 0.85)',
+              lineHeight: 1.7,
+              borderLeft: `3px solid ${activePost.color || '#8a5cf6'}`,
+              paddingLeft: '16px',
+              margin: '0 0 28px 0',
+              fontStyle: 'italic'
+            }}>
+              {activePost.excerpt}
+            </p>
+
+            {/* Author Badge */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '12px 18px',
+              borderRadius: '16px',
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              width: 'fit-content'
+            }}>
+              <img
+                src="/ad-logo.jpeg"
+                alt="Arup Das"
+                style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }}
+              />
+              <div>
+                <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#fff' }}>Arup Das</div>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>Developer, AI/ML Researcher & Creator</div>
+              </div>
+            </div>
+          </motion.header>
+
+          {/* Hero Cover Image */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.45, delay: 0.1 }}
+            style={{
+              width: '100%',
+              height: 'clamp(220px, 42vw, 420px)',
+              borderRadius: '24px',
+              overflow: 'hidden',
+              position: 'relative',
+              marginBottom: '40px',
+              border: '1px solid rgba(138, 92, 246, 0.25)',
+              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)'
+            }}
+          >
+            <img
+              src={activePost.coverImage}
+              alt={activePost.title}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(to top, rgba(10, 8, 20, 0.7) 0%, transparent 60%)'
+            }} />
+          </motion.div>
+
+          {/* Full Article Content */}
+          <motion.article
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.15 }}
+            style={{
+              background: 'rgba(255, 255, 255, 0.02)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              borderRadius: '24px',
+              border: '1px solid rgba(138, 92, 246, 0.18)',
+              padding: 'clamp(24px, 5vw, 44px)',
+              boxShadow: '0 20px 45px rgba(0, 0, 0, 0.35)',
+              marginBottom: '48px'
+            }}
+          >
+            <ArticleBody content={activePost.content} />
+
+            {/* Article Tags */}
+            <div style={{
+              marginTop: '40px',
+              paddingTop: '24px',
+              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Tag size={13} /> Tags:
+              </span>
+              {activePost.tags.map(tag => (
+                <span
+                  key={tag}
+                  style={{
+                    fontSize: '0.75rem',
+                    padding: '4px 12px',
+                    borderRadius: '8px',
+                    background: 'rgba(138, 92, 246, 0.12)',
+                    color: '#c4b5fd',
+                    border: '1px solid rgba(138, 92, 246, 0.2)',
+                  }}
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          </motion.article>
+
+          {/* Related Articles Section */}
+          {relatedPosts.length > 0 && (
+            <div style={{ marginTop: '56px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
+                <BookOpen size={20} color="#a78bfa" />
+                <h3 style={{
+                  fontFamily: 'Syne, sans-serif',
+                  fontSize: '1.4rem',
+                  fontWeight: 800,
+                  color: '#fff',
+                  margin: 0
+                }}>
+                  Related <span>Articles</span>
+                </h3>
+              </div>
+
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                gap: '20px'
+              }}>
+                {relatedPosts.map(post => (
+                  <div
+                    key={post.id}
+                    onClick={() => navigate(`/blogs/${post.slug}`)}
+                    className="blog-related-card"
+                  >
+                    <div style={{ position: 'relative', width: '100%', height: '140px', overflow: 'hidden' }}>
+                      <img src={post.coverImage} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <div style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'linear-gradient(to top, rgba(10, 8, 20, 0.9) 0%, transparent 60%)'
+                      }} />
+                      <span style={{
+                        position: 'absolute',
+                        top: '10px',
+                        left: '10px',
+                        padding: '3px 8px',
+                        borderRadius: '12px',
+                        background: 'rgba(10, 8, 20, 0.8)',
+                        fontSize: '0.7rem',
+                        fontWeight: 600,
+                        color: post.color || '#c084fc',
+                        border: `1px solid ${post.color || '#8a5cf6'}60`
+                      }}>
+                        {post.category}
+                      </span>
+                    </div>
+
+                    <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
+                      <h4 style={{
+                        fontFamily: 'Syne, sans-serif',
+                        fontSize: '1rem',
+                        fontWeight: 700,
+                        color: '#fff',
+                        lineHeight: 1.4,
+                        marginBottom: '8px'
+                      }}>
+                        {post.title}
+                      </h4>
+                      <span style={{
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        color: '#a78bfa',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}>
+                        Read Next <ChevronRight size={14} />
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Footer Back Button */}
+          <div style={{ marginTop: '48px', textAlign: 'center' }}>
+            <button
+              className="pubpage-back"
+              onClick={() => navigate('/blogs')}
+              style={{ margin: '0 auto' }}
+            >
+              <ArrowLeft size={16} />
+              Return to All Articles
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  // VIEW 2: FULL DEDICATED BLOGS DIRECTORY VIEW (/blogs)
+  // ══════════════════════════════════════════════════════════════════════
   return (
     <div className="pubpage-root" style={{ minHeight: '100vh', paddingBottom: IS_TOUCH ? '120px' : '80px' }}>
       <Navbar />
@@ -105,10 +470,7 @@ export default function BlogPage() {
 
       {/* Search & Filter Bar */}
       <div style={{ maxWidth: '900px', margin: '0 auto 32px', padding: '0 20px' }}>
-        <div style={{
-          position: 'relative',
-          marginBottom: '20px'
-        }}>
+        <div style={{ position: 'relative', marginBottom: '20px' }}>
           <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.4)' }} />
           <input
             type="text"
@@ -145,7 +507,7 @@ export default function BlogPage() {
         </div>
       </div>
 
-      {/* Grid */}
+      {/* Grid of All Blog Cards */}
       <ScrollAnimatedSection intensity="subtle">
         <div style={{
           maxWidth: '1200px',
@@ -162,7 +524,7 @@ export default function BlogPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.06, duration: 0.4 }}
               whileHover={{ y: -6 }}
-              onClick={() => handleSelectPost(post)}
+              onClick={() => navigate(`/blogs/${post.slug || post.id}`)}
               style={{
                 background: 'rgba(255, 255, 255, 0.028)',
                 backdropFilter: 'blur(16px)',
@@ -305,7 +667,7 @@ export default function BlogPage() {
                       fontWeight: 600,
                       color: 'var(--purple-light, #a78bfa)',
                     }}>
-                      Read Article <ArrowRight size={14} />
+                      Read Full Article <ArrowRight size={14} />
                     </span>
                   </div>
                 </div>
@@ -315,180 +677,133 @@ export default function BlogPage() {
         </div>
       </ScrollAnimatedSection>
 
-      {/* ── Full Article Reading Modal ── */}
-      <AnimatePresence>
-        {selectedPost && (
-          <motion.div
-            className="pub-modal-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={handleCloseModal}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              zIndex: 99999,
-              background: 'rgba(5, 4, 12, 0.88)',
-              backdropFilter: 'blur(14px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '20px'
-            }}
-          >
-            <motion.div
-              className="pub-modal-content"
-              initial={{ scale: 0.94, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.94, opacity: 0, y: 20 }}
-              transition={{ duration: 0.25 }}
-              onClick={e => e.stopPropagation()}
-              style={{
-                width: '100%',
-                maxWidth: '780px',
-                maxHeight: '90vh',
-                background: '#0e0b1c',
-                border: '1px solid rgba(138, 92, 246, 0.35)',
-                borderRadius: '24px',
-                overflowY: 'auto',
-                boxShadow: '0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(138,92,246,0.2)',
-                position: 'relative',
-                padding: '0'
-              }}
-            >
-              {/* Modal Banner */}
-              <div style={{ position: 'relative', width: '100%', height: '260px' }}>
-                <img
-                  src={selectedPost.coverImage}
-                  alt={selectedPost.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-                <div style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: 'linear-gradient(to top, #0e0b1c 0%, rgba(14, 11, 28, 0.4) 60%, rgba(14, 11, 28, 0.8) 100%)'
-                }} />
-                
-                <div style={{
-                  position: 'absolute',
-                  top: '16px',
-                  right: '16px',
-                  display: 'flex',
-                  gap: '8px'
-                }}>
-                  <button
-                    onClick={() => handleShare(selectedPost)}
-                    title="Share Article"
-                    style={{
-                      background: 'rgba(10, 8, 20, 0.7)',
-                      border: '1px solid rgba(255, 255, 255, 0.2)',
-                      borderRadius: '50%',
-                      width: '38px',
-                      height: '38px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#fff',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    {copied ? <Check size={16} color="#4ade80" /> : <Share2 size={16} />}
-                  </button>
-                  <button
-                    onClick={handleCloseModal}
-                    title="Close"
-                    style={{
-                      background: 'rgba(10, 8, 20, 0.7)',
-                      border: '1px solid rgba(255, 255, 255, 0.2)',
-                      borderRadius: '50%',
-                      width: '38px',
-                      height: '38px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#fff',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-              </div>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+        .blog-share-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 16px;
+          background: rgba(138, 92, 246, 0.12);
+          border: 1px solid rgba(138, 92, 246, 0.3);
+          border-radius: 12px;
+          color: #ddd6fe;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 0.85rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          backdrop-filter: blur(8px);
+        }
 
-              {/* Modal Content Body */}
-              <div style={{ padding: '32px 36px 48px' }}>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  fontSize: '0.82rem',
-                  color: 'rgba(255,255,255,0.6)',
-                  marginBottom: '14px'
-                }}>
-                  <span style={{
-                    padding: '4px 12px',
-                    borderRadius: '12px',
-                    background: 'rgba(138, 92, 246, 0.2)',
-                    color: '#c084fc',
-                    fontWeight: 600
-                  }}>
-                    {selectedPost.category}
-                  </span>
-                  <span>•</span>
-                  <span>{selectedPost.date}</span>
-                  <span>•</span>
-                  <span>{selectedPost.readTime}</span>
-                </div>
+        .blog-share-btn:hover {
+          background: rgba(138, 92, 246, 0.25);
+          border-color: #a78bfa;
+          color: #fff;
+          transform: translateY(-2px);
+        }
 
-                <h1 style={{
-                  fontFamily: 'Syne, sans-serif',
-                  fontSize: 'clamp(1.5rem, 3.5vw, 2.1rem)',
-                  fontWeight: 800,
-                  color: '#ffffff',
-                  lineHeight: 1.3,
-                  marginBottom: '20px'
-                }}>
-                  {selectedPost.title}
-                </h1>
+        /* ── Rich Article Content Typography ── */
+        .blog-article-content {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 1.05rem;
+          line-height: 1.9;
+          color: rgba(240, 235, 255, 0.92);
+        }
 
-                <div style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '8px',
-                  marginBottom: '28px'
-                }}>
-                  {selectedPost.tags.map(tag => (
-                    <span
-                      key={tag}
-                      style={{
-                        fontSize: '0.75rem',
-                        padding: '4px 10px',
-                        borderRadius: '6px',
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        color: '#ddd6fe',
-                        border: '1px solid rgba(255, 255, 255, 0.1)'
-                      }}
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
+        .blog-content-h2 {
+          font-family: 'Syne', sans-serif;
+          font-size: 1.65rem;
+          font-weight: 800;
+          color: #ffffff;
+          margin: 36px 0 16px 0;
+          letter-spacing: -0.01em;
+        }
 
-                {/* Content */}
-                <div style={{
-                  fontFamily: 'DM Sans, sans-serif',
-                  fontSize: '0.98rem',
-                  lineHeight: 1.85,
-                  color: '#e2d9f3',
-                  whiteSpace: 'pre-line'
-                }}>
-                  {selectedPost.content}
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        .blog-content-h3 {
+          font-family: 'Syne', sans-serif;
+          font-size: 1.3rem;
+          font-weight: 700;
+          color: #f1f5f9;
+          margin: 32px 0 14px 0;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .blog-content-h3-bar {
+          display: inline-block;
+          width: 4px;
+          height: 18px;
+          border-radius: 4px;
+          background: #a78bfa;
+          box-shadow: 0 0 10px rgba(167, 139, 250, 0.6);
+        }
+
+        .blog-content-p {
+          margin-bottom: 20px;
+        }
+
+        .blog-content-strong {
+          color: #ffffff;
+          font-weight: 700;
+        }
+
+        .blog-content-code {
+          padding: 2px 6px;
+          border-radius: 6px;
+          background: rgba(138, 92, 246, 0.15);
+          border: 1px solid rgba(138, 92, 246, 0.25);
+          color: #c4b5fd;
+          font-family: monospace;
+          font-size: 0.92em;
+        }
+
+        .blog-content-list {
+          list-style: none;
+          padding: 0;
+          margin: 16px 0 24px 0;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .blog-content-list-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+          line-height: 1.7;
+        }
+
+        .blog-list-bullet {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #00f2fe;
+          box-shadow: 0 0 8px #00f2fe;
+          margin-top: 10px;
+          flex-shrink: 0;
+        }
+
+        /* ── Related Card ── */
+        .blog-related-card {
+          background: rgba(255, 255, 255, 0.025);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(138, 92, 246, 0.2);
+          border-radius: 16px;
+          overflow: hidden;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .blog-related-card:hover {
+          transform: translateY(-4px);
+          border-color: rgba(167, 139, 250, 0.5);
+          box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), 0 0 15px rgba(138, 92, 246, 0.2);
+        }
+      `}} />
     </div>
   );
 }
