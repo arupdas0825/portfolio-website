@@ -10,6 +10,7 @@ const STACKS = [
     category: 'Languages',
     icon: '🗣️',
     color: '#3b82f6',
+    direction: 'right-to-left',
     items: [
       { name: 'Python', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg' },
       { name: 'JavaScript', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg' },
@@ -26,6 +27,7 @@ const STACKS = [
     category: 'Frameworks & Libraries',
     icon: '⚒️',
     color: '#8b5cf6',
+    direction: 'left-to-right',
     items: [
       { name: 'React', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg' },
       { name: 'Next.js', icon: 'https://cdn.simpleicons.org/nextdotjs/white' },
@@ -35,7 +37,6 @@ const STACKS = [
       { name: 'Tailwind', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg' },
       { name: 'Vite', icon: 'https://cdn.simpleicons.org/vite/white' },
     ],
-
     badges: [
       { name: 'PANDAS', color: '#150458' },
       { name: 'NUMPY', color: '#013243' },
@@ -48,6 +49,7 @@ const STACKS = [
     category: 'Databases',
     icon: '💾',
     color: '#10b981',
+    direction: 'right-to-left',
     items: [
       { name: 'MongoDB', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg' },
       { name: 'MySQL', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg' },
@@ -59,6 +61,7 @@ const STACKS = [
     category: 'Cloud & DevOps',
     icon: '🚀',
     color: '#f43f5e',
+    direction: 'left-to-right',
     items: [
       { name: 'AWS', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg' },
       { name: 'Google Cloud', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/googlecloud/googlecloud-original.svg' },
@@ -74,6 +77,7 @@ const STACKS = [
     category: 'AI TOOLS USE',
     icon: '✨',
     color: '#0ea5e9',
+    direction: 'right-to-left',
     items: [
       { name: 'Codex', icon: '/icons/ai/codex.png' },
       { name: 'Emergent', icon: '/icons/ai/emergent.png' },
@@ -85,13 +89,11 @@ const STACKS = [
       { name: 'DeepSeek', icon: '/icons/ai/deepseek.jpeg' },
     ],
   },
-
 ];
-
 
 const BRAND_COLORS = {
   // Languages
-  python: { border: '#3776AB', glow: 'rgba(255, 212, 59, 0.35)', bg: 'rgba(255, 212, 59, 0.05)' }, // #FFD43B glow
+  python: { border: '#3776AB', glow: 'rgba(255, 212, 59, 0.35)', bg: 'rgba(255, 212, 59, 0.05)' },
   javascript: { border: '#F7DF1E', glow: 'rgba(247, 223, 30, 0.35)', bg: 'rgba(247, 223, 30, 0.05)' },
   typescript: { border: '#3178C6', glow: 'rgba(49, 120, 198, 0.35)', bg: 'rgba(49, 120, 198, 0.05)' },
   java: { border: '#ED8B00', glow: 'rgba(237, 139, 0, 0.35)', bg: 'rgba(237, 139, 0, 0.05)' },
@@ -126,8 +128,6 @@ const BRAND_COLORS = {
 };
 
 const TechIcon = ({ src, name }) => {
-  // Only invert icons that are known to be dark by default (Devicon originals)
-  // SimpleIcons are already requested as /white
   const isSimpleIcon = src.includes('simpleicons.org');
   const isDarkDevicon = !isSimpleIcon && (name.toLowerCase() === 'next.js' || name.toLowerCase() === 'vercel' || name.toLowerCase() === 'github');
 
@@ -150,6 +150,7 @@ const TechIcon = ({ src, name }) => {
         padding: 14,
         cursor: 'pointer',
         position: 'relative',
+        flexShrink: 0,
         '--brand-hover-border': colors.border,
         '--brand-hover-glow': colors.glow,
       }}
@@ -175,8 +176,6 @@ const TechIcon = ({ src, name }) => {
   );
 };
 
-
-
 const TechBadge = ({ name, color }) => (
   <motion.div
     whileHover={{ scale: 1.05 }}
@@ -189,12 +188,26 @@ const TechBadge = ({ name, color }) => (
       fontWeight: 800,
       letterSpacing: '1px',
       display: 'flex', alignItems: 'center', gap: 6,
-      cursor: 'default'
+      cursor: 'default',
+      flexShrink: 0
     }}
   >
     <span style={{ opacity: 0.7 }}>||</span> {name}
   </motion.div>
 );
+
+// Helper to duplicate items within a group so that a single group spans wider than any screen
+const getRepeatedItems = (items, minCount = 14) => {
+  if (!items || items.length === 0) return [];
+  const repeatTimes = Math.ceil(minCount / items.length);
+  const result = [];
+  for (let i = 0; i < repeatTimes; i++) {
+    items.forEach((item, idx) => {
+      result.push({ ...item, uniqueKey: `${item.name}-${i}-${idx}` });
+    });
+  }
+  return result;
+};
 
 export default function TechStack() {
   const titleRef = useRef(null);
@@ -244,56 +257,152 @@ export default function TechStack() {
         </div>
 
         {/* Categories */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 52 }}>
+          {STACKS.map((category) => {
+            const repeatedGroup = getRepeatedItems(category.items, 14);
+            const isReverse = category.direction === 'left-to-right';
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 60 }}>
-          {STACKS.map((category) => (
-            <div key={category.category}>
-              {/* Category Header — Portfolio Style */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
-                <div style={{
-                  width: 3, height: 24,
-                  background: category.color,
-                  borderRadius: 4,
-                  boxShadow: `0 0 10px ${category.color}88`
-                }} />
-                <span style={{ fontSize: '1.6rem' }}>{category.icon}</span>
-                <h3 style={{
-                  fontFamily: 'Syne, sans-serif',
-                  fontSize: '1.25rem',
-                  fontWeight: 800,
-                  letterSpacing: '1.5px',
-                  textTransform: 'uppercase',
-                  color: '#fff',
-                  margin: 0
-                }}>
-                  {category.category}
-                </h3>
-              </div>
-
-
-              {/* Icons Grid */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: isMobile ? 10 : 16, paddingLeft: isMobile ? 0 : 40 }}>
-                {category.items.map((item) => (
-                  <TechIcon key={item.name} src={item.icon} name={item.name} />
-                ))}
-              </div>
-
-              {/* Badges Row (for DS/ML) */}
-              {category.badges && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingLeft: isMobile ? 0 : 40, marginTop: 20 }}>
-                  {category.badges.map((badge) => (
-                    <TechBadge key={badge.name} name={badge.name} color={badge.color} />
-                  ))}
+            return (
+              <div key={category.category} style={{ width: '100%', overflow: 'hidden' }}>
+                {/* Category Header — Portfolio Style */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18 }}>
+                  <div style={{
+                    width: 3, height: 24,
+                    background: category.color,
+                    borderRadius: 4,
+                    boxShadow: `0 0 10px ${category.color}88`
+                  }} />
+                  <span style={{ fontSize: '1.6rem' }}>{category.icon}</span>
+                  <h3 style={{
+                    fontFamily: 'Syne, sans-serif',
+                    fontSize: '1.25rem',
+                    fontWeight: 800,
+                    letterSpacing: '1.5px',
+                    textTransform: 'uppercase',
+                    color: '#fff',
+                    margin: 0
+                  }}>
+                    {category.category}
+                  </h3>
                 </div>
-              )}
-            </div>
-          ))}
+
+                {/* Seamless Infinite Auto-Scrolling Marquee Track */}
+                <div className="tech-marquee-wrapper">
+                  <div className={`tech-marquee-track ${isReverse ? 'scroll-right' : 'scroll-left'}`}>
+                    {/* Primary Track */}
+                    <div className="tech-marquee-group">
+                      {repeatedGroup.map((item) => (
+                        <TechIcon key={`g1-${item.uniqueKey}`} src={item.icon} name={item.name} />
+                      ))}
+                    </div>
+                    {/* Seamless Clone Track */}
+                    <div className="tech-marquee-group" aria-hidden="true">
+                      {repeatedGroup.map((item) => (
+                        <TechIcon key={`g2-${item.uniqueKey}`} src={item.icon} name={item.name} />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Badges Row (for DS/ML) */}
+                {category.badges && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingLeft: isMobile ? 0 : 4, marginTop: 14 }}>
+                    {category.badges.map((badge) => (
+                      <TechBadge key={badge.name} name={badge.name} color={badge.color} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
       </div>
 
       <style dangerouslySetInnerHTML={{
         __html: `
+        /* ── Marquee Outer Wrapper ── */
+        .tech-marquee-wrapper {
+          position: relative;
+          width: 100%;
+          overflow: hidden;
+          padding: 16px 0 32px 0;
+          margin-top: -8px;
+          margin-bottom: -16px;
+          mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 1) 3%, rgba(0, 0, 0, 1) 97%, transparent 100%);
+          -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 1) 3%, rgba(0, 0, 0, 1) 97%, transparent 100%);
+        }
+
+        /* ── Continuous Sliding Track ── */
+        .tech-marquee-track {
+          display: flex;
+          width: max-content;
+          will-change: transform;
+        }
+
+        .tech-marquee-track.scroll-left {
+          animation: techMarqueeScrollLeft 32s linear infinite;
+        }
+
+        .tech-marquee-track.scroll-right {
+          animation: techMarqueeScrollRight 32s linear infinite;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+          .tech-marquee-wrapper:hover .tech-marquee-track {
+            animation-play-state: paused;
+          }
+        }
+
+        /* ── Marquee Group ── */
+        .tech-marquee-group {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          padding-right: 16px;
+          flex-shrink: 0;
+        }
+
+        @media (max-width: 768px) {
+          .tech-marquee-group {
+            gap: 12px;
+            padding-right: 12px;
+          }
+          .tech-marquee-track.scroll-left {
+            animation-duration: 26s;
+          }
+          .tech-marquee-track.scroll-right {
+            animation-duration: 26s;
+          }
+        }
+
+        /* ── Seamless GPU Transform Keyframes ── */
+        @keyframes techMarqueeScrollLeft {
+          0% {
+            transform: translate3d(0, 0, 0);
+          }
+          100% {
+            transform: translate3d(-50%, 0, 0);
+          }
+        }
+
+        @keyframes techMarqueeScrollRight {
+          0% {
+            transform: translate3d(-50%, 0, 0);
+          }
+          100% {
+            transform: translate3d(0, 0, 0);
+          }
+        }
+
+        /* ── Prefers Reduced Motion ── */
+        @media (prefers-reduced-motion: reduce) {
+          .tech-marquee-track {
+            animation: none !important;
+            transform: none !important;
+          }
+        }
+
         .tech-icon-box {
           will-change: transform;
           transform: translateZ(0); /* GPU Acceleration */
